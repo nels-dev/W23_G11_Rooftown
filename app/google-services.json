@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "515691117437",
+    "project_id": "csis3175-w23-g11-rooftown",
+    "storage_bucket": "csis3175-w23-g11-rooftown.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515691117437:android:b821fc9f2f1b6829ef6a14",
+        "android_client_info": {
+          "package_name": "csis3175.w23.g11.rooftown"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "515691117437-3sk9j9mgpnirb4v104jeh6shsmvs1f64.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "csis3175.w23.g11.rooftown",
+            "certificate_hash": "5ffb9056ed582f28502d47a142704be765ddea20"
+          }
+        },
+        {
+          "client_id": "515691117437-jo6m22jlh84ntv23fc6oouj5kco3250s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJYiYNzJDGJS4oQ7RkcVtMFubyw0N05YY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "515691117437-jo6m22jlh84ntv23fc6oouj5kco3250s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

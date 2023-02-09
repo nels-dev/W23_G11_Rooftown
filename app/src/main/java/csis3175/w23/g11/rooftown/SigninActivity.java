@@ -90,6 +90,8 @@ public class SigninActivity extends AppCompatActivity{
             Log.i(TAG, user.getEmail());
             Log.i(TAG, user.getUid());
             Toast.makeText(this, "Sign in successful. Hi " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            this.startActivity(intent);
         } else {
             // If sign in fails, display a message to the user.
             Log.w(TAG, "signInWithCredential:failure", task.getException());

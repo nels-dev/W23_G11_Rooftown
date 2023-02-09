@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/home"
+        android:title="@string/bottomNavHomeButtonTitle"
+        android:icon="@drawable/ic_outline_home_24"/>
+    <item android:id="@+id/roommates"
+        android:title="@string/bottomNavRoommatesButtonTitle"
+        android:icon="@drawable/ic_outline_group_24"/>
+    <item android:id="@+id/messages"
+        android:title="@string/bottomNavMessagesButtonTitle"
+        android:icon="@drawable/ic_outline_message_24"/>
+    <item android:id="@+id/posting"
+        android:title="@string/bottomNavPostingButtonTitle"
+        android:icon="@drawable/ic_outline_add_home_24"/>
+    <item android:id="@+id/profile"
+        android:title="@string/bottomNavProfileButtonTitle"
+        android:icon="@drawable/ic_outline_account_circle_24"/>
+
+</menu>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Project</string>
+    <string name="app_name">Rooftown</string>
     <string name="bottomNavHomeButtonTitle">Home</string>
     <string name="bottomNavRoommatesButtonTitle">Roommates</string>
     <string name="bottomNavMessagesButtonTitle">Messages</string>

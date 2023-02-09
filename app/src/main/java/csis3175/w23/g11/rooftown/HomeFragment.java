@@ -1,6 +1,4 @@
-package csis3175.proj;
-
-import androidx.lifecycle.ViewModelProvider;
+package csis3175.w23.g11.rooftown;
 
 import android.os.Bundle;
 
@@ -13,10 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 public class HomeFragment extends Fragment {
-
-    public static HomeFragment newInstance() {
-        return new HomeFragment();
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,

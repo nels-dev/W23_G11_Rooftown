@@ -1,4 +1,4 @@
-package csis3175.proj;
+package csis3175.w23.g11.rooftown;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;

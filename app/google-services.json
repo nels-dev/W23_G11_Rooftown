@@ -7,14 +7,14 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:515691117437:android:b821fc9f2f1b6829ef6a14",
+        "mobilesdk_app_id": "1:515691117437:android:310ae5dedb0c0288ef6a14",
         "android_client_info": {
           "package_name": "csis3175.w23.g11.rooftown"
         }
       },
       "oauth_client": [
         {
-          "client_id": "515691117437-3sk9j9mgpnirb4v104jeh6shsmvs1f64.apps.googleusercontent.com",
+          "client_id": "515691117437-4ms27upgsh22v0n37g3icmkir4u490eu.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "csis3175.w23.g11.rooftown",
@@ -22,7 +22,7 @@
           }
         },
         {
-          "client_id": "515691117437-jo6m22jlh84ntv23fc6oouj5kco3250s.apps.googleusercontent.com",
+          "client_id": "515691117437-a2c0fqpo23ltlb9tvoo88dcq20kvfgr8.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -35,7 +35,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "515691117437-jo6m22jlh84ntv23fc6oouj5kco3250s.apps.googleusercontent.com",
+              "client_id": "515691117437-a2c0fqpo23ltlb9tvoo88dcq20kvfgr8.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

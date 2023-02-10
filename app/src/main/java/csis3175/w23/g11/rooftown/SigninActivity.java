@@ -29,7 +29,7 @@ public class SigninActivity extends AppCompatActivity{
 
     private static final String TAG = "SIGNIN";
     private SignInButton btnGoogleSignIn;
-    private GoogleSignInClient signInClient;
+    private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
     private ActivityResultLauncher<Intent> signInActivityResultLauncher;
 
@@ -40,11 +40,11 @@ public class SigninActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
         GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .requestProfile()
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .build();
-        signInClient = GoogleSignIn.getClient(this, options);
+        mGoogleSignInClient = GoogleSignIn.getClient(this, options);
         btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn);
         btnGoogleSignIn.setOnClickListener(this::signIn);
         signInActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this::onActivityResult);
@@ -58,7 +58,7 @@ public class SigninActivity extends AppCompatActivity{
     public void signOut(View v){
         if (null != mAuth.getCurrentUser()){
             mAuth.signOut();
-            signInClient.signOut();
+            mGoogleSignInClient.signOut();
             Toast.makeText(this, "Sign out successful", Toast.LENGTH_SHORT).show();
         }else{
             Log.w(TAG, "No current user detected.");
@@ -68,7 +68,7 @@ public class SigninActivity extends AppCompatActivity{
 
     public void onActivityResult(ActivityResult result){
         if(result.getResultCode()==RESULT_OK){
-            Log.d(TAG, "Google Signin successful, forwarding the signin to firebase");
+            Log.d(TAG, "Google Sign-in successful, forwarding the token to firebase");
             GoogleSignInAccount account = GoogleSignIn.getSignedInAccountFromIntent(result.getData()).getResult();
             String idToken = account.getIdToken();
             if (idToken !=  null) {
@@ -76,7 +76,11 @@ public class SigninActivity extends AppCompatActivity{
                 // with Firebase.
                 AuthCredential firebaseCredential = GoogleAuthProvider.getCredential(idToken, null);
                 mAuth.signInWithCredential(firebaseCredential).addOnCompleteListener(this, this::onCompleteFirebaseAuth);
+            } else{
+                Log.e(TAG, "Google returned user with no ID Token");
             }
+        }else{
+            Log.w(TAG, "Signin cancelled");
         }
     }
 
@@ -99,7 +103,7 @@ public class SigninActivity extends AppCompatActivity{
     }
 
     public void signIn(View v) {
-        Intent signInIntent = signInClient.getSignInIntent();
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         signInActivityResultLauncher.launch(signInIntent);
     }
 }

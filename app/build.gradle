@@ -4,6 +4,12 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+        }
+    }
     namespace 'csis3175.w23.g11.rooftown'
     compileSdk 32
 
@@ -21,6 +27,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.debug
+            debuggable true
         }
     }
     compileOptions {

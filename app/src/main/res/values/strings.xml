@@ -10,4 +10,10 @@
     <string name="messagesFragmentTitle">Messages Fragment</string>
     <string name="postingFragmentTitle">Posting Fragment</string>
     <string name="profileFragmentTitle">Profile Fragment</string>
+    <string name="roommatesTabGridTitle">Grid</string>
+    <string name="roommatesTabListTitle">List</string>
+    <string name="roommatesTabMapTitle">Map</string>
+    <string name="gridViewFragmentTitle">Grid View Fragment</string>
+    <string name="listViewFragmentTitle">List View Fragment</string>
+    <string name="mapViewFragmentTitle">Map View Fragment</string>
 </resources>

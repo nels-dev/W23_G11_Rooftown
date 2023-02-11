@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         bottomNav = findViewById(R.id.bottomNav);
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, homeFragment).commit();
 
         BadgeDrawable badgeDrawable = bottomNav.getOrCreateBadge(R.id.messages);
         badgeDrawable.setVisible(true);
@@ -32,19 +32,19 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav.setOnItemSelectedListener((@NonNull MenuItem item) -> {
             if (item.getItemId() == R.id.home) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, homeFragment).commit();
                 return true;
             } else if (item.getItemId() == R.id.roommates) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, roommatesFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, roommatesFragment).commit();
                 return true;
             } else if (item.getItemId() == R.id.messages) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, messagesFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, messagesFragment).commit();
                 return true;
             } else if (item.getItemId() == R.id.posting) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, postingFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, postingFragment).commit();
                 return true;
             } else if (item.getItemId() == R.id.profile) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, profileFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, profileFragment).commit();
                 return true;
             } else {
                 return false;

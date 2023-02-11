@@ -5,11 +5,34 @@
     android:layout_height="match_parent"
     tools:context=".RoommatesFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <com.google.android.material.tabs.TabLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/roommatesFragmentTitle"
-        android:textSize="25sp"
-        android:layout_centerInParent="true"/>
+        android:id="@+id/roommatesTabs">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/roommatesTabGrid"
+            android:text="@string/roommatesTabGridTitle" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/roommatesTabList"
+            android:text="@string/roommatesTabListTitle" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/roommatesTabMap"
+            android:text="@string/roommatesTabMapTitle" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/roommatesContainer"
+        android:layout_below="@+id/roommatesTabs" />
 
 </RelativeLayout>

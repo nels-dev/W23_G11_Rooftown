@@ -66,6 +66,7 @@ public class SingleChatFragment extends Fragment {
         fromSystem.setChatMessageId(UUID.randomUUID().toString());
         fromSystem.setContent("You have indicated your interest!");
         fromSystem.setSentAt(new Date(System.currentTimeMillis() - 1000*1900));
+        fromSystem.setSystemMessage(true);
         fromSystem.setSentBy(mAuth.getUid()); //by me
 
         ChatMessageDto fromPartner = new ChatMessageDto();

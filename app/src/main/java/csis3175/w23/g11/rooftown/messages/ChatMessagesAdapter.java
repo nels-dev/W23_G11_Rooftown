@@ -5,6 +5,7 @@ import static android.view.View.LAYOUT_DIRECTION_RTL;
 import static androidx.recyclerview.widget.RecyclerView.NO_ID;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,19 +47,12 @@ public class ChatMessagesAdapter extends RecyclerView.Adapter<ChatMessagesAdapte
         // When the ViewHolder "window" is used to render the item at position
         ChatMessageDto chatMessage = chatMessages.get(position);
         Log.d(TAG, "Binding viewholder to " + chatMessage.getChatMessageId());
-        holder.txtViewChatMessage.setText(getMessageContent(chatMessage));
+        holder.txtViewChatMessage.setText(chatMessage.getContent());
         if(chatMessage.isSystemMessage()) {
             holder.txtViewChatMessage.setTextColor(context.getResources().getColor(R.color.md_theme_light_onSurface));
+            holder.txtViewChatMessage.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
         }
         holder.layoutChatMessage.setLayoutDirection(getLayoutDirection(chatMessage));
-    }
-
-    private String getMessageContent(ChatMessageDto messageDto){
-        if(messageDto.isSystemMessage()){
-            return "[" + messageDto + "]";
-        }else{
-            return messageDto.getContent();
-        }
     }
 
     private int getLayoutDirection(ChatMessageDto messageDto){

@@ -90,7 +90,7 @@ public class AllChatsFragment extends Fragment implements TabLayout.OnTabSelecte
             sendByOther.setLastActivity(new Date(System.currentTimeMillis()-1000*3700));
             sendByOther.setLastMessage("Yoyo");
             sendByOther.setNameOfCounterparty("Daniel");
-            sendByOther.setRead(false);
+            sendByOther.setRead(true);
             sendByOther.setLastActivityByCurrentUser(false);
             ChatDto sendByMyself = new ChatDto();
             sendByMyself.setId(UUID.randomUUID().toString());

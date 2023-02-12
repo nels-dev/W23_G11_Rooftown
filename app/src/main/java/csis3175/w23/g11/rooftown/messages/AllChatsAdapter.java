@@ -3,6 +3,7 @@ package csis3175.w23.g11.rooftown.messages;
 import static androidx.recyclerview.widget.RecyclerView.NO_ID;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,10 +46,28 @@ public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.Messag
         // When the ViewHolder "window" is used to render the item at position
         ChatDto chat = chats.get(position);
         Log.d(TAG, "Binding viewholder to " + chat.getChatId());
-        CharSequence timeSpan = DateUtils.getRelativeTimeSpanString(chat.getLastActivity().getTime());
+
         holder.txtViewChatItemTitle.setText(chat.getLastMessage());
-        holder.txtViewChatItemContent.setText("Sent by " + (chat.isLastActivityByCurrentUser() ? "you" : chat.getNameOfCounterparty()) + " " + timeSpan);
+        holder.txtViewChatItemContent.setText(getChatMetaText(chat));
+        if(!chat.isRead()){
+            holder.txtViewChatItemTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        }else{
+            holder.txtViewChatItemTitle.setTypeface(Typeface.DEFAULT);
+        }
         holder.chatId = chat.getChatId();
+    }
+
+    @NonNull
+    private String getChatMetaText(ChatDto chat) {
+        CharSequence timeSpan = DateUtils.getRelativeTimeSpanString(chat.getLastActivity().getTime());
+        StringBuilder sb = new StringBuilder()
+                .append("Sent by ")
+                .append(chat.isLastActivityByCurrentUser() ? "you" : chat.getNameOfCounterparty())
+                .append(" ")
+                .append(timeSpan)
+                .append(".")
+                .append(chat.isRead() ? "" : " Unread");
+        return sb.toString();
     }
 
     @Override

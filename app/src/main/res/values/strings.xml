@@ -16,4 +16,8 @@
     <string name="gridViewFragmentTitle">Grid View Fragment</string>
     <string name="listViewFragmentTitle">List View Fragment</string>
     <string name="mapViewFragmentTitle">Map View Fragment</string>
+    <string name="tabTitleInterestedIn">Interested In</string>
+    <string name="tabTitleInterestedBy">Interested By</string>
+    <string name="btnTextSend">Send</string>
+    <string name="txtHintNewMessage">Type something...</string>
 </resources>

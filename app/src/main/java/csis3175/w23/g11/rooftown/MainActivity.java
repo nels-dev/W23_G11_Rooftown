@@ -9,12 +9,14 @@ import android.view.MenuItem;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import csis3175.w23.g11.rooftown.messages.AllChatsFragment;
+
 public class MainActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNav;
     HomeFragment homeFragment = new HomeFragment();
     RoommatesFragment roommatesFragment = new RoommatesFragment();
-    MessagesFragment messagesFragment = new MessagesFragment();
+    AllChatsFragment allChatsFragment = new AllChatsFragment();
     PostingFragment postingFragment = new PostingFragment();
     ProfileFragment profileFragment = new ProfileFragment();
 
@@ -33,18 +35,23 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setOnItemSelectedListener((@NonNull MenuItem item) -> {
             if (item.getItemId() == R.id.home) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, homeFragment).commit();
+                getSupportActionBar().setTitle("Rooftown");
                 return true;
             } else if (item.getItemId() == R.id.roommates) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, roommatesFragment).commit();
+                getSupportActionBar().setTitle("Roommates");
                 return true;
             } else if (item.getItemId() == R.id.messages) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, messagesFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, allChatsFragment).commit();
+                getSupportActionBar().setTitle("Messages");
                 return true;
             } else if (item.getItemId() == R.id.posting) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, postingFragment).commit();
+                getSupportActionBar().setTitle("Posting");
                 return true;
             } else if (item.getItemId() == R.id.profile) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, profileFragment).commit();
+                getSupportActionBar().setTitle("Profile");
                 return true;
             } else {
                 return false;

@@ -14,6 +14,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import csis3175.w23.g11.rooftown.messages.AllChatsFragment;
 
 public class HomeFragment extends Fragment {
@@ -23,63 +27,29 @@ public class HomeFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         LinearLayout linearLayoutHome = view.findViewById(R.id.linearLayoutHome);
+        List<Integer> btnTitles = new ArrayList<>(Arrays.asList(R.string.txtHomeButton1Title, R.string.txtHomeButton2Title, R.string.txtHomeButton3Title));
+        List<Integer> btnContents = new ArrayList<>(Arrays.asList(R.string.txtHomeButton1Content, R.string.txtHomeButton2Content, R.string.txtHomeButton3Content));
+        List<Integer> btnDrawables = new ArrayList<>(Arrays.asList(R.drawable.ic_outline_search_60, R.drawable.ic_outline_add_box_60, R.drawable.ic_outline_question_answer_60));
+        List<Fragment> btnTargetFragments = new ArrayList<>(Arrays.asList(new RoommatesFragment(), new PostingFragment(), new AllChatsFragment()));
 
-        View button1 = inflater.inflate(R.layout.layout_homebutton, container, false);
-        TextView buttonTitle1 = button1.findViewById(R.id.txtViewHomeButtonTitle);
-        buttonTitle1.setText(R.string.txtHomeButton1Title);
-        TextView buttonContent1 = button1.findViewById(R.id.txtViewHomeButtonContent);
-        buttonContent1.setText(R.string.txtHomeButton1Content);
-        buttonContent1.setCompoundDrawablesWithIntrinsicBounds(null,
-                ResourcesCompat.getDrawable(getResources(), R.drawable.ic_outline_search_60, null ),
-                null,
-                null);
-        CardView card1 = button1.findViewById(R.id.cardViewHomeButton);
-        card1.setOnClickListener((View v) -> {
-            Fragment roommatesFragment = new RoommatesFragment();
-            requireActivity().getSupportFragmentManager()
+        for (int i = 0; i < btnTitles.size(); i++) {
+            int pos = i;
+            View button = inflater.inflate(R.layout.layout_homebutton, container, false);
+            TextView buttonTitle = button.findViewById(R.id.txtViewHomeButtonTitle);
+            buttonTitle.setText(btnTitles.get(pos));
+            TextView buttonContent = button.findViewById(R.id.txtViewHomeButtonContent);
+            buttonContent.setText(btnContents.get(pos));
+            buttonContent.setCompoundDrawablesWithIntrinsicBounds(null,
+                    ResourcesCompat.getDrawable(getResources(), btnDrawables.get(pos), null ),
+                    null,
+                    null);
+            CardView card = button.findViewById(R.id.cardViewHomeButton);
+            card.setOnClickListener((View v) -> requireActivity().getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.mainContainer, roommatesFragment)
-                    .commit();
-        });
-        linearLayoutHome.addView(button1);
-
-        View button2 = inflater.inflate(R.layout.layout_homebutton, container, false);
-        TextView buttonTitle2 = button2.findViewById(R.id.txtViewHomeButtonTitle);
-        buttonTitle2.setText(R.string.txtHomeButton2Title);
-        TextView buttonContent2 = button2.findViewById(R.id.txtViewHomeButtonContent);
-        buttonContent2.setText(R.string.txtHomeButton2Content);
-        buttonContent2.setCompoundDrawablesWithIntrinsicBounds(null,
-                ResourcesCompat.getDrawable(getResources(), R.drawable.ic_outline_add_box_60, null ),
-                null,
-                null);
-        CardView card2 = button2.findViewById(R.id.cardViewHomeButton);
-        card2.setOnClickListener((View v) -> {
-            Fragment postingFragment = new PostingFragment();
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.mainContainer, postingFragment)
-                    .commit();
-        });
-        linearLayoutHome.addView(button2);
-
-        View button3 = inflater.inflate(R.layout.layout_homebutton, container, false);
-        TextView buttonTitle3 = button3.findViewById(R.id.txtViewHomeButtonTitle);
-        buttonTitle3.setText(R.string.txtHomeButton3Title);
-        TextView buttonContent3 = button3.findViewById(R.id.txtViewHomeButtonContent);
-        buttonContent3.setText(R.string.txtHomeButton3Content);
-        buttonContent3.setCompoundDrawablesWithIntrinsicBounds(null,
-                ResourcesCompat.getDrawable(getResources(), R.drawable.ic_outline_question_answer_60, null ),
-                null,
-                null);
-        CardView card3 = button3.findViewById(R.id.cardViewHomeButton);
-        card3.setOnClickListener((View v) -> {
-            Fragment allChatsFragment = new AllChatsFragment();
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.mainContainer, allChatsFragment)
-                    .commit();
-        });
-        linearLayoutHome.addView(button3);
+                    .replace(R.id.mainContainer, btnTargetFragments.get(pos))
+                    .commit());
+            linearLayoutHome.addView(button);
+        }
 
         return view;
     }

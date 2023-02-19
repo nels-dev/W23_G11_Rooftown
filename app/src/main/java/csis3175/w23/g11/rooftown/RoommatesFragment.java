@@ -9,9 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
-
-import java.util.Objects;
 
 public class RoommatesFragment extends Fragment {
     TabLayout roommatesTabs;
@@ -74,5 +73,12 @@ public class RoommatesFragment extends Fragment {
 
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottomNav);
+        bottomNav.getMenu().findItem(R.id.bottomNavMenuRoommates).setChecked(true);
     }
 }

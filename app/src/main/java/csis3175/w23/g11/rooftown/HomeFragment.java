@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,5 +54,12 @@ public class HomeFragment extends Fragment {
         }
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottomNav);
+        bottomNav.getMenu().findItem(R.id.bottomNavMenuHome).setChecked(true);
     }
 }

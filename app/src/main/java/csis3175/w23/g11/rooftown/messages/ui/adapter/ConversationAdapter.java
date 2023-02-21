@@ -1,4 +1,4 @@
-package csis3175.w23.g11.rooftown.messages;
+package csis3175.w23.g11.rooftown.messages.ui.adapter;
 
 import static android.view.View.LAYOUT_DIRECTION_LTR;
 import static android.view.View.LAYOUT_DIRECTION_RTL;
@@ -6,7 +6,6 @@ import static androidx.recyclerview.widget.RecyclerView.NO_ID;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,19 +18,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.messages.data.model.ChatMessage;
+import csis3175.w23.g11.rooftown.util.CurrentUserHelper;
 
-public class ChatMessagesAdapter extends RecyclerView.Adapter<ChatMessagesAdapter.MessagesViewHolder> {
-    private static final String TAG = "CHAT MESSAGES";
-    List<ChatMessageDto> chatMessages;
+public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.MessagesViewHolder> {
+    private static final String TAG = "CHATS";
+    List<ChatMessage> chatMessages;
     Context context;
-    String currentUserId;
 
-    public ChatMessagesAdapter(List<ChatMessageDto> chatMessages,
-                               Context context,
-                               String currentUserId){
+    public ConversationAdapter(List<ChatMessage> chatMessages,
+                               Context context){
         this.chatMessages = chatMessages;
         this.context = context;
-        this.currentUserId = currentUserId;
     }
 
     @NonNull
@@ -45,8 +43,7 @@ public class ChatMessagesAdapter extends RecyclerView.Adapter<ChatMessagesAdapte
     @Override
     public void onBindViewHolder(@NonNull MessagesViewHolder holder, int position) {
         // When the ViewHolder "window" is used to render the item at position
-        ChatMessageDto chatMessage = chatMessages.get(position);
-        Log.d(TAG, "Binding viewholder to " + chatMessage.getChatMessageId());
+        ChatMessage chatMessage = chatMessages.get(position);
         holder.txtViewChatMessage.setText(chatMessage.getContent());
         if(chatMessage.isSystemMessage()) {
             holder.txtViewChatMessage.setTextColor(context.getResources().getColor(R.color.md_theme_light_onSurface));
@@ -55,12 +52,18 @@ public class ChatMessagesAdapter extends RecyclerView.Adapter<ChatMessagesAdapte
         holder.layoutChatMessage.setLayoutDirection(getLayoutDirection(chatMessage));
     }
 
-    private int getLayoutDirection(ChatMessageDto messageDto){
-        if (messageDto.getSentBy().equals(currentUserId)){
+    private int getLayoutDirection(ChatMessage messageDto){
+        if (messageDto.getSentBy().equals(CurrentUserHelper.getCurrentUid())){
             return LAYOUT_DIRECTION_LTR;
         }else{
             return LAYOUT_DIRECTION_RTL;
         }
+    }
+
+    public void setChatMessages(List<ChatMessage> chatMessages){
+        this.chatMessages.clear();
+        this.chatMessages.addAll(chatMessages);
+        this.notifyDataSetChanged();
     }
 
     @Override

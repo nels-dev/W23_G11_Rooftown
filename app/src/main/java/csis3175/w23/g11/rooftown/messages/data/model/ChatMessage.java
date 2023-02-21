@@ -1,15 +1,32 @@
-package csis3175.w23.g11.rooftown.messages;
+package csis3175.w23.g11.rooftown.messages.data.model;
 
 import java.util.Date;
+import java.util.UUID;
 
-public class ChatMessageDto {
-
+// Entity class
+public class ChatMessage {
+    private UUID chatId;
+    private UUID chatMessageId;
     private String content;
-    private String chatId;
-    private String chatMessageId;
     private Date sentAt;
     private boolean systemMessage;
     private String sentBy;
+
+    public UUID getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(UUID chatId) {
+        this.chatId = chatId;
+    }
+
+    public UUID getChatMessageId() {
+        return chatMessageId;
+    }
+
+    public void setChatMessageId(UUID chatMessageId) {
+        this.chatMessageId = chatMessageId;
+    }
 
     public String getContent() {
         return content;
@@ -17,22 +34,6 @@ public class ChatMessageDto {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public String getChatId() {
-        return chatId;
-    }
-
-    public void setChatId(String chatId) {
-        this.chatId = chatId;
-    }
-
-    public String getChatMessageId() {
-        return chatMessageId;
-    }
-
-    public void setChatMessageId(String chatMessageId) {
-        this.chatMessageId = chatMessageId;
     }
 
     public Date getSentAt() {
@@ -58,5 +59,4 @@ public class ChatMessageDto {
     public void setSentBy(String sentBy) {
         this.sentBy = sentBy;
     }
-
 }

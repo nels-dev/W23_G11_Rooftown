@@ -1,11 +1,10 @@
-package csis3175.w23.g11.rooftown.messages;
+package csis3175.w23.g11.rooftown.messages.ui.adapter;
 
 import static androidx.recyclerview.widget.RecyclerView.NO_ID;
 
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +15,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.messages.data.model.Chat;
+import csis3175.w23.g11.rooftown.messages.ui.view.ChatItemClickedListener;
 
 public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.MessagesViewHolder> {
-    private static final String TAG = "MESSAGES";
-    List<ChatDto> chats;
+    private static final String TAG = "CHATS";
+    List<Chat> chats;
     Context context;
     ChatItemClickedListener itemClickedListener;
 
-    public AllChatsAdapter(List<ChatDto> chats,
+    public AllChatsAdapter(List<Chat> chats,
                            Context context,
                            ChatItemClickedListener itemClickedListener){
         this.chats = chats;
@@ -33,41 +35,29 @@ public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.Messag
         this.itemClickedListener = itemClickedListener;
     }
 
-    @NonNull
     @Override
-    public MessagesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MessagesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //create a new ViewHolder and wraps the inflated item view
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_chatlistitem, parent, false);
         return new MessagesViewHolder(view, itemClickedListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MessagesViewHolder holder, int position) {
+    public void onBindViewHolder(MessagesViewHolder holder, int position) {
         // When the ViewHolder "window" is used to render the item at position
-        ChatDto chat = chats.get(position);
-        Log.d(TAG, "Binding viewholder to " + chat.getChatId());
-
-        holder.txtViewChatItemTitle.setText(chat.getLastMessage());
-        holder.txtViewChatItemContent.setText(getChatMetaText(chat));
+        Chat chat = chats.get(position);
+        holder.txtViewChatItemTitle.setText(chat.getPartnerName());
+        holder.txtViewChatItemContent.setText(chat.getLastMessage());
+        holder.txtViewChatItemTime.setText(DateUtils.getRelativeTimeSpanString(chat.getLastActivityAt().getTime()));
+        holder.txtViewChatItemTitle.setTypeface(Typeface.DEFAULT);
         if(!chat.isRead()){
             holder.txtViewChatItemTitle.setTypeface(Typeface.DEFAULT_BOLD);
+            holder.txtViewChatItemContent.setTypeface(Typeface.DEFAULT_BOLD);
         }else{
             holder.txtViewChatItemTitle.setTypeface(Typeface.DEFAULT);
+            holder.txtViewChatItemContent.setTypeface(Typeface.DEFAULT);
         }
         holder.chatId = chat.getChatId();
-    }
-
-    @NonNull
-    private String getChatMetaText(ChatDto chat) {
-        CharSequence timeSpan = DateUtils.getRelativeTimeSpanString(chat.getLastActivity().getTime());
-        StringBuilder sb = new StringBuilder()
-                .append("Sent by ")
-                .append(chat.isLastActivityByCurrentUser() ? "you" : chat.getNameOfCounterparty())
-                .append(" ")
-                .append(timeSpan)
-                .append(".")
-                .append(chat.isRead() ? "" : " Unread");
-        return sb.toString();
     }
 
     @Override
@@ -84,13 +74,15 @@ public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.Messag
 
         public TextView txtViewChatItemTitle;
         public TextView txtViewChatItemContent;
+        public TextView txtViewChatItemTime;
         public ImageView imgViewChatItem;
-        public String chatId;
+        public UUID chatId;
 
         public MessagesViewHolder(@NonNull View itemView, ChatItemClickedListener itemClickedListener) {
             super(itemView);
             txtViewChatItemTitle = itemView.findViewById(R.id.txtViewChatItemTitle);
             txtViewChatItemContent = itemView.findViewById(R.id.txtViewChatItemContent);
+            txtViewChatItemTime = itemView.findViewById(R.id.txtViewChatItemTime);
             imgViewChatItem = itemView.findViewById(R.id.imgViewChatItem);
             this.itemView.setOnClickListener(v -> {
                 if(getAdapterPosition()!=RecyclerView.NO_POSITION){
@@ -100,8 +92,7 @@ public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.Messag
         }
     }
 
-    public void populateMessages(List<ChatDto> chats){
-        Log.d(TAG, "Messages populated");
+    public void populateMessages(List<Chat> chats){
         this.chats.clear();
         this.chats.addAll(chats);
         this.notifyDataSetChanged();

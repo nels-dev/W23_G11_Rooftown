@@ -5,11 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import csis3175.w23.g11.rooftown.messages.AllChatsFragment;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
+
+import csis3175.w23.g11.rooftown.messages.ui.view.AllChatsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,5 +61,10 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        // Such that the bottom navigation will hide when keyboard is showing
+        KeyboardVisibilityEvent.setEventListener(
+                this,
+                isOpen -> bottomNav.setVisibility(isOpen ? View.GONE: View.VISIBLE));
     }
 }

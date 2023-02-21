@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 public class ProfileFragment extends Fragment {
 
     @Override
@@ -17,4 +19,10 @@ public class ProfileFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottomNav);
+        bottomNav.getMenu().findItem(R.id.bottomNavMenuProfile).setChecked(true);
+    }
 }

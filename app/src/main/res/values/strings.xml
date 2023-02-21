@@ -19,5 +19,13 @@
     <string name="tabTitleInterestedIn">Interested In</string>
     <string name="tabTitleInterestedBy">Interested By</string>
     <string name="btnTextSend">Send</string>
-    <string name="txtHintNewMessage">Type something...</string>
+    <string name="txtHintNewMessage">Type something…</string>
+    <string name="txtHomeButton1Title">Find Roommates</string>
+    <string name="txtHomeButton1Content">Browse for all the rooms and roommate finders to find your best matches</string>
+    <string name="txtHomeButton2Title">Publish Your Own</string>
+    <string name="txtHomeButton2Content">Have spare rooms?
+        Looking for roommates?
+        Post it to let others know!</string>
+    <string name="txtHomeButton3Title">Check Availabilities</string>
+    <string name="txtHomeButton3Content">Someone interested in your post? Or vice versa? Let’s chat in detail to see if match</string>
 </resources>

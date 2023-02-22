@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -86,6 +87,12 @@ public class AllChatsFragment extends Fragment implements TabLayout.OnTabSelecte
         tx.commit();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottomNav);
+        bottomNav.getMenu().findItem(R.id.bottomNavMenuMessages).setChecked(true);
+    }
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {

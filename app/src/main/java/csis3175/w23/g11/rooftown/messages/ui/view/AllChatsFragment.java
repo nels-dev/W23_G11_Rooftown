@@ -38,18 +38,6 @@ public class AllChatsFragment extends Fragment implements TabLayout.OnTabSelecte
         return inflater.inflate(R.layout.fragment_messages, container, false);
     }
 
-    private Chat createChat(){
-        Chat chat = new Chat();
-        chat.setChatId(UUID.randomUUID());
-        chat.setInitiator(CurrentUserHelper.getCurrentUid());
-        chat.setLastMessage("Hi");
-        chat.setPartnerName("Nelson");
-        chat.setCounterParty(UUID.randomUUID().toString());
-        chat.setLastActivityBy(CurrentUserHelper.getCurrentUid());
-        chat.setLastActivityAt(new Date());
-        chat.setLastReadAt(new Date());
-        return chat;
-    }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

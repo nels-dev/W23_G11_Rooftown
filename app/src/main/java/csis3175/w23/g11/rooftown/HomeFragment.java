@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import csis3175.w23.g11.rooftown.messages.AllChatsFragment;
+import csis3175.w23.g11.rooftown.messages.ui.view.AllChatsFragment;
+
 
 public class HomeFragment extends Fragment {
 

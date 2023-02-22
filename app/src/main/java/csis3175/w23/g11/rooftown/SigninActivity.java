@@ -25,6 +25,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import csis3175.w23.g11.rooftown.util.DatabaseHelper;
+
 public class SigninActivity extends AppCompatActivity{
 
     private static final String TAG = "SIGNIN";
@@ -93,8 +95,15 @@ public class SigninActivity extends AppCompatActivity{
             Log.i(TAG, user.getDisplayName());
             Log.i(TAG, user.getEmail());
             Log.i(TAG, user.getUid());
+
+            //Init the database. This could also be used to wipe all existing data since the sign-in user may be different from previous one
+            DatabaseHelper.init(this);
+
             Toast.makeText(this, "Sign in successful. Hi " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, MainActivity.class);
+
+
+
             this.startActivity(intent);
         } else {
             // If sign in fails, display a message to the user.

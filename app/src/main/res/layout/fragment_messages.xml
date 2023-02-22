@@ -5,7 +5,7 @@
     android:id="@+id/relativeLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".messages.AllChatsFragment">
+    tools:context=".messages.ui.view.AllChatsFragment">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayoutMessages"

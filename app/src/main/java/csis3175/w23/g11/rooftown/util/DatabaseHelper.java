@@ -15,7 +15,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final SimpleDateFormat storageDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final String TAG = "DATABASE";
     private static final String DATABASE_NAME = "rooftown.db"; //In-memory database
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 5;
 
     public static DatabaseHelper getInstance(){
         if(null==instance){
@@ -34,7 +34,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d(TAG, "Creating database tables");
+        dropAndInitDB(db);
+    }
+
+    private void dropAndInitDB(SQLiteDatabase db){
         db.execSQL("drop table if exists CHAT;");
         db.execSQL("drop table if exists CHAT_MESSAGE;");
         db.execSQL("drop table if exists USER_PROFILE;");
@@ -43,6 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "initiator varchar(36), " +
                 "counter_party varchar(36)," +
                 "partner_name varchar(100), " +
+                "partner_image varchar(100), " +
                 "last_activity_at datetime, " +
                 "last_activity_by varchar(36), " +
                 "last_message text, " +
@@ -54,7 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "sent_by varchar(36), " +
                 "system_message integer)");
         db.execSQL("create table USER_PROFILE(user_id varchar(36) primary key, " +
-                "user_name varchar(100)) ");
+                "user_name varchar(100), city varchar(100), country varchar(50), image_file_name varchar(50))");
     }
 
     public static String toDateString(Date date){
@@ -73,6 +77,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Not necessary unless database version is changed
+        // So that the entire DB is re-created when there is schema change
+        dropAndInitDB(db);
     }
 }

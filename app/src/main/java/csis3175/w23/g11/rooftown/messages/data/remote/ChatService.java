@@ -21,6 +21,7 @@ import java.util.UUID;
 import csis3175.w23.g11.rooftown.messages.data.model.Chat;
 import csis3175.w23.g11.rooftown.messages.data.model.ChatDto;
 import csis3175.w23.g11.rooftown.messages.data.model.ChatMessage;
+import csis3175.w23.g11.rooftown.user.data.model.UserProfile;
 import csis3175.w23.g11.rooftown.user.data.repository.UserProfileRepository;
 import csis3175.w23.g11.rooftown.util.CurrentUserHelper;
 
@@ -53,11 +54,14 @@ public class ChatService {
 
                     //Make sure all users are loaded
                     Set<String> userIds = extractAllUsers(chats);
-                    userProfileRepository.loadUsers(new ArrayList<>(userIds), ()-> {
+                    userProfileRepository.loadUsers(new ArrayList<>(userIds), (unused)-> {
                         for(Chat c: chats){
-                            c.setPartnerName(c.getInitiator().equals(CurrentUserHelper.getCurrentUid())
-                                    ? userProfileRepository.getUserName(c.getCounterParty())
-                                    : userProfileRepository.getUserName(c.getInitiator()));
+                            UserProfile userProfile =
+                            c.getInitiator().equals(CurrentUserHelper.getCurrentUid())
+                                    ? userProfileRepository.getUserProfile(c.getCounterParty())
+                                    : userProfileRepository.getUserProfile(c.getInitiator());
+                            c.setPartnerName(userProfile.getUserName());
+                            c.setPartnerImage(userProfile.getImageFileName());
                         }
                         resultConsumer.onListUpdated(chats);
                     });

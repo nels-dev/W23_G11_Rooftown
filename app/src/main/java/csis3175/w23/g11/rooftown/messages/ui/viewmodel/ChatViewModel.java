@@ -1,12 +1,10 @@
 package csis3175.w23.g11.rooftown.messages.ui.viewmodel;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.firestore.ListenerRegistration;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,51 +19,47 @@ public class ChatViewModel extends ViewModel {
     private ListenerRegistration registration;
     private ChatRepository chatRepository;
 
-    public UUID getSelectedChatId() {
-        return selectedChatId;
-    }
-
     private UUID selectedChatId;
 
-    public ChatViewModel(){
+    public ChatViewModel() {
         this.chatRepository = new ChatRepository();
         outgoingChats = chatRepository.getOutgoingChats();
         incomingChats = chatRepository.getIncomingChats();
         chatMessages = chatRepository.getChatMessages();
     }
 
-    public LiveData<List<Chat>> getOutgoingChats(){
+    public LiveData<List<Chat>> getOutgoingChats() {
         return outgoingChats;
     }
 
-    public LiveData<List<Chat>> getIncomingChats(){
+    public LiveData<List<Chat>> getIncomingChats() {
         return incomingChats;
     }
 
-    public LiveData<List<ChatMessage>> getChatMessages(){
+    public LiveData<List<ChatMessage>> getChatMessages() {
         return chatMessages;
     }
 
-    public void loadData(){
+    public void loadData() {
         chatRepository.loadAllChats();
     }
 
-    public void setSelectedChatId(UUID chatId){
+    public void setSelectedChatId(UUID chatId) {
         // Whenever the "listen to" chatId is changed,
         // the LiveData of ChatMessages has to be repopulated
         // and the previous listener has to be removed to avoid leakage
-        if(registration!=null) {
+        if (registration != null) {
             registration.remove();
         }
         selectedChatId = chatId;
         registration = chatRepository.loadAndListenToMessages(chatId);
     }
 
-    public void sendMessage(String content){
+    public void sendMessage(String content) {
         chatRepository.sendMessage(selectedChatId, content);
     }
 
-    public void markChatAsRead(){
+    public void markChatAsRead() {
         chatRepository.markChatAsRead(selectedChatId);
     }
 }

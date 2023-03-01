@@ -27,7 +27,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     Context context;
 
     public ConversationAdapter(List<ChatMessage> chatMessages,
-                               Context context){
+                               Context context) {
         this.chatMessages = chatMessages;
         this.context = context;
     }
@@ -45,22 +45,22 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         // When the ViewHolder "window" is used to render the item at position
         ChatMessage chatMessage = chatMessages.get(position);
         holder.txtViewChatMessage.setText(chatMessage.getContent());
-        if(chatMessage.isSystemMessage()) {
+        if (chatMessage.isSystemMessage()) {
             holder.txtViewChatMessage.setTextColor(context.getResources().getColor(R.color.md_theme_light_onSurface));
             holder.txtViewChatMessage.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
         }
         holder.layoutChatMessage.setLayoutDirection(getLayoutDirection(chatMessage));
     }
 
-    private int getLayoutDirection(ChatMessage messageDto){
-        if (messageDto.getSentBy().equals(CurrentUserHelper.getCurrentUid())){
+    private int getLayoutDirection(ChatMessage messageDto) {
+        if (messageDto.getSentBy().equals(CurrentUserHelper.getCurrentUid())) {
             return LAYOUT_DIRECTION_LTR;
-        }else{
+        } else {
             return LAYOUT_DIRECTION_RTL;
         }
     }
 
-    public void setChatMessages(List<ChatMessage> chatMessages){
+    public void setChatMessages(List<ChatMessage> chatMessages) {
         this.chatMessages.clear();
         this.chatMessages.addAll(chatMessages);
         this.notifyDataSetChanged();

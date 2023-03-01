@@ -29,23 +29,25 @@ public class ChatRepository {
     private final MutableLiveData<List<ChatMessage>> chatMessages = new MutableLiveData<>(new ArrayList<>());
     private volatile boolean loading = false;
 
-    public ChatRepository(){
+    public ChatRepository() {
         chatDao = new ChatDao();
         chatService = new ChatService();
         chatMessageDao = new ChatMessageDao();
     }
 
-    public LiveData<List<Chat>> getOutgoingChats(){
+    public LiveData<List<Chat>> getOutgoingChats() {
         return outgoingChats;
     }
 
-    public LiveData<List<Chat>> getIncomingChats(){
+    public LiveData<List<Chat>> getIncomingChats() {
         return incomingChats;
     }
 
-    public LiveData<List<ChatMessage>> getChatMessages() { return chatMessages; }
+    public LiveData<List<ChatMessage>> getChatMessages() {
+        return chatMessages;
+    }
 
-    public void loadAllChats(){
+    public void loadAllChats() {
         Log.d(TAG, "Loading chats from database ");
         outgoingChats.setValue(chatDao.getChatsByInitiator(CurrentUserHelper.getCurrentUid()));
         incomingChats.setValue(chatDao.getChatsByCounterParty(CurrentUserHelper.getCurrentUid()));
@@ -53,37 +55,37 @@ public class ChatRepository {
         syncWithRemote();
     }
 
-    public ListenerRegistration loadAndListenToMessages(UUID chatId){
+    public ListenerRegistration loadAndListenToMessages(UUID chatId) {
         chatMessages.setValue(chatMessageDao.getChatMessagesByChatId(chatId));
-        return chatService.listenToChat(chatId, (messages)->{
+        return chatService.listenToChat(chatId, (messages) -> {
             chatMessageDao.insertMessagesIfNotExist(messages);
             chatMessages.postValue(chatMessageDao.getChatMessagesByChatId(chatId));
 
         });
     }
 
-    public void syncWithRemote(){
-        new Handler().postDelayed(()->{
-            if(!loading) {
-                loading=true;
+    public void syncWithRemote() {
+        new Handler().post(() -> {
+            if (!loading) {
+                loading = true;
                 chatService.loadChats(chats -> {
                     chatDao.insertOrUpdateChats(chats);
                     Log.d(TAG, "Received remote data, posting value to live data ");
                     outgoingChats.postValue(chatDao.getChatsByInitiator(CurrentUserHelper.getCurrentUid()));
                     incomingChats.postValue(chatDao.getChatsByCounterParty(CurrentUserHelper.getCurrentUid()));
-                    loading=false;
+                    loading = false;
                 });
-            }else{
+            } else {
                 Log.d(TAG, "Skip sync with remote, another thread is working on it");
             }
-        }, 1000); // Using async here to simulate a remote latency
+        });
     }
 
-    public void sendMessage(UUID chatId, String content){
+    public void sendMessage(UUID chatId, String content) {
         chatService.addMessageToChat(chatId, content);
     }
 
-    public void markChatAsRead(UUID chatId){
+    public void markChatAsRead(UUID chatId) {
         chatDao.markAsRead(chatId);
     }
 

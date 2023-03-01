@@ -8,8 +8,12 @@ public class CurrentUserHelper {
         return FirebaseAuth.getInstance().getUid();
     }
 
+    public static String getCurrentUserEmail(){
+        return FirebaseAuth.getInstance().getCurrentUser().getEmail();
+    }
+
+
     public static String getCurrentUserName(){
-        //TODO: use in-app user profile
         return FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
     }
 }

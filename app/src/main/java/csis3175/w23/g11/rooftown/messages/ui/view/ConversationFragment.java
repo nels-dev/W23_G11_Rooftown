@@ -43,7 +43,7 @@ public class ConversationFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
+        viewModel = new ViewModelProvider(getActivity()).get(ChatViewModel.class);
         editTextChatMessage = view.findViewById(R.id.editTextChatMessage);
         if (null == getArguments() || null == this.getArguments().getString(ARG_CHAT_ID)) {
             Log.e(TAG, "No arguments passed to fragment. Expected " + ARG_CHAT_ID);

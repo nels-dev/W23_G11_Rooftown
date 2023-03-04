@@ -42,8 +42,7 @@ public class AllChatsFragment extends Fragment implements TabLayout.OnTabSelecte
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d(TAG, "AllChatsFragment - onViewCreated");
-        viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
+        viewModel = new ViewModelProvider(getActivity()).get(ChatViewModel.class);
 
         //Setup recyclerView
         RecyclerView recyclerViewChats = view.findViewById(R.id.recyclerViewChats);
@@ -63,11 +62,6 @@ public class AllChatsFragment extends Fragment implements TabLayout.OnTabSelecte
                 messagesAdapter.populateMessages(chats);
             }
         });
-
-        // Putting "loadData" inside on view created means application will try
-        // to fetch from local db + sync with remote every time this fragment is
-        // (re)displayed, including switching from messages fragment
-        viewModel.loadData();
 
         //Setup tab
         tabLayoutMessages = view.findViewById(R.id.tabLayoutMessages);

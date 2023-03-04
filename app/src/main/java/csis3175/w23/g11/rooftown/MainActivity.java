@@ -2,12 +2,15 @@ package csis3175.w23.g11.rooftown;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -16,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 
 import csis3175.w23.g11.rooftown.messages.ui.view.AllChatsFragment;
+import csis3175.w23.g11.rooftown.messages.ui.viewmodel.ChatViewModel;
 import csis3175.w23.g11.rooftown.user.ui.view.ProfileFragment;
 import csis3175.w23.g11.rooftown.util.DatabaseHelper;
 
@@ -27,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     AllChatsFragment allChatsFragment = new AllChatsFragment();
     PostingFragment postingFragment = new PostingFragment();
     ProfileFragment profileFragment = new ProfileFragment();
+    private BadgeDrawable badgeDrawable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav = findViewById(R.id.bottomNav);
         getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, homeFragment).commit();
+        badgeDrawable = bottomNav.getOrCreateBadge(R.id.bottomNavMenuMessages);
+        badgeDrawable.setVisible(false);
 
-        BadgeDrawable badgeDrawable = bottomNav.getOrCreateBadge(R.id.bottomNavMenuMessages);
-        badgeDrawable.setVisible(true);
-        badgeDrawable.setNumber(3);
+        loadAndListenToChatsAsync();
 
         bottomNav.setOnItemSelectedListener((@NonNull MenuItem item) -> {
             if (item.getItemId() == R.id.bottomNavMenuHome) {
@@ -77,5 +82,21 @@ public class MainActivity extends AppCompatActivity {
         KeyboardVisibilityEvent.setEventListener(
                 this,
                 isOpen -> bottomNav.setVisibility(isOpen ? View.GONE : View.VISIBLE));
+    }
+
+    private void loadAndListenToChatsAsync() {
+        new Handler().post(()->{
+            ChatViewModel viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
+            viewModel.loadData();
+            viewModel.getNumberOfUnread().observe(this, numOfUnread -> {
+                if(numOfUnread >0){
+                    badgeDrawable.setVisible(true);
+                    badgeDrawable.setNumber(numOfUnread);
+                }else{
+                    badgeDrawable.setVisible(false);
+                }
+            });
+        });
+
     }
 }

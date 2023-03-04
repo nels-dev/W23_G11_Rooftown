@@ -23,11 +23,13 @@ public class ChatRepository {
     private static final String TAG = "CHATS";
     private final ChatDao chatDao;
     private final ChatMessageDao chatMessageDao;
+
+
     private final ChatService chatService;
     private final MutableLiveData<List<Chat>> outgoingChats = new MutableLiveData<>();
     private final MutableLiveData<List<Chat>> incomingChats = new MutableLiveData<>();
     private final MutableLiveData<List<ChatMessage>> chatMessages = new MutableLiveData<>(new ArrayList<>());
-    private volatile boolean loading = false;
+    private final MutableLiveData<Integer> numberOfUnread = new MutableLiveData<>();
 
     public ChatRepository() {
         chatDao = new ChatDao();
@@ -47,38 +49,31 @@ public class ChatRepository {
         return chatMessages;
     }
 
-    public void loadAllChats() {
-        Log.d(TAG, "Loading chats from database ");
+
+    public MutableLiveData<Integer> getNumberOfUnread() {
+        return numberOfUnread;
+    }
+
+    public ListenerRegistration loadAndListenToChats(){
         outgoingChats.setValue(chatDao.getChatsByInitiator(CurrentUserHelper.getCurrentUid()));
         incomingChats.setValue(chatDao.getChatsByCounterParty(CurrentUserHelper.getCurrentUid()));
-        Log.d(TAG, "Loading chats from remote");
-        syncWithRemote();
+        return chatService.listenToAllChats(this::remoteCallBackWithData);
     }
 
     public ListenerRegistration loadAndListenToMessages(UUID chatId) {
         chatMessages.setValue(chatMessageDao.getChatMessagesByChatId(chatId));
-        return chatService.listenToChat(chatId, (messages) -> {
+        return chatService.listenToChatMessages(chatId, (messages) -> {
             chatMessageDao.insertMessagesIfNotExist(messages);
             chatMessages.postValue(chatMessageDao.getChatMessagesByChatId(chatId));
-
         });
     }
 
-    public void syncWithRemote() {
-        new Handler().post(() -> {
-            if (!loading) {
-                loading = true;
-                chatService.loadChats(chats -> {
-                    chatDao.insertOrUpdateChats(chats);
-                    Log.d(TAG, "Received remote data, posting value to live data ");
-                    outgoingChats.postValue(chatDao.getChatsByInitiator(CurrentUserHelper.getCurrentUid()));
-                    incomingChats.postValue(chatDao.getChatsByCounterParty(CurrentUserHelper.getCurrentUid()));
-                    loading = false;
-                });
-            } else {
-                Log.d(TAG, "Skip sync with remote, another thread is working on it");
-            }
-        });
+    public void remoteCallBackWithData(List<Chat> chats) {
+        chatDao.insertOrUpdateChats(chats);
+        Log.d(TAG, "Received remote data, posting value to live data ");
+        outgoingChats.postValue(chatDao.getChatsByInitiator(CurrentUserHelper.getCurrentUid()));
+        incomingChats.postValue(chatDao.getChatsByCounterParty(CurrentUserHelper.getCurrentUid()));
+        numberOfUnread.postValue(chatDao.getNumberOfUnread());
     }
 
     public void sendMessage(UUID chatId, String content) {
@@ -87,6 +82,7 @@ public class ChatRepository {
 
     public void markChatAsRead(UUID chatId) {
         chatDao.markAsRead(chatId);
+        numberOfUnread.postValue(chatDao.getNumberOfUnread());
     }
 
 

@@ -3,12 +3,17 @@ package csis3175.w23.g11.rooftown.messages.data.remote;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +28,7 @@ import csis3175.w23.g11.rooftown.messages.data.model.ChatDto;
 import csis3175.w23.g11.rooftown.messages.data.model.ChatMessage;
 import csis3175.w23.g11.rooftown.user.data.model.UserProfile;
 import csis3175.w23.g11.rooftown.user.data.repository.UserProfileRepository;
+import csis3175.w23.g11.rooftown.util.CallbackListener;
 import csis3175.w23.g11.rooftown.util.CurrentUserHelper;
 
 /**
@@ -43,29 +49,38 @@ public class ChatService {
                 .whereArrayContains("participants", CurrentUserHelper.getCurrentUid());
     }
 
-    public void loadChats(ListUpdateListener<Chat> resultConsumer){
-        allChats.get()
-                .addOnCompleteListener(task -> {
-                    List<DocumentSnapshot> resultList = task.getResult().getDocuments();
-                    List<Chat> chats = new ArrayList<>();
-                    for(DocumentSnapshot doc: resultList){
-                        chats.add(toChat(doc));
+    public ListenerRegistration listenToAllChats(CallbackListener<List<Chat>> resultConsumer){
+        return allChats.addSnapshotListener(MetadataChanges.EXCLUDE, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (value==null) return;
+                for (DocumentChange chng : value.getDocumentChanges()){
+                    List<Chat> delta = new ArrayList<>();
+                    if(chng.getType()== DocumentChange.Type.ADDED){
+                        Log.d(TAG, "Chat created: " + chng.getDocument().getId());
+                        delta.add(toChat(chng.getDocument()));
+                    }else if(chng.getType()== DocumentChange.Type.MODIFIED){
+                        Log.d(TAG, "Chat updated: " + chng.getDocument().getId());
+                        delta.add(toChat(chng.getDocument()));
+                    }else if(chng.getType()==DocumentChange.Type.REMOVED){
+                        // Shouldn't happen, but for completeness
+                        Log.w(TAG, "Chat deleted: " + chng.getDocument().getId());
                     }
-
-                    //Make sure all users are loaded
-                    Set<String> userIds = extractAllUsers(chats);
+                    Set<String> userIds = extractAllUsers(delta);
                     userProfileRepository.loadUsers(new ArrayList<>(userIds), (unused)-> {
-                        for(Chat c: chats){
+                        for(Chat c: delta){
                             UserProfile userProfile =
-                            c.getInitiator().equals(CurrentUserHelper.getCurrentUid())
-                                    ? userProfileRepository.getUserProfile(c.getCounterParty())
-                                    : userProfileRepository.getUserProfile(c.getInitiator());
+                                    c.getInitiator().equals(CurrentUserHelper.getCurrentUid())
+                                            ? userProfileRepository.getUserProfile(c.getCounterParty())
+                                            : userProfileRepository.getUserProfile(c.getInitiator());
                             c.setPartnerName(userProfile.getUserName());
                             c.setPartnerImage(userProfile.getImageFileName());
                         }
-                        resultConsumer.onListUpdated(chats);
+                        resultConsumer.callback(delta);
                     });
-                });
+                }
+            }
+        });
     }
 
     private Set<String> extractAllUsers(List<Chat> chats) {
@@ -78,14 +93,14 @@ public class ChatService {
         return userIds;
     }
 
-    public ListenerRegistration listenToChat(UUID chatId, ListUpdateListener<ChatMessage> resultConsumer){
+    public ListenerRegistration listenToChatMessages(UUID chatId, CallbackListener<List<ChatMessage>> resultConsumer){
         return fs.collection(COLLECTION_CHAT).document(chatId.toString())
                 .addSnapshotListener(MetadataChanges.EXCLUDE,
                 (value, error) -> {
                     if(value!=null) {
                         Log.d(TAG, "Chat has changed. Extracting messages");
                         List<ChatMessage> messages = getMessages(value);
-                        resultConsumer.onListUpdated(messages);
+                        resultConsumer.callback(messages);
                     }
                 });
     }
@@ -154,10 +169,6 @@ public class ChatService {
         chat.setInitiator(dto.getParticipants().get(0));
         chat.setCounterParty(dto.getParticipants().get(1));
         return chat;
-    }
-
-    public interface ListUpdateListener<T> {
-        void onListUpdated(List<T> list);
     }
 
     public void addMessageToChat(UUID chatId, String messageContent){

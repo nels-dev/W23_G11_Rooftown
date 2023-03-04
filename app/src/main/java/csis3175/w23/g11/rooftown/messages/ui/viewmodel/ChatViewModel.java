@@ -16,8 +16,10 @@ public class ChatViewModel extends ViewModel {
     private final LiveData<List<Chat>> outgoingChats;
     private final LiveData<List<Chat>> incomingChats;
     private final LiveData<List<ChatMessage>> chatMessages;
-    private ListenerRegistration registration;
-    private ChatRepository chatRepository;
+    private final LiveData<Integer> numberOfUnread;
+    private final ChatRepository chatRepository;
+    private ListenerRegistration singleChatRegistration;
+    private ListenerRegistration allChatsRegistration;
 
     private UUID selectedChatId;
 
@@ -26,6 +28,7 @@ public class ChatViewModel extends ViewModel {
         outgoingChats = chatRepository.getOutgoingChats();
         incomingChats = chatRepository.getIncomingChats();
         chatMessages = chatRepository.getChatMessages();
+        numberOfUnread = chatRepository.getNumberOfUnread();
     }
 
     public LiveData<List<Chat>> getOutgoingChats() {
@@ -40,19 +43,26 @@ public class ChatViewModel extends ViewModel {
         return chatMessages;
     }
 
+    public LiveData<Integer> getNumberOfUnread() {
+        return numberOfUnread;
+    }
+
     public void loadData() {
-        chatRepository.loadAllChats();
+        if(allChatsRegistration!=null){
+            allChatsRegistration.remove();
+        }
+        allChatsRegistration = chatRepository.loadAndListenToChats();
     }
 
     public void setSelectedChatId(UUID chatId) {
         // Whenever the "listen to" chatId is changed,
         // the LiveData of ChatMessages has to be repopulated
         // and the previous listener has to be removed to avoid leakage
-        if (registration != null) {
-            registration.remove();
+        if (singleChatRegistration != null) {
+            singleChatRegistration.remove();
         }
         selectedChatId = chatId;
-        registration = chatRepository.loadAndListenToMessages(chatId);
+        singleChatRegistration = chatRepository.loadAndListenToMessages(chatId);
     }
 
     public void sendMessage(String content) {

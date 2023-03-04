@@ -61,6 +61,15 @@ public class ChatDao {
         return result;
     }
 
+    public int getNumberOfUnread(){
+        Cursor cursor = DatabaseHelper.getInstance().getReadableDatabase()
+                .rawQuery("select count(1) from CHAT where last_read_at is null or last_activity_at > last_read_at", new String[]{});
+        while(cursor.moveToNext()){
+            return cursor.getInt(0);
+        }
+        return 0;
+    }
+
     private Chat getData(Cursor cursor){
         Chat chat = new Chat();
         chat.setChatId(UUID.fromString(cursor.getString(0)));

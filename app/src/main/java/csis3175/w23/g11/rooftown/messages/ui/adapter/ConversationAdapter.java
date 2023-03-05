@@ -44,10 +44,13 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     public void onBindViewHolder(@NonNull MessagesViewHolder holder, int position) {
         // When the ViewHolder "window" is used to render the item at position
         ChatMessage chatMessage = chatMessages.get(position);
-        holder.txtViewChatMessage.setText(chatMessage.getContent());
+
         if (chatMessage.isSystemMessage()) {
-            holder.txtViewChatMessage.setTextColor(context.getResources().getColor(R.color.md_theme_light_onSurface));
+            holder.txtViewChatMessage.setText("[" + chatMessage.getContent() + "]");
             holder.txtViewChatMessage.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+        }else{
+            holder.txtViewChatMessage.setText(chatMessage.getContent());
+            holder.txtViewChatMessage.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
         }
         holder.layoutChatMessage.setLayoutDirection(getLayoutDirection(chatMessage));
     }

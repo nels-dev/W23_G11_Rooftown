@@ -83,6 +83,8 @@ public class ChatRepository {
     public void markChatAsRead(UUID chatId) {
         chatDao.markAsRead(chatId);
         numberOfUnread.postValue(chatDao.getNumberOfUnread());
+        outgoingChats.postValue(chatDao.getChatsByInitiator(CurrentUserHelper.getCurrentUid()));
+        incomingChats.postValue(chatDao.getChatsByCounterParty(CurrentUserHelper.getCurrentUid()));
     }
 
 

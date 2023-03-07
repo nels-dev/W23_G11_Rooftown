@@ -11,10 +11,19 @@ public class Chat {
     private String initiator;
     private String counterParty;
     private String partnerName;
+    private String partnerImage;
     private Date lastActivityAt;
     private String lastActivityBy;
     private String lastMessage;
     private Date lastReadAt;
+
+    public String getPartnerImage() {
+        return partnerImage;
+    }
+
+    public void setPartnerImage(String partnerImage) {
+        this.partnerImage = partnerImage;
+    }
 
     public boolean isRead(){
         return lastReadAt!=null && lastActivityAt.before(lastReadAt);

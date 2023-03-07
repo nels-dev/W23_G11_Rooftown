@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -12,7 +11,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -25,17 +23,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import csis3175.w23.g11.rooftown.util.DatabaseHelper;
+import csis3175.w23.g11.rooftown.user.data.model.UserProfile;
+import csis3175.w23.g11.rooftown.user.data.repository.UserProfileRepository;
 
-public class SigninActivity extends AppCompatActivity{
+public class SigninActivity extends AppCompatActivity {
 
     private static final String TAG = "SIGNIN";
     private SignInButton btnGoogleSignIn;
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
     private ActivityResultLauncher<Intent> signInActivityResultLauncher;
-
-    private Button btnSignout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,41 +49,32 @@ public class SigninActivity extends AppCompatActivity{
         signInActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this::onActivityResult);
         mAuth = FirebaseAuth.getInstance();
 
-        //Signout button is for demo purpose only, should be moved to profile page eventually
-        btnSignout = findViewById(R.id.btnSignout);
-        btnSignout.setOnClickListener(this::signOut);
-    }
-
-    public void signOut(View v){
-        if (null != mAuth.getCurrentUser()){
-            mAuth.signOut();
-            mGoogleSignInClient.signOut();
-            Toast.makeText(this, "Sign out successful", Toast.LENGTH_SHORT).show();
-        }else{
-            Log.w(TAG, "No current user detected.");
+        if (null != mAuth.getCurrentUser()) {
+            Toast.makeText(this, "Welcome back, " + mAuth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            this.startActivity(intent);
         }
     }
 
-
-    public void onActivityResult(ActivityResult result){
-        if(result.getResultCode()==RESULT_OK){
+    public void onActivityResult(ActivityResult result) {
+        if (result.getResultCode() == RESULT_OK) {
             Log.d(TAG, "Google Sign-in successful, forwarding the token to firebase");
             GoogleSignInAccount account = GoogleSignIn.getSignedInAccountFromIntent(result.getData()).getResult();
             String idToken = account.getIdToken();
-            if (idToken !=  null) {
+            if (idToken != null) {
                 // Got an ID token from Google. Use it to authenticate
                 // with Firebase.
                 AuthCredential firebaseCredential = GoogleAuthProvider.getCredential(idToken, null);
                 mAuth.signInWithCredential(firebaseCredential).addOnCompleteListener(this, this::onCompleteFirebaseAuth);
-            } else{
+            } else {
                 Log.e(TAG, "Google returned user with no ID Token");
             }
-        }else{
+        } else {
             Log.w(TAG, "Signin cancelled");
         }
     }
 
-    private void onCompleteFirebaseAuth(Task<AuthResult> task){
+    private void onCompleteFirebaseAuth(Task<AuthResult> task) {
         if (task.isSuccessful()) {
             // Sign in success, update UI with the signed-in user's information
             Log.d(TAG, "signInWithCredential:success");
@@ -96,14 +84,14 @@ public class SigninActivity extends AppCompatActivity{
             Log.i(TAG, user.getEmail());
             Log.i(TAG, user.getUid());
 
-            //Init the database. This could also be used to wipe all existing data since the sign-in user may be different from previous one
-            DatabaseHelper.init(this);
-
             Toast.makeText(this, "Sign in successful. Hi " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
+
+            UserProfile up = new UserProfile();
+            up.setUserId(user.getUid());
+            up.setUserName(user.getDisplayName());
+            new UserProfileRepository().createIfNotExist(up);
+
             Intent intent = new Intent(this, MainActivity.class);
-
-
-
             this.startActivity(intent);
         } else {
             // If sign in fails, display a message to the user.

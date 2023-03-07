@@ -1,7 +1,6 @@
 package csis3175.w23.g11.rooftown.messages.ui.view;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,20 +17,18 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
-import csis3175.w23.g11.rooftown.messages.data.model.Chat;
 import csis3175.w23.g11.rooftown.messages.ui.adapter.AllChatsAdapter;
 import csis3175.w23.g11.rooftown.messages.ui.viewmodel.ChatViewModel;
-import csis3175.w23.g11.rooftown.util.CurrentUserHelper;
 
 public class AllChatsFragment extends Fragment implements TabLayout.OnTabSelectedListener {
 
     private TabLayout tabLayoutMessages;
     private AllChatsAdapter messagesAdapter;
     private ChatViewModel viewModel;
+    private int selectedTab;
     private static final String TAG = "CHATS";
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -42,8 +39,7 @@ public class AllChatsFragment extends Fragment implements TabLayout.OnTabSelecte
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d(TAG, "AllChatsFragment - onViewCreated");
-        viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
+        viewModel = new ViewModelProvider(getActivity()).get(ChatViewModel.class);
 
         //Setup recyclerView
         RecyclerView recyclerViewChats = view.findViewById(R.id.recyclerViewChats);
@@ -64,13 +60,9 @@ public class AllChatsFragment extends Fragment implements TabLayout.OnTabSelecte
             }
         });
 
-        // Putting "loadData" inside on view created means application will try
-        // to fetch from local db + sync with remote every time this fragment is
-        // (re)displayed, including switching from messages fragment
-        viewModel.loadData();
-
         //Setup tab
         tabLayoutMessages = view.findViewById(R.id.tabLayoutMessages);
+        tabLayoutMessages.getTabAt(selectedTab).select();
         tabLayoutMessages.addOnTabSelectedListener(this);
     }
 
@@ -103,6 +95,7 @@ public class AllChatsFragment extends Fragment implements TabLayout.OnTabSelecte
             // Interest by
             messagesAdapter.populateMessages(viewModel.getIncomingChats().getValue());
         }
+        this.selectedTab = tab.getPosition();
     }
 
     @Override

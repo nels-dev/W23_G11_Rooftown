@@ -20,6 +20,7 @@ import java.util.UUID;
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.messages.data.model.Chat;
 import csis3175.w23.g11.rooftown.messages.ui.view.ChatItemClickedListener;
+import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
 public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.MessagesViewHolder> {
     private static final String TAG = "CHATS";
@@ -29,7 +30,7 @@ public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.Messag
 
     public AllChatsAdapter(List<Chat> chats,
                            Context context,
-                           ChatItemClickedListener itemClickedListener){
+                           ChatItemClickedListener itemClickedListener) {
         this.chats = chats;
         this.context = context;
         this.itemClickedListener = itemClickedListener;
@@ -49,13 +50,16 @@ public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.Messag
         holder.txtViewChatItemTitle.setText(chat.getPartnerName());
         holder.txtViewChatItemContent.setText(chat.getLastMessage());
         holder.txtViewChatItemTime.setText(DateUtils.getRelativeTimeSpanString(chat.getLastActivityAt().getTime()));
-        holder.txtViewChatItemTitle.setTypeface(Typeface.DEFAULT);
-        if(!chat.isRead()){
+
+        if (!chat.isRead()) {
             holder.txtViewChatItemTitle.setTypeface(Typeface.DEFAULT_BOLD);
             holder.txtViewChatItemContent.setTypeface(Typeface.DEFAULT_BOLD);
-        }else{
+        } else {
             holder.txtViewChatItemTitle.setTypeface(Typeface.DEFAULT);
             holder.txtViewChatItemContent.setTypeface(Typeface.DEFAULT);
+        }
+        if (null != chat.getPartnerImage()) {
+            ImageFileHelper.readImage(context, chat.getPartnerImage(), bitmap -> holder.imgViewChatItem.setImageBitmap(bitmap));
         }
         holder.chatId = chat.getChatId();
     }
@@ -85,14 +89,14 @@ public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.Messag
             txtViewChatItemTime = itemView.findViewById(R.id.txtViewChatItemTime);
             imgViewChatItem = itemView.findViewById(R.id.imgViewChatItem);
             this.itemView.setOnClickListener(v -> {
-                if(getAdapterPosition()!=RecyclerView.NO_POSITION){
+                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     itemClickedListener.onClick(chatId);
                 }
             });
         }
     }
 
-    public void populateMessages(List<Chat> chats){
+    public void populateMessages(List<Chat> chats) {
         this.chats.clear();
         this.chats.addAll(chats);
         this.notifyDataSetChanged();

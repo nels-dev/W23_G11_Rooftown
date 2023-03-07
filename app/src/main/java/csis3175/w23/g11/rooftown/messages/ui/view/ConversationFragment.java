@@ -2,6 +2,12 @@ package csis3175.w23.g11.rooftown.messages.ui.view;
 
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,13 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -44,9 +43,9 @@ public class ConversationFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
+        viewModel = new ViewModelProvider(getActivity()).get(ChatViewModel.class);
         editTextChatMessage = view.findViewById(R.id.editTextChatMessage);
-        if(null==   getArguments() || null==this.getArguments().getString(ARG_CHAT_ID)){
+        if (null == getArguments() || null == this.getArguments().getString(ARG_CHAT_ID)) {
             Log.e(TAG, "No arguments passed to fragment. Expected " + ARG_CHAT_ID);
             return;
         }
@@ -59,18 +58,19 @@ public class ConversationFragment extends Fragment {
         recyclerViewMessages.setAdapter(adapter);
         viewModel.setSelectedChatId(chatId);
         viewModel.markChatAsRead();
-        viewModel.getChatMessages().observe(this.getViewLifecycleOwner(), (messages)->{
+        viewModel.getChatMessages().observe(this.getViewLifecycleOwner(), (messages) -> {
             adapter.setChatMessages(messages);
             viewModel.markChatAsRead(); // User is already reading the conversation
             try {
                 recyclerViewMessages.smoothScrollToPosition(adapter.getItemCount() - 1);
-            }catch(Exception ignored){}
+            } catch (Exception ignored) {
+            }
         });
         Button btnSendMessage = view.findViewById(R.id.btnSendMessage);
         btnSendMessage.setOnClickListener(this::sendMessage);
     }
 
-    public void sendMessage(View view){
+    public void sendMessage(View view) {
         viewModel.sendMessage(editTextChatMessage.getText().toString());
         editTextChatMessage.setText(null);
     }

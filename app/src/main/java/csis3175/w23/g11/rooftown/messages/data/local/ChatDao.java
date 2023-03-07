@@ -23,7 +23,8 @@ public class ChatDao {
             "last_activity_at",
             "last_activity_by",
             "last_message",
-            "last_read_at"
+            "last_read_at",
+            "partner_image"
     };
 
     public List<Chat> getChatsByInitiator(String userId){
@@ -60,6 +61,15 @@ public class ChatDao {
         return result;
     }
 
+    public int getNumberOfUnread(){
+        Cursor cursor = DatabaseHelper.getInstance().getReadableDatabase()
+                .rawQuery("select count(1) from CHAT where last_read_at is null or last_activity_at > last_read_at", new String[]{});
+        while(cursor.moveToNext()){
+            return cursor.getInt(0);
+        }
+        return 0;
+    }
+
     private Chat getData(Cursor cursor){
         Chat chat = new Chat();
         chat.setChatId(UUID.fromString(cursor.getString(0)));
@@ -70,6 +80,7 @@ public class ChatDao {
         chat.setLastActivityBy(cursor.getString(5));
         chat.setLastMessage(cursor.getString(6));
         chat.setLastReadAt(DatabaseHelper.fromDateString(cursor.getString(7)));
+        chat.setPartnerImage(cursor.getString(8));
         return chat;
     }
 
@@ -83,6 +94,7 @@ public class ChatDao {
         cv.put("last_activity_at", DatabaseHelper.toDateString(chat.getLastActivityAt()));
         cv.put("last_activity_by", chat.getLastActivityBy());
         cv.put("last_message", chat.getLastMessage());
+        cv.put("partner_image", chat.getPartnerImage());
         DatabaseHelper.getInstance().getWritableDatabase().insert(TABLE, null, cv);
         Log.d(TAG, "<< Insert chat to local DB done");
     }
@@ -90,6 +102,7 @@ public class ChatDao {
     public void updateChat(Chat chat){
         ContentValues cv = new ContentValues();
         cv.put("partner_name", chat.getPartnerName());
+        cv.put("partner_image", chat.getPartnerImage());
         cv.put("last_activity_at", DatabaseHelper.toDateString(chat.getLastActivityAt()));
         cv.put("last_activity_by", chat.getLastActivityBy());
         cv.put("last_message", chat.getLastMessage());

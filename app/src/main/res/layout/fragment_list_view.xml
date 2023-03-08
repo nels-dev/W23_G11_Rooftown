@@ -8,8 +8,22 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="112dp"
+        android:layout_marginEnd="85dp"
         android:text="@string/listViewFragmentTitle"
-        android:textSize="25sp"
-        android:layout_centerInParent="true"/>
+        android:textSize="25sp" />
+
+    <ListView
+        android:id="@+id/listViewPost"
+        android:layout_width="320dp"
+        android:layout_height="597dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="54dp"
+        android:layout_marginEnd="37dp"
+        android:layout_marginBottom="57dp" />
 
 </RelativeLayout>

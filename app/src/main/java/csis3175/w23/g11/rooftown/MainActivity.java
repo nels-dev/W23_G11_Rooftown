@@ -1,14 +1,16 @@
 package csis3175.w23.g11.rooftown;
 
 import android.content.Intent;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -22,6 +24,7 @@ import csis3175.w23.g11.rooftown.messages.ui.view.AllChatsFragment;
 import csis3175.w23.g11.rooftown.messages.ui.viewmodel.ChatViewModel;
 import csis3175.w23.g11.rooftown.user.ui.view.ProfileFragment;
 import csis3175.w23.g11.rooftown.util.DatabaseHelper;
+import csis3175.w23.g11.rooftown.roommates.ui.view.MapViewFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -98,5 +101,12 @@ public class MainActivity extends AppCompatActivity {
             });
         });
 
+    }
+
+    public void switchToMapViewFragment() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.map_container, new MapViewFragment());
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

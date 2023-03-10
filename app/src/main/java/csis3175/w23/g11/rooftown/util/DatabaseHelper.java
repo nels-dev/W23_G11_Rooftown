@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -73,6 +75,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.e(TAG, "Unable to parse date string "+ date);
             return null;
         }
+    }
+
+    public static String toLatLngString(LatLng latLng) {
+        return latLng.latitude + "," + latLng.longitude;
+    }
+
+    public static LatLng fromLatLngString(String latLng) {
+        if (latLng == null) return null;
+        try {
+            String[] splitLatLng = latLng.split(",");
+            if (splitLatLng.length != 2) return null;
+            return new LatLng(Double.parseDouble(splitLatLng[0]), Double.parseDouble(splitLatLng[1]));
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "Unable to parse latLng string " + latLng);
+            return null;
+        }
+    }
+
+    public static String toBooleanString(boolean bool) {
+        return bool ? "TRUE" : "FALSE";
+    }
+
+    public static boolean fromBooleanString(String bool) {
+        return (bool != null && bool.equals("TRUE"));
     }
 
     @Override

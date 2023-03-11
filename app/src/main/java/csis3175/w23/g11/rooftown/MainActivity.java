@@ -1,14 +1,20 @@
 package csis3175.w23.g11.rooftown;
 
+import android.Manifest;
 import android.content.Intent;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -22,6 +28,7 @@ import csis3175.w23.g11.rooftown.messages.ui.view.AllChatsFragment;
 import csis3175.w23.g11.rooftown.messages.ui.viewmodel.ChatViewModel;
 import csis3175.w23.g11.rooftown.user.ui.view.ProfileFragment;
 import csis3175.w23.g11.rooftown.util.DatabaseHelper;
+import csis3175.w23.g11.rooftown.roommates.ui.view.MapViewFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,6 +55,31 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, SigninActivity.class);
                 startActivity(intent);
             }
+        });
+
+        ActivityResultLauncher<String[]> locationPermissionRequest =
+                registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+                    Boolean fineLocationGranted = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                        fineLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false);
+                    }
+                    Boolean coarseLocationGranted = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                        coarseLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION,false);
+                    }
+                    if (fineLocationGranted != null && fineLocationGranted) {
+                                // Precise location access granted.
+                            } else if (coarseLocationGranted != null && coarseLocationGranted) {
+                                // Only approximate location access granted.
+                            } else {
+                                // No location access granted.
+                            }
+                        }
+                );
+
+        locationPermissionRequest.launch(new String[] {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
         });
 
         bottomNav = findViewById(R.id.bottomNav);
@@ -98,5 +130,12 @@ public class MainActivity extends AppCompatActivity {
             });
         });
 
+    }
+
+    public void switchToMapViewFragment() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.map_container, new MapViewFragment());
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

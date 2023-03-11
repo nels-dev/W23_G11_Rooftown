@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import csis3175.w23.g11.rooftown.roommates.ui.view.MapViewFragment;
+
 public class RoommatesFragment extends Fragment {
     TabLayout roommatesTabs;
     GridViewFragment gridViewFragment = new GridViewFragment();
@@ -55,6 +57,7 @@ public class RoommatesFragment extends Fragment {
                     case 2:
                         currTabPos = 2;
                         getChildFragmentManager().beginTransaction().replace(R.id.roommatesContainer, mapViewFragment).commit();
+                        ((MainActivity) requireActivity()).switchToMapViewFragment();
                         break;
                     default:
                         currTabPos = 0;

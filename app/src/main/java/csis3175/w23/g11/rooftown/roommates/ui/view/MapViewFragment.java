@@ -2,11 +2,15 @@ package csis3175.w23.g11.rooftown.roommates.ui.view;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +26,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -64,13 +69,13 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
 
         for (LatLng location : locationList) {
-            Marker marker = mMap.addMarker(new MarkerOptions().position(location));
+            Marker marker = mMap.addMarker(new MarkerOptions().position(location).title("My Title ").snippet("My snippet\n" + "2nd Line Text\n" +
+                    "3rd Line Text").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
         }
 
         // async get a list of posting
         // extract coordinate(lat lng)
         // mark in the map view
-
 
         LatLng firstLocation = locationList.get(0);
 
@@ -96,11 +101,47 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 }
                 for(Location location: locationResult.getLocations()){
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+//                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                 }
             }
         };
         fusedLocationProviderClient.requestLocationUpdates(new LocationRequest().setInterval(10000), locationCallback, null);
+
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Nullable
+            @Override
+            public View getInfoWindow(@NonNull Marker marker) {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public View getInfoContents(@NonNull Marker marker) {
+                // Create a custom view for the info window
+                View infoWindowView = getLayoutInflater().inflate(R.layout.layout_custom_info_window, null);
+
+                // Set the title and snippet of the info window based on the marker's title and snippet
+                TextView titleTextView = infoWindowView.findViewById(R.id.txtViewInfoWindowTitle);
+                titleTextView.setTextColor(Color.BLACK);
+                titleTextView.setGravity(Gravity.CENTER);
+                titleTextView.setTypeface(null, Typeface.BOLD);
+                titleTextView.setText(marker.getTitle());
+
+                TextView snippetTextView = infoWindowView.findViewById(R.id.txtViewInfoWindowSnippet);
+                snippetTextView.setTextColor(Color.GRAY);
+                snippetTextView.setText(marker.getSnippet());
+
+                return infoWindowView;
+            }
+        });
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+                marker.showInfoWindow();
+                return true;
+            }
+        });
     }
 
     @Override
@@ -132,62 +173,3 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         mapView.onLowMemory();
     }
 }
-
-//
-//package csis3175.w23.g11.rooftown;
-//
-//import androidx.annotation.NonNull;
-//import androidx.annotation.Nullable;
-//import androidx.fragment.app.Fragment;
-//
-//import android.os.Bundle;
-//import android.view.LayoutInflater;
-//import android.view.View;
-//import android.view.ViewGroup;
-//
-//import com.google.android.gms.maps.CameraUpdateFactory;
-//import com.google.android.gms.maps.GoogleMap;
-//import com.google.android.gms.maps.OnMapReadyCallback;
-//import com.google.android.gms.maps.SupportMapFragment;
-//import com.google.android.gms.maps.model.LatLng;
-//import com.google.android.gms.maps.model.MarkerOptions;
-//
-//public class MapViewFragment extends Fragment {
-//
-//    private OnMapReadyCallback callback = new OnMapReadyCallback() {
-//
-//        /**
-//         * Manipulates the map once available.
-//         * This callback is triggered when the map is ready to be used.
-//         * This is where we can add markers or lines, add listeners or move the camera.
-//         * In this case, we just add a marker near Sydney, Australia.
-//         * If Google Play services is not installed on the device, the user will be prompted to
-//         * install it inside the SupportMapFragment. This method will only be triggered once the
-//         * user has installed Google Play services and returned to the app.
-//         */
-//        @Override
-//        public void onMapReady(GoogleMap googleMap) {
-//            LatLng sydney = new LatLng(-34, 151);
-//            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-//        }
-//    };
-//
-//    @Nullable
-//    @Override
-//    public View onCreateView(@NonNull LayoutInflater inflater,
-//                             @Nullable ViewGroup container,
-//                             @Nullable Bundle savedInstanceState) {
-//        return inflater.inflate(R.layout.fragment_maps, container, false);
-//    }
-//
-//    @Override
-//    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-//        super.onViewCreated(view, savedInstanceState);
-//        SupportMapFragment mapFragment =
-//                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_container);
-//        if (mapFragment != null) {
-//            mapFragment.getMapAsync(callback);
-//        }
-//    }
-//}

@@ -1,4 +1,4 @@
-package csis3175.w23.g11.rooftown.roommates.ui.adapter;
+package csis3175.w23.g11.rooftown.posts.ui.adapter;
 
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
@@ -16,7 +16,7 @@ import java.util.List;
 
 import csis3175.w23.g11.rooftown.R;
 
-public class ListAdapter extends BaseAdapter {
+public class PostListAdapter extends BaseAdapter {
 
     //
     // depends on parent
@@ -25,7 +25,7 @@ public class ListAdapter extends BaseAdapter {
     List<String> PostName;
     List<Integer> PostPics;
 
-    public ListAdapter(List<String> postName, List<Integer> postPics) {
+    public PostListAdapter(List<String> postName, List<Integer> postPics) {
         PostName = postName;
         PostPics = postPics;
     }

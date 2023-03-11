@@ -26,9 +26,10 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 
 import csis3175.w23.g11.rooftown.messages.ui.view.AllChatsFragment;
 import csis3175.w23.g11.rooftown.messages.ui.viewmodel.ChatViewModel;
+import csis3175.w23.g11.rooftown.posts.ui.view.RoommatesFragment;
 import csis3175.w23.g11.rooftown.user.ui.view.ProfileFragment;
 import csis3175.w23.g11.rooftown.util.DatabaseHelper;
-import csis3175.w23.g11.rooftown.roommates.ui.view.MapViewFragment;
+import csis3175.w23.g11.rooftown.posts.ui.view.MapViewFragment;
 
 public class MainActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package csis3175.w23.g11.rooftown.roommates.ui.view;
+package csis3175.w23.g11.rooftown.posts.ui.view;
 
 import android.Manifest;
 import android.content.pm.PackageManager;

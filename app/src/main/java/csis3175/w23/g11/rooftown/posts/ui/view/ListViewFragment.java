@@ -1,4 +1,4 @@
-package csis3175.w23.g11.rooftown;
+package csis3175.w23.g11.rooftown.posts.ui.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +13,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Arrays;
 import java.util.List;
+
+import csis3175.w23.g11.rooftown.R;
 
 public class ListViewFragment extends Fragment {
 

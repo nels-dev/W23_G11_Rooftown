@@ -1,4 +1,4 @@
-package csis3175.w23.g11.rooftown;
+package csis3175.w23.g11.rooftown.posts.ui.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,7 +12,11 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
-import csis3175.w23.g11.rooftown.roommates.ui.view.MapViewFragment;
+import csis3175.w23.g11.rooftown.MainActivity;
+import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.posts.ui.view.GridViewFragment;
+import csis3175.w23.g11.rooftown.posts.ui.view.ListViewFragment;
+import csis3175.w23.g11.rooftown.posts.ui.view.MapViewFragment;
 
 public class RoommatesFragment extends Fragment {
     TabLayout roommatesTabs;

@@ -17,7 +17,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final SimpleDateFormat storageDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final String TAG = "DATABASE";
     private static final String DATABASE_NAME = "rooftown.db"; //In-memory database
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     public static DatabaseHelper getInstance(){
         if(null==instance){
@@ -61,6 +61,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "system_message integer)");
         db.execSQL("create table USER_PROFILE(user_id varchar(36) primary key, " +
                 "user_name varchar(100), city varchar(100), country varchar(50), image_file_name varchar(50))");
+        db.execSQL("create table POST(" +
+                "post_id varchar(36) primary key, " +
+                "post_type varchar(10)," +
+                "location varchar(100)," +
+                "city varchar(100)," +
+                "country varchar(50)," +
+                "lat_long varchar(25)," +
+                "num_of_rooms varchar(50)," +
+                "furnished boolean," +
+                "shared_bathroom boolean," +
+                "room_description varchar(255)," +
+                "room_image varchar(50)," +
+                "initiator varchar(36)," +
+                "initiator_name varchar(100)," +
+                "initiator_gender varchar(50)," +
+                "initiator_age varchar(50)," +
+                "initiator_description varchar(255)," +
+                "initiator_image varchar(50)," +
+                "post_status varchar(10)," +
+                "post_at datetime)");
     }
 
     public static String toDateString(Date date){

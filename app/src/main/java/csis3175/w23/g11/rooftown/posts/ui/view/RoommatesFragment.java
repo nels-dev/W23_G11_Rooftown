@@ -8,22 +8,30 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import csis3175.w23.g11.rooftown.MainActivity;
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.messages.ui.viewmodel.ChatViewModel;
 import csis3175.w23.g11.rooftown.posts.ui.view.GridViewFragment;
 import csis3175.w23.g11.rooftown.posts.ui.view.ListViewFragment;
 import csis3175.w23.g11.rooftown.posts.ui.view.MapViewFragment;
+import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class RoommatesFragment extends Fragment {
-    TabLayout roommatesTabs;
-    GridViewFragment gridViewFragment = new GridViewFragment();
-    ListViewFragment listViewFragment = new ListViewFragment();
-    MapViewFragment mapViewFragment = new MapViewFragment();
+    private TabLayout roommatesTabs;
+    private GridViewFragment gridViewFragment;
+    private ListViewFragment listViewFragment;
+    private MapViewFragment mapViewFragment;
+    private PostViewModel viewModel;
     int currTabPos = 0;
+
+    public PostViewModel getViewModel() {
+        return viewModel;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -33,6 +41,12 @@ public class RoommatesFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
+        viewModel.loadData();
+        gridViewFragment = new GridViewFragment();
+        listViewFragment = new ListViewFragment();
+        mapViewFragment = new MapViewFragment();
         roommatesTabs = view.findViewById(R.id.roommatesTabs);
         TabLayout.Tab currTab = roommatesTabs.getTabAt(currTabPos);
         if (currTab != null) {

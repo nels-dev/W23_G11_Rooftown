@@ -3,24 +3,23 @@ package csis3175.w23.g11.rooftown.posts.data.remote;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
+import csis3175.w23.g11.rooftown.posts.data.model.PostDto;
 import csis3175.w23.g11.rooftown.posts.data.model.PostStatus;
+import csis3175.w23.g11.rooftown.posts.data.model.PostType;
 import csis3175.w23.g11.rooftown.util.CallbackListener;
+import csis3175.w23.g11.rooftown.util.DatabaseHelper;
 
 public class PostService {
     private static final String TAG = "POSTS";
@@ -31,25 +30,21 @@ public class PostService {
     public PostService() {
         fs = FirebaseFirestore.getInstance();
         allPosts = fs.collection(COLLECTION_POST)
-                .whereNotEqualTo("post_status", PostStatus.CANCELLED.name());
+                .whereNotEqualTo("postStatus", PostStatus.CANCELLED.name());
     }
 
     public ListenerRegistration listenToAllPosts(CallbackListener<List<Post>> resultConsumer) {
-        return allPosts.addSnapshotListener(MetadataChanges.EXCLUDE, (@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) -> {
+        return allPosts.addSnapshotListener(MetadataChanges.EXCLUDE, (value, error) -> {
             if (value == null) return;
-            for (DocumentChange docChange : value.getDocumentChanges()) {
-                List<Post> delta = new ArrayList<>();
-                if (docChange.getType() == DocumentChange.Type.ADDED) {
-                    Log.d(TAG, "Post created: " + docChange.getDocument().getId());
-                    delta.add(toPost(docChange.getDocument()));
-                } else if (docChange.getType() == DocumentChange.Type.MODIFIED) {
-                    Log.d(TAG, "Post updated: " + docChange.getDocument().getId());
-                    delta.add(toPost(docChange.getDocument()));
-                } else if (docChange.getType() == DocumentChange.Type.REMOVED) {
-                    Log.d(TAG, "Post deleted: " + docChange.getDocument().getId());
-                }
-                resultConsumer.callback(delta);
+            Log.d(TAG, "listenToAllPosts");
+            Log.d(TAG, "value:" + value);
+            Log.d(TAG, "getDocuments size:" + value.getDocuments().size());
+            List<Post> posts = new ArrayList<>();
+            for (DocumentSnapshot doc : value.getDocuments()) {
+                Log.d(TAG, "doc:" + doc);
+                posts.add(toPost(doc));
             }
+            resultConsumer.callback(posts);
         });
     }
 
@@ -62,9 +57,28 @@ public class PostService {
     }
 
     private Post toPost(DocumentSnapshot doc) {
-        Post post = doc.toObject(Post.class);
-        if (post != null) {
+        PostDto dto = doc.toObject(PostDto.class);
+        Post post = new Post();
+        if (dto != null) {
             post.setPostId(UUID.fromString(doc.getId()));
+            post.setPostType(PostType.valueOf(dto.getPostType()));
+            post.setLocation(dto.getLocation());
+            post.setCity(dto.getCity());
+            post.setCountry(dto.getCountry());
+            post.setLatLong(DatabaseHelper.fromLatLngString(dto.getLatLong()));
+            post.setNumOfRooms(dto.getNumOfRooms());
+            post.setFurnished(dto.isFurnished());
+            post.setSharedBathroom(dto.isSharedBathroom());
+            post.setRoomDescription(dto.getRoomDescription());
+            post.setRoomImage(dto.getRoomImage());
+            post.setInitiator(dto.getInitiator());
+            post.setInitiatorName(dto.getInitiatorName());
+            post.setInitiatorGender(dto.getInitiatorGender());
+            post.setInitiatorAge(dto.getInitiatorAge());
+            post.setInitiatorDescription(dto.getInitiatorDescription());
+            post.setInitiatorImage(dto.getInitiatorImage());
+            post.setPostStatus(PostStatus.valueOf(dto.getPostStatus()));
+            post.setPostAt(dto.getPostAt());
         }
         return post;
     }

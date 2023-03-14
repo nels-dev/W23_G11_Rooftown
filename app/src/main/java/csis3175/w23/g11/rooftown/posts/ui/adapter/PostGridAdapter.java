@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,6 +43,7 @@ public class PostGridAdapter extends RecyclerView.Adapter<PostGridAdapter.PostVi
         } else {
             holder.imgViewGridPost.setImageResource(0);
         }
+        holder.txtViewGridPost.setText(post.getLocation());
     }
 
     @Override
@@ -51,9 +53,17 @@ public class PostGridAdapter extends RecyclerView.Adapter<PostGridAdapter.PostVi
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         public ImageView imgViewGridPost;
+        public TextView txtViewGridPost;
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
             imgViewGridPost = itemView.findViewById(R.id.imgViewGridPost);
+            txtViewGridPost = itemView.findViewById(R.id.txtViewGridPost);
         }
+    }
+
+    public void populatePosts(List<Post> posts) {
+        this.posts.clear();
+        this.posts.addAll(posts);
+        this.notifyDataSetChanged();
     }
 }

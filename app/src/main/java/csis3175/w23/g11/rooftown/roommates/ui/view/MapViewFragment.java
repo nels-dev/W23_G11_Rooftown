@@ -26,7 +26,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -36,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.roommates.data.model.Post;
 
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
@@ -44,11 +44,11 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback;
 
-    private List<LatLng> locationList = Arrays.asList(
-            new LatLng(49.203711118998456, -122.91276244392093),  // NW campus
-            new LatLng(49.20506401434402, -122.91321305502117),  // Place 1
-            new LatLng(49.20070804313903, -122.9180578868112), // Place 2
-            new LatLng(49.2263531659175, -122.99951733755651)   // Place 3
+    private List<Post> postList = Arrays.asList(
+            new Post("Douglas College", new LatLng(49.203711118998456, -122.91276244392093), "This is Douglas College", R.drawable.place1),
+            new Post("Metrotown", new LatLng(49.20506401434402, -122.91321305502117), "This is Metrotown", R.drawable.place2),
+            new Post("Vancouver", new LatLng(49.20070804313903, -122.9180578868112), "This is Vancouver", R.drawable.place3),
+            new Post("New Westminster", new LatLng(49.2263531659175, -122.99951733755651), "This is West Minster", R.drawable.place4)
     );
 
     @Nullable
@@ -68,16 +68,18 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-        for (LatLng location : locationList) {
-            Marker marker = mMap.addMarker(new MarkerOptions().position(location).title("My Title ").snippet("My snippet\n" + "2nd Line Text\n" +
-                    "3rd Line Text").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+        for (Post post : postList) {
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(post.getCoordinates());
+            markerOptions.title(post.getTitle());
+            mMap.addMarker(markerOptions).setTag(post);
         }
 
         // async get a list of posting
         // extract coordinate(lat lng)
         // mark in the map view
 
-        LatLng firstLocation = locationList.get(0);
+        Post firstPost = postList.get(0);
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             mMap.setMyLocationEnabled(true);
@@ -87,7 +89,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 public void onSuccess(Location location) {
                     if (location != null) {
                         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(firstLocation, 15));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(firstPost.getCoordinates(), 15));
                     }
                 }
             });
@@ -112,7 +114,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public View getInfoWindow(@NonNull Marker marker) {
                 return null;
-            }
+            }   // use default info window background
 
             @Nullable
             @Override
@@ -131,6 +133,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 snippetTextView.setTextColor(Color.GRAY);
                 snippetTextView.setText(marker.getSnippet());
 
+//                ImageView imgViewInfoWin = infoWindowView.findViewById(R.id.imgViewInfoWin);
                 return infoWindowView;
             }
         });
@@ -138,7 +141,13 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
-                marker.showInfoWindow();
+                Post post = (Post)marker.getTag();
+                if(post !=null){
+                    marker.setTitle((post.getTitle()));
+                    marker.setSnippet((post.getPostDescription()));
+
+                    marker.showInfoWindow();
+                }
                 return true;
             }
         });

@@ -1,59 +1,39 @@
 package csis3175.w23.g11.rooftown.roommates.ui.adapter;
 
-import android.graphics.drawable.Drawable;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.core.content.ContextCompat;
-
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.roommates.data.model.Post;
 
 public class ListAdapter extends BaseAdapter {
 
     //
     // depends on parent
     // output which view
+    private List<Post> postList;
 
-    List<String> PostName;
-    List<Integer> PostPics;
+//    List<String> PostName;
+//    List<Integer> PostPics;
 
-    public ListAdapter(List<String> postName, List<Integer> postPics) {
-        PostName = postName;
-        PostPics = postPics;
-    }
-
-    public List<String> getPostName() {
-        return PostName;
-    }
-
-    public void setPostName(List<String> postName) {
-        PostName = postName;
-    }
-
-    public List<Integer> getPostPics() {
-        return PostPics;
-    }
-
-    public void setPostPics(List<Integer> postPics) {
-        PostPics = postPics;
+    public ListAdapter(List<Post> postList) {
+        this.postList = postList;
     }
 
     @Override
     public int getCount() {
-        return PostName.size();
+        return postList.size();
     }
 
     @Override
-    public Object getItem(int i) {
-        return null;
+    public Post getItem(int i) {
+        return postList.get(i);
     }
 
     @Override
@@ -62,18 +42,22 @@ public class ListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        if (view == null){
-            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_listpost,viewGroup,false);
+    public View getView(int i, View convertView, ViewGroup parent) {
+        if (convertView == null){
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_postitem,parent,false);
         }
-        TextView txtViewPostItem = view.findViewById(R.id.txtViewPostItem);
-        txtViewPostItem.setText(PostName.get(i));
-        Drawable img = ContextCompat.getDrawable(viewGroup.getContext(),PostPics.get(i));
-        img.setBounds(0,0,300,300);
+        // Get the Post object for the current position
+        Post post = postList.get(i);
 
-        txtViewPostItem.setCompoundDrawables(null,null, img,null);
-        txtViewPostItem.setCompoundDrawablePadding(8);
-        txtViewPostItem.setGravity(Gravity.CENTER_VERTICAL);
-        return null;
+        TextView listViewTitle = convertView.findViewById(R.id.txtViewPostItem);
+        listViewTitle.setText(post.getTitle());
+
+        ImageView imgViewPost = convertView.findViewById(R.id.imgViewPostItem);
+        imgViewPost.setImageResource(post.getPostPic());
+
+        TextView txtViewPostDescription = convertView.findViewById(R.id.txtViewPostDescription);
+        txtViewPostDescription.setText(post.getPostDescription());
+
+        return convertView;
     }
 }

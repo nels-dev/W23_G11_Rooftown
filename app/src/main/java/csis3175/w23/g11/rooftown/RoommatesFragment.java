@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import csis3175.w23.g11.rooftown.roommates.ui.view.GridViewFragment;
+import csis3175.w23.g11.rooftown.roommates.ui.view.ListViewFragment;
 import csis3175.w23.g11.rooftown.roommates.ui.view.MapViewFragment;
 
 public class RoommatesFragment extends Fragment {

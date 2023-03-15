@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".roommates.ui.view.ListViewFragment">
+    tools:context=".posts.ui.view.ListViewFragment">
 
     <ListView
         android:id="@+id/listViewPost"
@@ -12,6 +12,6 @@
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"></ListView>
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

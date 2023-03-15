@@ -42,6 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private void dropAndInitDB(SQLiteDatabase db){
         db.execSQL("drop table if exists CHAT;");
         db.execSQL("drop table if exists CHAT_MESSAGE;");
+        db.execSQL("drop table if exists POST;");
         db.execSQL("drop table if exists USER_PROFILE;");
         db.execSQL("create table CHAT(" +
                 "chat_id varchar(36) primary key, " +
@@ -67,7 +68,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "location varchar(100)," +
                 "city varchar(100)," +
                 "country varchar(50)," +
-                "lat_long varchar(25)," +
+                "lat_long varchar(40)," +
                 "num_of_rooms varchar(50)," +
                 "furnished boolean," +
                 "shared_bathroom boolean," +

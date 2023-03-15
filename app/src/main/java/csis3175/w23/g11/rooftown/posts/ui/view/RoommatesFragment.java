@@ -15,10 +15,6 @@ import com.google.android.material.tabs.TabLayout;
 
 import csis3175.w23.g11.rooftown.MainActivity;
 import csis3175.w23.g11.rooftown.R;
-import csis3175.w23.g11.rooftown.messages.ui.viewmodel.ChatViewModel;
-import csis3175.w23.g11.rooftown.posts.ui.view.GridViewFragment;
-import csis3175.w23.g11.rooftown.posts.ui.view.ListViewFragment;
-import csis3175.w23.g11.rooftown.posts.ui.view.MapViewFragment;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class RoommatesFragment extends Fragment {

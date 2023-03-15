@@ -16,11 +16,11 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import csis3175.w23.g11.rooftown.R;
-import csis3175.w23.g11.rooftown.posts.ui.adapter.PostGridAdapter;
+import csis3175.w23.g11.rooftown.posts.ui.adapter.GridAdapter;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class GridViewFragment extends Fragment {
-    private PostGridAdapter postGridAdapter;
+    private GridAdapter gridAdapter;
     private static final String TAG = "POSTS";
 
     @Override
@@ -36,15 +36,16 @@ public class GridViewFragment extends Fragment {
         if (getParentFragment() != null) {
             PostViewModel viewModel = ((RoommatesFragment) getParentFragment()).getViewModel();
 
-            RecyclerView recyclerViewPostsGrid = view.findViewById(R.id.recyclerViewPostsGrid);
-            recyclerViewPostsGrid.setLayoutManager(new GridLayoutManager(view.getContext(), 3));
+            RecyclerView recyclerGrid = view.findViewById(R.id.recyclerGrid);
+            recyclerGrid.setLayoutManager(new GridLayoutManager(view.getContext(), 3));
 
-            postGridAdapter = new PostGridAdapter(new ArrayList<>(), view.getContext());
-            recyclerViewPostsGrid.setAdapter(postGridAdapter);
+            // Setup Adapter
+            gridAdapter = new GridAdapter(new ArrayList<>(), view.getContext());
+            recyclerGrid.setAdapter(gridAdapter);
 
             viewModel.getAllPosts().observe(this.getViewLifecycleOwner(), posts -> {
                 Log.d(TAG, "Post List Size: " + posts.size());
-                postGridAdapter.populatePosts(posts);
+                gridAdapter.populatePosts(posts);
             });
         }
     }

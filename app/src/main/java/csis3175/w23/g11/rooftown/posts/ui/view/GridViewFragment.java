@@ -21,7 +21,7 @@ import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class GridViewFragment extends Fragment {
     private GridAdapter gridAdapter;
-    private static final String TAG = "POSTS";
+    private static final String TAG = "POSTS_GRID";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

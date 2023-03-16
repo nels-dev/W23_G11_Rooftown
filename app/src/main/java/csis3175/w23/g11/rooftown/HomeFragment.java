@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import csis3175.w23.g11.rooftown.messages.ui.view.AllChatsFragment;
+import csis3175.w23.g11.rooftown.posts.ui.view.RoommatesFragment;
 
 
 public class HomeFragment extends Fragment {

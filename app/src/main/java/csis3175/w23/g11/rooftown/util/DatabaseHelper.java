@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,7 +17,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final SimpleDateFormat storageDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final String TAG = "DATABASE";
     private static final String DATABASE_NAME = "rooftown.db"; //In-memory database
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     public static DatabaseHelper getInstance(){
         if(null==instance){
@@ -40,6 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private void dropAndInitDB(SQLiteDatabase db){
         db.execSQL("drop table if exists CHAT;");
         db.execSQL("drop table if exists CHAT_MESSAGE;");
+        db.execSQL("drop table if exists POST;");
         db.execSQL("drop table if exists USER_PROFILE;");
         db.execSQL("create table CHAT(" +
                 "chat_id varchar(36) primary key, " +
@@ -59,6 +62,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "system_message integer)");
         db.execSQL("create table USER_PROFILE(user_id varchar(36) primary key, " +
                 "user_name varchar(100), city varchar(100), country varchar(50), image_file_name varchar(50))");
+        db.execSQL("create table POST(" +
+                "post_id varchar(36) primary key, " +
+                "post_type varchar(10)," +
+                "location varchar(100)," +
+                "city varchar(100)," +
+                "country varchar(50)," +
+                "lat_long varchar(40)," +
+                "num_of_rooms varchar(50)," +
+                "furnished boolean," +
+                "shared_bathroom boolean," +
+                "room_description varchar(255)," +
+                "room_image varchar(50)," +
+                "initiator varchar(36)," +
+                "initiator_name varchar(100)," +
+                "initiator_gender varchar(50)," +
+                "initiator_age varchar(50)," +
+                "initiator_description varchar(255)," +
+                "initiator_image varchar(50)," +
+                "post_status varchar(10)," +
+                "post_at datetime)");
     }
 
     public static String toDateString(Date date){
@@ -73,6 +96,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.e(TAG, "Unable to parse date string "+ date);
             return null;
         }
+    }
+
+    public static String toLatLngString(LatLng latLng) {
+        return latLng.latitude + "," + latLng.longitude;
+    }
+
+    public static LatLng fromLatLngString(String latLng) {
+        if (latLng == null) return null;
+        try {
+            String[] splitLatLng = latLng.split(",");
+            if (splitLatLng.length != 2) return null;
+            return new LatLng(Double.parseDouble(splitLatLng[0]), Double.parseDouble(splitLatLng[1]));
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "Unable to parse latLng string " + latLng);
+            return null;
+        }
+    }
+
+    public static String toBooleanString(boolean bool) {
+        return bool ? "TRUE" : "FALSE";
+    }
+
+    public static boolean fromBooleanString(String bool) {
+        return (bool != null && bool.equals("TRUE"));
     }
 
     @Override

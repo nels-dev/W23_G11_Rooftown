@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,11 +32,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import csis3175.w23.g11.rooftown.R;
-import csis3175.w23.g11.rooftown.roommates.data.model.Post;
+import csis3175.w23.g11.rooftown.posts.data.model.Post;
+import csis3175.w23.g11.rooftown.posts.data.model.PostType;
+import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
@@ -43,13 +46,9 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback;
+    private static final String TAG = "POSTS_MAP";
 
-    private List<Post> postList = Arrays.asList(
-            new Post("Douglas College", new LatLng(49.203711118998456, -122.91276244392093), "This is Douglas College", R.drawable.place1),
-            new Post("Metrotown", new LatLng(49.20506401434402, -122.91321305502117), "This is Metrotown", R.drawable.place2),
-            new Post("Vancouver", new LatLng(49.20070804313903, -122.9180578868112), "This is Vancouver", R.drawable.place3),
-            new Post("New Westminster", new LatLng(49.2263531659175, -122.99951733755651), "This is West Minster", R.drawable.place4)
-    );
+    private final List<Post> postList = new ArrayList<>();
 
     @Nullable
     @Override
@@ -67,30 +66,31 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-
-        for (Post post : postList) {
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(post.getCoordinates());
-            markerOptions.title(post.getTitle());
-            mMap.addMarker(markerOptions).setTag(post);
-        }
+        mMap.getUiSettings().setZoomControlsEnabled(true);
 
         // async get a list of posting
         // extract coordinate(lat lng)
         // mark in the map view
-
-        Post firstPost = postList.get(0);
+        if (getParentFragment() != null) {
+            PostViewModel viewModel = ((RoommatesFragment) getParentFragment()).getViewModel();
+            viewModel.getAllPosts().observe(this.getViewLifecycleOwner(), posts -> {
+                Log.d(TAG, "getAllPosts");
+                postList.clear();
+                postList.addAll(posts);
+                addPostMarkers(postList);
+                if (!postList.isEmpty()) {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLng(postList.get(0).getLatLong()));
+                }
+            });
+        }
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(requireActivity(), new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(firstPost.getCoordinates(), 15));
-                    }
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
+                if (location != null) {
+                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                 }
             });
         }
@@ -107,7 +107,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         };
-        fusedLocationProviderClient.requestLocationUpdates(new LocationRequest().setInterval(10000), locationCallback, null);
+//        fusedLocationProviderClient.requestLocationUpdates(new LocationRequest().setInterval(10000), locationCallback, null);
 
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Nullable
@@ -138,19 +138,28 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(@NonNull Marker marker) {
-                Post post = (Post)marker.getTag();
-                if(post !=null){
-                    marker.setTitle((post.getTitle()));
-                    marker.setSnippet((post.getPostDescription()));
+        mMap.setOnMarkerClickListener(marker -> {
+            Post post = (Post)marker.getTag();
+            if (post != null) {
+                marker.setTitle(((post.getPostType() == PostType.ROOM)?post.getLocation():post.getInitiatorName()));
+                marker.setSnippet(((post.getPostType() == PostType.ROOM)?post.getRoomDescription():post.getInitiatorDescription()));
 
-                    marker.showInfoWindow();
-                }
-                return true;
+                marker.showInfoWindow();
             }
+            return true;
         });
+    }
+
+    private void addPostMarkers(List<Post> posts) {
+        for (Post post : posts) {
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(post.getLatLong());
+            markerOptions.title((post.getPostType() == PostType.ROOM)?post.getLocation():post.getInitiatorName());
+            Marker marker = mMap.addMarker(markerOptions);
+            if (marker!= null) {
+                marker.setTag(post);
+            }
+        }
     }
 
     @Override

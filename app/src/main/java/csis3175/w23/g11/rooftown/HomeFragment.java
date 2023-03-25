@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import csis3175.w23.g11.rooftown.messages.ui.view.AllChatsFragment;
+import csis3175.w23.g11.rooftown.posts.ui.view.MyPostFragment;
 import csis3175.w23.g11.rooftown.posts.ui.view.RoommatesFragment;
 
 
@@ -34,7 +35,7 @@ public class HomeFragment extends Fragment {
         List<Integer> btnTitles = new ArrayList<>(Arrays.asList(R.string.txtHomeButton1Title, R.string.txtHomeButton2Title, R.string.txtHomeButton3Title));
         List<Integer> btnContents = new ArrayList<>(Arrays.asList(R.string.txtHomeButton1Content, R.string.txtHomeButton2Content, R.string.txtHomeButton3Content));
         List<Integer> btnDrawables = new ArrayList<>(Arrays.asList(R.drawable.ic_outline_search_60, R.drawable.ic_outline_add_box_60, R.drawable.ic_outline_question_answer_60));
-        List<Fragment> btnTargetFragments = new ArrayList<>(Arrays.asList(new RoommatesFragment(), new PostingFragment(), new AllChatsFragment()));
+        List<Fragment> btnTargetFragments = new ArrayList<>(Arrays.asList(new RoommatesFragment(), new MyPostFragment(), new AllChatsFragment()));
 
         for (int i = 0; i < btnTitles.size(); i++) {
             int pos = i;

@@ -25,6 +25,7 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 
 import csis3175.w23.g11.rooftown.messages.ui.view.AllChatsFragment;
 import csis3175.w23.g11.rooftown.messages.ui.viewmodel.ChatViewModel;
+import csis3175.w23.g11.rooftown.posts.ui.view.MyPostFragment;
 import csis3175.w23.g11.rooftown.posts.ui.view.RoommatesFragment;
 import csis3175.w23.g11.rooftown.user.ui.view.ProfileFragment;
 import csis3175.w23.g11.rooftown.util.DatabaseHelper;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     HomeFragment homeFragment = new HomeFragment();
     RoommatesFragment roommatesFragment = new RoommatesFragment();
     AllChatsFragment allChatsFragment = new AllChatsFragment();
-    PostDetailFragment postDetailFragment = new PostDetailFragment();
+    MyPostFragment myPostFragment = new MyPostFragment();
     ProfileFragment profileFragment = new ProfileFragment();
     private BadgeDrawable badgeDrawable;
 
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, allChatsFragment).commit();
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuPosting) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, postDetailFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, myPostFragment).commit();
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuProfile) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, profileFragment).commit();

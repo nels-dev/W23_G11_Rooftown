@@ -1,4 +1,4 @@
-package csis3175.w23.g11.rooftown;
+package csis3175.w23.g11.rooftown.posts.ui.view;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 

@@ -17,7 +17,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final SimpleDateFormat storageDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final String TAG = "DATABASE";
     private static final String DATABASE_NAME = "rooftown.db"; //In-memory database
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     public static DatabaseHelper getInstance(){
         if(null==instance){

@@ -28,13 +28,36 @@
         Post it to let others know!</string>
     <string name="txtHomeButton3Title">Check Availabilities</string>
     <string name="txtHomeButton3Content">Someone interested in your post? Or vice versa? Let’s chat in detail to see if match</string>
+    <string name="txtPostTypeButton1Title">Find Roommates</string>
+    <string name="txtPostTypeButton1Content">I have a room and looking for room mate to share the home</string>
+    <string name="txtPostTypeButton2Title">Find Room and Roommates</string>
+    <string name="txtPostTypeButton2Content">I don\'t have a room yet and I am looking for a room</string>
     <string name="txtSignOut">Sign Out</string>
+    <string name="txtAboutTargetLocation">About your target location</string>
+    <string name="txtAboutRoom">About your room</string>
+    <string name="txtAboutPerson">About yourself</string>
     <string name="txtHintPhone">Phone Number</string>
     <string name="txtUserName">Display name</string>
     <string name="txtEmail">Email</string>
     <string name="txtPassword">Password</string>
+    <string name="txtLocation">Location</string>
     <string name="txtCity">City/Province</string>
     <string name="txtCountry">Country</string>
+    <string name="txtLatLong">Lat / Long</string>
+    <string name="txtNumOfRooms">Number Of Rooms</string>
+    <string name="txtFurnished">Furnished?</string>
+    <string name="txtYes">Yes</string>
+    <string name="txtNo">No</string>
+    <string name="txtSharedBathroom">Shared Bathroom?</string>
+    <string name="txtRoomDesc">Room description</string>
+    <string name="txtRoomDescHint">Room description such as house type, number of rooms, etc…</string>
+    <string name="txtRoomImage">Image of room</string>
+    <string name="txtInitiatorName">Display Name</string>
+    <string name="txtInitiatorGender">Gender</string>
+    <string name="txtInitiatorAge">Age</string>
+    <string name="txtInitiatorDesc">Poster description</string>
+    <string name="txtInitiatorDescHint">E.g. background, preference, preferred location, etc…</string>
+    <string name="txtInitiatorImage">Image of Poster</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 
@@ -125,6 +148,14 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="txtSaveProfile">Save Profile</string>
+    <string name="txtCreatePost">Create Post</string>
+    <string name="txtSavePost">Save Post</string>
     <string name="txtPostImage">Post Image</string>
+    <string name="txtFragmentMyPostChooseType">Buttons to choose whether you have rooms to share or not</string>
+    <string-array name="gender">
+        <item>Male</item>
+        <item>Female</item>
+        <item>Prefer not to disclose</item>
+    </string-array>
     <string name="btnText">I\'m Interested</string>
 </resources>

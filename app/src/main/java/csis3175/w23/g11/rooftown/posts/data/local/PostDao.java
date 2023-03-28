@@ -2,6 +2,7 @@ package csis3175.w23.g11.rooftown.posts.data.local;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,27 +50,7 @@ public class PostDao {
         );
         List<Post> posts = new ArrayList<>();
         while (cursor.moveToNext()) {
-            Post post = new Post();
-            post.setPostId(UUID.fromString(cursor.getString(0)));
-            post.setPostType(PostType.valueOf(cursor.getString(1)));
-            post.setLocation(cursor.getString(2));
-            post.setCity(cursor.getString(3));
-            post.setCountry(cursor.getString(4));
-            post.setLatLong(DatabaseHelper.fromLatLngString(cursor.getString(5)));
-            post.setNumOfRooms(cursor.getString(6));
-            post.setFurnished(DatabaseHelper.fromBooleanString(cursor.getString(7)));
-            post.setSharedBathroom(DatabaseHelper.fromBooleanString(cursor.getString(8)));
-            post.setRoomDescription(cursor.getString(9));
-            post.setRoomImage(cursor.getString(10));
-            post.setInitiator(cursor.getString(11));
-            post.setInitiatorName(cursor.getString(12));
-            post.setInitiatorGender(cursor.getString(13));
-            post.setInitiatorAge(cursor.getString(14));
-            post.setInitiatorDescription(cursor.getString(15));
-            post.setInitiatorImage(cursor.getString(16));
-            post.setPostStatus(PostStatus.valueOf(cursor.getString(17)));
-            post.setPostAt(DatabaseHelper.fromDateString(cursor.getString(18)));
-            posts.add(post);
+            posts.add(getData(cursor));
         }
         cursor.close();
         return posts;
@@ -87,32 +68,56 @@ public class PostDao {
         );
         Post post = null;
         while (cursor.moveToNext()) {
-            post = new Post();
-            post.setPostId(UUID.fromString(cursor.getString(0)));
-            post.setPostType(PostType.valueOf(cursor.getString(1)));
-            post.setLocation(cursor.getString(2));
-            post.setCity(cursor.getString(3));
-            post.setCountry(cursor.getString(4));
-            post.setLatLong(DatabaseHelper.fromLatLngString(cursor.getString(5)));
-            post.setNumOfRooms(cursor.getString(6));
-            post.setFurnished(DatabaseHelper.fromBooleanString(cursor.getString(7)));
-            post.setSharedBathroom(DatabaseHelper.fromBooleanString(cursor.getString(8)));
-            post.setRoomDescription(cursor.getString(9));
-            post.setRoomImage(cursor.getString(10));
-            post.setInitiator(cursor.getString(11));
-            post.setInitiatorName(cursor.getString(12));
-            post.setInitiatorGender(cursor.getString(13));
-            post.setInitiatorAge(cursor.getString(14));
-            post.setInitiatorDescription(cursor.getString(15));
-            post.setInitiatorImage(cursor.getString(16));
-            post.setPostStatus(PostStatus.valueOf(cursor.getString(17)));
-            post.setPostAt(DatabaseHelper.fromDateString(cursor.getString(18)));
+            post = getData(cursor);
         }
         cursor.close();
         return post;
     }
 
+    public Post getPostByInitiator(String userId) {
+        Cursor cursor = DatabaseHelper.getInstance().getReadableDatabase().query(
+                TABLE,
+                ALL_COLUMNS,
+                "initiator=? AND post_status!=?",
+                new String[]{userId, "CANCELLED"},
+                null,
+                null,
+                null
+        );
+        Post post = null;
+        while (cursor.moveToNext()) {
+            post = getData(cursor);
+        }
+        cursor.close();
+        return post;
+    }
+
+    private Post getData(Cursor cursor) {
+        Post post = new Post();
+        post.setPostId(UUID.fromString(cursor.getString(0)));
+        post.setPostType(PostType.valueOf(cursor.getString(1)));
+        post.setLocation(cursor.getString(2));
+        post.setCity(cursor.getString(3));
+        post.setCountry(cursor.getString(4));
+        post.setLatLong(DatabaseHelper.fromLatLngString(cursor.getString(5)));
+        post.setNumOfRooms(cursor.getString(6));
+        post.setFurnished(DatabaseHelper.fromBooleanString(cursor.getString(7)));
+        post.setSharedBathroom(DatabaseHelper.fromBooleanString(cursor.getString(8)));
+        post.setRoomDescription(cursor.getString(9));
+        post.setRoomImage(cursor.getString(10));
+        post.setInitiator(cursor.getString(11));
+        post.setInitiatorName(cursor.getString(12));
+        post.setInitiatorGender(cursor.getString(13));
+        post.setInitiatorAge(cursor.getString(14));
+        post.setInitiatorDescription(cursor.getString(15));
+        post.setInitiatorImage(cursor.getString(16));
+        post.setPostStatus(PostStatus.valueOf(cursor.getString(17)));
+        post.setPostAt(DatabaseHelper.fromDateString(cursor.getString(18)));
+        return post;
+    }
+
     public void insert(Post post) {
+        Log.d(TAG, ">> Inserting post to local DB: " + post.getPostId().toString());
         ContentValues cv = new ContentValues();
         cv.put("post_id", post.getPostId().toString());
         cv.put("post_type", post.getPostType().name());
@@ -134,6 +139,7 @@ public class PostDao {
         cv.put("post_status", post.getPostStatus().name());
         cv.put("post_at", DatabaseHelper.toDateString(post.getPostAt()));
         DatabaseHelper.getInstance().getWritableDatabase().insert(TABLE, null, cv);
+        Log.d(TAG, "<< Insert post to local DB done");
     }
 
     public void update(Post post) {

@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.badge.BadgeDrawable;
@@ -37,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     HomeFragment homeFragment = new HomeFragment();
     RoommatesFragment roommatesFragment = new RoommatesFragment();
     AllChatsFragment allChatsFragment = new AllChatsFragment();
-    PostingFragment postingFragment = new PostingFragment();
+    PostDetailFragment postDetailFragment = new PostDetailFragment();
     ProfileFragment profileFragment = new ProfileFragment();
     private BadgeDrawable badgeDrawable;
 
@@ -101,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, allChatsFragment).commit();
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuPosting) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, postingFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, postDetailFragment).commit();
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuProfile) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, profileFragment).commit();

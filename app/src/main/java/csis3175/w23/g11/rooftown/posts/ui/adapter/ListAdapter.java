@@ -8,75 +8,83 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
+import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
-import csis3175.w23.g11.rooftown.posts.data.model.PostType;
 import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
-public class ListAdapter extends BaseAdapter {
-
-    //
-    // depends on parent
-    // output which view
-    private List<Post> postList;
+public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
+    private static final String TAG = "LISTS";
+    List<Post> posts;
     Context context;
+    OnClickListener listClickedListener;
 
-//    List<String> PostName;
-//    List<Integer> PostPics;
-
-    public ListAdapter(List<Post> postList, Context context) {
-        this.postList = postList;
+    public ListAdapter(List<Post> posts, Context context, OnClickListener listClickedListener) {
+        this.posts = posts;
         this.context = context;
+        this.listClickedListener = listClickedListener;
     }
 
-    @Override
-    public int getCount() {
-        return postList.size();
-    }
+    public static class ListViewHolder extends RecyclerView.ViewHolder{
+        public ImageView imgViewList;
+        public TextView txtViewListTitle;
+        public TextView txtViewListDescription;
+        public UUID postId;
 
-    @Override
-    public Post getItem(int i) {
-        return postList.get(i);
-    }
+        public ListViewHolder(@NonNull View itemView, OnClickListener listClickedListener){
+            super(itemView);
+            imgViewList = itemView.findViewById(R.id.imgViewList);
+            txtViewListTitle = itemView.findViewById(R.id.txtViewListTitle);
+            txtViewListDescription = itemView.findViewById(R.id.txtViewListDescription);
 
-    @Override
-    public long getItemId(int i) {
-        return i;
-    }
-
-    @Override
-    public View getView(int i, View convertView, ViewGroup parent) {
-        if (convertView == null){
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_postitem,parent,false);
+            this.itemView.setOnClickListener(v -> {
+                if(getAdapterPosition()!= RecyclerView.NO_POSITION){
+                    listClickedListener.onItemClicked(postId);
+                }
+            });
         }
-        // Get the Post object for the current position
-        Post post = postList.get(i);
+    }
 
-        TextView listViewTitle = convertView.findViewById(R.id.txtViewPostItem);
-        ImageView imgViewPost = convertView.findViewById(R.id.imgViewPostItem);
-        TextView txtViewPostDescription = convertView.findViewById(R.id.txtViewPostDescription);
-        if (post.getPostType() == PostType.ROOM) {
-            ImageFileHelper.readImage(context, post.getRoomImage(), imgViewPost::setImageBitmap);
-            listViewTitle.setText(post.getLocation());
-            txtViewPostDescription.setText(String.format("%s, %s", post.getCity(), post.getCountry()));
-        } else if (post.getPostType() == PostType.PERSON) {
-            ImageFileHelper.readImage(context, post.getInitiatorImage(), imgViewPost::setImageBitmap);
-            listViewTitle.setText(post.getInitiatorName());
-            txtViewPostDescription.setText(String.format("%s (%s, %s)", post.getLocation(), post.getInitiatorGender(), post.getInitiatorAge()));
+    @NonNull
+    @Override
+    public ListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_listitem, parent, false);
+        return new ListViewHolder(view, listClickedListener);
+    }
+
+    @Override
+    public void onBindViewHolder(ListViewHolder holder, int position) {
+        Post post = posts.get(position);
+        holder.txtViewListTitle.setText(post.getLocation());
+        holder.txtViewListDescription.setText(post.getRoomDescription());
+
+        if (post.getRoomImage() !=null){
+            ImageFileHelper.readImage(context, post.getRoomImage(), bitmap -> holder.imgViewList.setImageBitmap(bitmap));
+        } else if (post.getInitiatorImage() != null){
+            ImageFileHelper.readImage(context, post.getInitiatorImage(), bitmap -> holder.imgViewList.setImageBitmap(bitmap));
         } else {
-            imgViewPost.setImageResource(0);
-            listViewTitle.setText("");
-            txtViewPostDescription.setText("");
+            holder.imgViewList.setImageResource(0);
         }
-
-        return convertView;
+        holder.postId = post.getPostId();
     }
 
-    public void populatePosts(List<Post> posts) {
-        this.postList.clear();
-        this.postList.addAll(posts);
+    @Override
+    public int getItemCount() {
+        return posts.size();
+    }
+
+    public void populatePosts(List<Post> posts){
+        this.posts.clear();
+        this.posts.addAll(posts);
         this.notifyDataSetChanged();
+    }
+
+    public static interface OnClickListener{
+        void onItemClicked(UUID postId);
     }
 }

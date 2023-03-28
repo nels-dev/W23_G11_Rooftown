@@ -48,11 +48,13 @@ public class PostService {
         });
     }
 
-    public void savePost(Post post) {
+    public void savePost(Post post, CallbackListener<Void> callback) {
+        Log.d(TAG, ">> Invoke save post to Firestore: " + post.getPostId().toString());
+        PostDto dto = toDto(post);
         fs.collection(COLLECTION_POST)
                 .document(post.getPostId().toString())
-                .set(post)
-                .addOnSuccessListener((Void unused) -> Log.d(TAG, "Post document saved"))
+                .set(dto)
+                .addOnSuccessListener(callback::callback)
                 .addOnFailureListener((@NonNull Exception e) -> Log.d(TAG, "Cannot save document", e));
     }
 
@@ -81,5 +83,28 @@ public class PostService {
             post.setPostAt(dto.getPostAt());
         }
         return post;
+    }
+
+    private PostDto toDto(Post post) {
+        PostDto dto = new PostDto();
+        dto.setPostType(post.getPostType().toString());
+        dto.setLocation(post.getLocation());
+        dto.setCity(post.getCity());
+        dto.setCountry(post.getCountry());
+        dto.setLatLong(DatabaseHelper.toLatLngString(post.getLatLong()));
+        dto.setNumOfRooms(post.getNumOfRooms());
+        dto.setFurnished(post.isFurnished());
+        dto.setSharedBathroom(post.isSharedBathroom());
+        dto.setRoomDescription(post.getRoomDescription());
+        dto.setRoomImage(post.getRoomImage());
+        dto.setInitiator(post.getInitiator());
+        dto.setInitiatorName(post.getInitiatorName());
+        dto.setInitiatorGender(post.getInitiatorGender());
+        dto.setInitiatorAge(post.getInitiatorAge());
+        dto.setInitiatorDescription(post.getInitiatorDescription());
+        dto.setInitiatorImage(post.getInitiatorImage());
+        dto.setPostStatus(post.getPostStatus().toString());
+        dto.setPostAt(post.getPostAt());
+        return dto;
     }
 }

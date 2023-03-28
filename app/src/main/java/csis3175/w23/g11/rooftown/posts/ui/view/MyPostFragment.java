@@ -57,10 +57,10 @@ public class MyPostFragment extends Fragment {
                 });
             } else if (btnPostTypes.get(i) == PostType.PERSON) {
                 card.setOnClickListener((View v) -> {
-                    NewRoomPostFragment newRoomPostFragment = NewRoomPostFragment.newInstance();
+                    NewPersonPostFragment newPersonPostFragment = NewPersonPostFragment.newInstance();
                     getParentFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.mainContainer, newRoomPostFragment)
+                            .replace(R.id.mainContainer, newPersonPostFragment)
                             .addToBackStack(TAG)
                             .commit();
                 });

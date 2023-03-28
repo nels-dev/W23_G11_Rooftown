@@ -33,6 +33,7 @@
     <string name="txtPostTypeButton2Title">Find Room and Roommates</string>
     <string name="txtPostTypeButton2Content">I don\'t have a room yet and I am looking for a room</string>
     <string name="txtSignOut">Sign Out</string>
+    <string name="txtAboutTargetLocation">About your target location</string>
     <string name="txtAboutRoom">About your room</string>
     <string name="txtAboutPerson">About yourself</string>
     <string name="txtHintPhone">Phone Number</string>

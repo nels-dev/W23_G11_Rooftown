@@ -9,6 +9,7 @@ import java.util.List;
 
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.data.repository.PostRepository;
+import csis3175.w23.g11.rooftown.util.CallbackListener;
 
 public class PostViewModel extends ViewModel {
     private final LiveData<List<Post>> posts;
@@ -29,11 +30,11 @@ public class PostViewModel extends ViewModel {
         allPostsRegistration = postRepository.loadAndListenToPosts();
     }
 
-    public void createPost(Post post) {
-        postRepository.createPost(post);
+    public void createPost(Post post, CallbackListener<Void> callback) {
+        postRepository.createPost(post, callback);
     }
 
-    public void updatePost(Post post) {
-        postRepository.updatePost(post);
+    public void updatePost(Post post, CallbackListener<Void> callback) {
+        postRepository.updatePost(post, callback);
     }
 }

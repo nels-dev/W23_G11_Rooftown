@@ -12,6 +12,7 @@ import java.util.UUID;
 import csis3175.w23.g11.rooftown.posts.data.local.PostDao;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.data.remote.PostService;
+import csis3175.w23.g11.rooftown.util.CallbackListener;
 
 public class PostRepository {
     private static final String TAG = "POSTS";
@@ -35,14 +36,14 @@ public class PostRepository {
         postDao.insertOrUpdate(posts);
     }
 
-    public void createPost(Post post) {
+    public void createPost(Post post, CallbackListener<Void> callback) {
         post.setPostId(UUID.randomUUID());
         postDao.insert(post);
-        postService.savePost(post);
+        postService.savePost(post, callback);
     }
 
-    public void updatePost(Post post) {
+    public void updatePost(Post post, CallbackListener<Void> callback) {
         postDao.update(post);
-        postService.savePost(post);
+        postService.savePost(post, callback);
     }
 }

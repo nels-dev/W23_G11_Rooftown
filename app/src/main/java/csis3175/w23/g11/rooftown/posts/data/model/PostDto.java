@@ -1,12 +1,8 @@
 package csis3175.w23.g11.rooftown.posts.data.model;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import java.util.Date;
-import java.util.UUID;
 
 public class PostDto {
-    private UUID postId;
     private String postType;
     private String location;
     private String city;
@@ -25,14 +21,6 @@ public class PostDto {
     private String initiatorImage;
     private String postStatus;
     private Date postAt;
-
-    public UUID getPostId() {
-        return postId;
-    }
-
-    public void setPostId(UUID postId) {
-        this.postId = postId;
-    }
 
     public String getPostType() {
         return postType;

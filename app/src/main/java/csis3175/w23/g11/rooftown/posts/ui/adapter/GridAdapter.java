@@ -10,33 +10,37 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
 public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder> {
-
+    private static final String TAG = "GRIDS";
     List<Post> posts;
     Context context;
+    OnClickListener gridClickedListener;
 
-    public GridAdapter(List<Post> posts, Context context) {
+    public GridAdapter(List<Post> posts, Context context, OnClickListener gridClickedListener) {
         this.posts = posts;
         this.context = context;
+        this.gridClickedListener = gridClickedListener;
     }
 
     public static class GridViewHolder extends RecyclerView.ViewHolder{
         public ImageView imgViewGrid;
+        public UUID postId;
 
-        public GridViewHolder(@NonNull View itemView) {
+        public GridViewHolder(@NonNull View itemView, OnClickListener gridClickedListener) {
             super(itemView);
             imgViewGrid = itemView.findViewById(R.id.imgViewGrid);
 
-//            this.itemView.setOnClickListener(v -> {
-//                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-//                    itemClickedListener.onClick(chatId);
-//                }
-//            });
+            this.itemView.setOnClickListener(v -> {
+                if(getAdapterPosition()!=RecyclerView.NO_POSITION){
+                    gridClickedListener.onItemClicked(postId);
+                }
+            });
         }
     }
 
@@ -44,7 +48,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder
     @Override
     public GridAdapter.GridViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_griditem, parent, false);
-        return new GridViewHolder(view);
+        return new GridViewHolder(view, gridClickedListener);
     }
 
     @Override
@@ -57,6 +61,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder
         } else {
             holder.imgViewGrid.setImageResource(0);
         }
+        holder.postId = post.getPostId();
     }
 
     @Override
@@ -68,5 +73,9 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder
         this.posts.clear();
         this.posts.addAll(posts);
         this.notifyDataSetChanged();
+    }
+
+    public static interface OnClickListener{
+        void onItemClicked(UUID postId);
     }
 }

@@ -27,10 +27,9 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.common.ImageFileHelper;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
-import csis3175.w23.g11.rooftown.posts.data.model.PostType;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
-import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
 public class EditPersonPostFragment extends Fragment {
     public static final String ARG_POST_ID = "post_id";
@@ -48,12 +47,13 @@ public class EditPersonPostFragment extends Fragment {
     private String uploadPostInitiatorImageFileName;
     private ActivityResultLauncher<Intent> activityResultLauncherInitiatorImage;
 
-    public static EditPersonPostFragment newInstance() { return new EditPersonPostFragment(); }
+    public static EditPersonPostFragment newInstance() {
+        return new EditPersonPostFragment();
+    }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_person_post, container,false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_edit_person_post, container, false);
     }
 
     @Override
@@ -89,8 +89,7 @@ public class EditPersonPostFragment extends Fragment {
         editTextPostInitiatorDescription.setText(post.getInitiatorDescription());
         if (post.getInitiatorImage() != null) {
             this.uploadPostInitiatorImageFileName = post.getInitiatorImage();
-            ImageFileHelper.readImage(view.getContext(), post.getInitiatorImage(),
-                    (bitmap) -> imgViewPostInitiatorImage.setImageBitmap(bitmap));
+            ImageFileHelper.readImage(view.getContext(), post.getInitiatorImage(), (bitmap) -> imgViewPostInitiatorImage.setImageBitmap(bitmap));
         }
 
         activityResultLauncherInitiatorImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this::initiatorImageChosen);
@@ -141,10 +140,7 @@ public class EditPersonPostFragment extends Fragment {
         }
         postViewModel.updatePost(post, (unused) -> {
             Toast.makeText(EditPersonPostFragment.this.getContext(), "Post updated", Toast.LENGTH_SHORT).show();
-            getParentFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.mainContainer, MyPostFragment.class, savedInstanceState)
-                    .commit();
+            getParentFragmentManager().beginTransaction().replace(R.id.mainContainer, MyPostFragment.class, savedInstanceState).commit();
         });
     }
 }

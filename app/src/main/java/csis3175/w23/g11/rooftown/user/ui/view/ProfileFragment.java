@@ -20,9 +20,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.Random;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.common.CurrentUserHelper;
+import csis3175.w23.g11.rooftown.common.ImageFileHelper;
 import csis3175.w23.g11.rooftown.user.ui.viewmodel.UserProfileViewModel;
-import csis3175.w23.g11.rooftown.util.CurrentUserHelper;
-import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
 public class ProfileFragment extends Fragment {
 

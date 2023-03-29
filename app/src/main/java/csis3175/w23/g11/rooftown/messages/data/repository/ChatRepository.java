@@ -1,6 +1,6 @@
 package csis3175.w23.g11.rooftown.messages.data.repository;
 
-import android.os.Handler;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -9,15 +9,18 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import csis3175.w23.g11.rooftown.common.AppDatabase;
+import csis3175.w23.g11.rooftown.common.CurrentUserHelper;
 import csis3175.w23.g11.rooftown.messages.data.local.ChatDao;
 import csis3175.w23.g11.rooftown.messages.data.local.ChatMessageDao;
 import csis3175.w23.g11.rooftown.messages.data.model.Chat;
 import csis3175.w23.g11.rooftown.messages.data.model.ChatMessage;
 import csis3175.w23.g11.rooftown.messages.data.remote.ChatService;
-import csis3175.w23.g11.rooftown.util.CurrentUserHelper;
 
 public class ChatRepository {
     private static final String TAG = "CHATS";
@@ -32,9 +35,10 @@ public class ChatRepository {
     private final MutableLiveData<Integer> numberOfUnread = new MutableLiveData<>();
 
     public ChatRepository() {
-        chatDao = new ChatDao();
+
         chatService = new ChatService();
-        chatMessageDao = new ChatMessageDao();
+        chatDao = AppDatabase.getInstance().chatDao();
+        chatMessageDao = AppDatabase.getInstance().chatMessageDao();
     }
 
     public LiveData<List<Chat>> getOutgoingChats() {
@@ -54,17 +58,21 @@ public class ChatRepository {
         return numberOfUnread;
     }
 
-    public ListenerRegistration loadAndListenToChats(){
-        outgoingChats.setValue(chatDao.getChatsByInitiator(CurrentUserHelper.getCurrentUid()));
-        incomingChats.setValue(chatDao.getChatsByCounterParty(CurrentUserHelper.getCurrentUid()));
+    public ListenerRegistration loadAndListenToChats() {
+        AsyncTask.execute(() -> {
+            outgoingChats.postValue(chatDao.getChatsByInitiator(CurrentUserHelper.getCurrentUid()));
+            incomingChats.postValue(chatDao.getChatsByCounterParty(CurrentUserHelper.getCurrentUid()));
+        });
         return chatService.listenToAllChats(this::remoteCallBackWithData);
     }
 
     public ListenerRegistration loadAndListenToMessages(UUID chatId) {
-        chatMessages.setValue(chatMessageDao.getChatMessagesByChatId(chatId));
+        AsyncTask.execute(() -> chatMessages.postValue(chatMessageDao.getChatMessagesByChatId(chatId)));
         return chatService.listenToChatMessages(chatId, (messages) -> {
-            chatMessageDao.insertMessagesIfNotExist(messages);
-            chatMessages.postValue(chatMessageDao.getChatMessagesByChatId(chatId));
+            AsyncTask.execute(() -> {
+                chatMessageDao.insertMessagesIfNotExist(messages);
+                chatMessages.postValue(chatMessageDao.getChatMessagesByChatId(chatId));
+            });
         });
     }
 
@@ -77,14 +85,33 @@ public class ChatRepository {
     }
 
     public void sendMessage(UUID chatId, String content) {
-        chatService.addMessageToChat(chatId, content);
+        AsyncTask.execute(() -> {
+            ChatMessage newMessage = new ChatMessage();
+            newMessage.setChatId(chatId);
+            newMessage.setChatMessageId(UUID.randomUUID());
+            newMessage.setContent(content);
+            newMessage.setSentAt(new Date());
+            newMessage.setSentBy(CurrentUserHelper.getCurrentUid());
+            newMessage.setSystemMessage(false);
+            chatMessageDao.insertMessagesIfNotExist(new ArrayList<>(Arrays.asList(newMessage)));
+
+            Chat chat = chatDao.getChatById(chatId);
+            chat.setLastActivityAt(newMessage.getSentAt());
+            chat.setLastMessage(newMessage.getContent());
+            chat.setLastActivityBy(newMessage.getSentBy());
+            chatDao.updateChat(chat);
+
+            chatService.addMessageToChat(newMessage);
+        });
     }
 
     public void markChatAsRead(UUID chatId) {
-        chatDao.markAsRead(chatId);
-        numberOfUnread.postValue(chatDao.getNumberOfUnread());
-        outgoingChats.postValue(chatDao.getChatsByInitiator(CurrentUserHelper.getCurrentUid()));
-        incomingChats.postValue(chatDao.getChatsByCounterParty(CurrentUserHelper.getCurrentUid()));
+        AsyncTask.execute(() -> {
+            chatDao.markAsRead(chatId);
+            numberOfUnread.postValue(chatDao.getNumberOfUnread());
+            outgoingChats.postValue(chatDao.getChatsByInitiator(CurrentUserHelper.getCurrentUid()));
+            incomingChats.postValue(chatDao.getChatsByCounterParty(CurrentUserHelper.getCurrentUid()));
+        });
     }
 
 

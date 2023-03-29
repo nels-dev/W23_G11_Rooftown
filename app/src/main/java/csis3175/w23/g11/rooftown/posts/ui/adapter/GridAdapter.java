@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.common.ImageFileHelper;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.data.model.PostType;
-import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
 public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder> {
-    private static final String TAG = "GRIDS";
+    private static final String TAG = "POSTS";
     List<Post> posts;
     Context context;
     OnClickListener gridClickedListener;
@@ -27,22 +27,6 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder
         this.posts = posts;
         this.context = context;
         this.gridClickedListener = gridClickedListener;
-    }
-
-    public static class GridViewHolder extends RecyclerView.ViewHolder{
-        public ImageView imgViewGrid;
-        public UUID postId;
-
-        public GridViewHolder(@NonNull View itemView, OnClickListener gridClickedListener) {
-            super(itemView);
-            imgViewGrid = itemView.findViewById(R.id.imgViewGrid);
-
-            this.itemView.setOnClickListener(v -> {
-                if(getAdapterPosition()!=RecyclerView.NO_POSITION){
-                    gridClickedListener.onItemClicked(postId);
-                }
-            });
-        }
     }
 
     @NonNull
@@ -88,7 +72,23 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder
         this.notifyDataSetChanged();
     }
 
-    public interface OnClickListener{
+    public interface OnClickListener {
         void onItemClicked(UUID postId);
+    }
+
+    public static class GridViewHolder extends RecyclerView.ViewHolder {
+        public ImageView imgViewGrid;
+        public UUID postId;
+
+        public GridViewHolder(@NonNull View itemView, OnClickListener gridClickedListener) {
+            super(itemView);
+            imgViewGrid = itemView.findViewById(R.id.imgViewGrid);
+
+            this.itemView.setOnClickListener(v -> {
+                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    gridClickedListener.onItemClicked(postId);
+                }
+            });
+        }
     }
 }

@@ -14,16 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import csis3175.w23.g11.rooftown.common.CallbackListener;
+import csis3175.w23.g11.rooftown.common.Converters;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.data.model.PostDto;
 import csis3175.w23.g11.rooftown.posts.data.model.PostStatus;
 import csis3175.w23.g11.rooftown.posts.data.model.PostType;
-import csis3175.w23.g11.rooftown.util.CallbackListener;
-import csis3175.w23.g11.rooftown.util.DatabaseHelper;
 
 public class PostService {
-    private static final String TAG = "POSTS";
     public static final String COLLECTION_POST = "POSTS";
+    private static final String TAG = "POSTS";
     private final FirebaseFirestore fs;
     private final Query allPosts;
 
@@ -36,12 +36,9 @@ public class PostService {
     public ListenerRegistration listenToAllPosts(CallbackListener<List<Post>> resultConsumer) {
         return allPosts.addSnapshotListener(MetadataChanges.EXCLUDE, (value, error) -> {
             if (value == null) return;
-            Log.d(TAG, "listenToAllPosts");
-            Log.d(TAG, "value:" + value);
-            Log.d(TAG, "getDocuments size:" + value.getDocuments().size());
+            Log.d(TAG, "Firebase invoked listener with doc size:" + value.getDocuments().size());
             List<Post> posts = new ArrayList<>();
             for (DocumentSnapshot doc : value.getDocuments()) {
-                Log.d(TAG, "doc:" + doc);
                 posts.add(toPost(doc));
             }
             resultConsumer.callback(posts);
@@ -67,7 +64,7 @@ public class PostService {
             post.setLocation(dto.getLocation());
             post.setCity(dto.getCity());
             post.setCountry(dto.getCountry());
-            post.setLatLong(DatabaseHelper.fromLatLngString(dto.getLatLong()));
+            post.setLatLong(Converters.fromLatLngString(dto.getLatLong()));
             post.setNumOfRooms(dto.getNumOfRooms());
             post.setFurnished(dto.isFurnished());
             post.setSharedBathroom(dto.isSharedBathroom());
@@ -91,7 +88,7 @@ public class PostService {
         dto.setLocation(post.getLocation());
         dto.setCity(post.getCity());
         dto.setCountry(post.getCountry());
-        dto.setLatLong(DatabaseHelper.toLatLngString(post.getLatLong()));
+        dto.setLatLong(Converters.toLatLngString(post.getLatLong()));
         dto.setNumOfRooms(post.getNumOfRooms());
         dto.setFurnished(post.isFurnished());
         dto.setSharedBathroom(post.isSharedBathroom());

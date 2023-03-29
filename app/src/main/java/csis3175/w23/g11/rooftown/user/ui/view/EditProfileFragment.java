@@ -3,11 +3,9 @@ package csis3175.w23.g11.rooftown.user.ui.view;
 import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,23 +18,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Random;
 
 import csis3175.w23.g11.rooftown.R;
-import csis3175.w23.g11.rooftown.messages.ui.view.ConversationFragment;
+import csis3175.w23.g11.rooftown.common.CurrentUserHelper;
+import csis3175.w23.g11.rooftown.common.ImageFileHelper;
 import csis3175.w23.g11.rooftown.user.data.model.UserProfile;
 import csis3175.w23.g11.rooftown.user.ui.viewmodel.UserProfileViewModel;
-import csis3175.w23.g11.rooftown.util.CurrentUserHelper;
-import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
 public class EditProfileFragment extends Fragment {
 
@@ -55,9 +50,7 @@ public class EditProfileFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_profile, container, false);
     }
 
@@ -90,8 +83,7 @@ public class EditProfileFragment extends Fragment {
             }
 
             if (null != profile.getImageFileName()) {
-                ImageFileHelper.readImage(view.getContext(), profile.getImageFileName(),
-                        (bitmap) -> imgViewEditProfileImage.setImageBitmap(bitmap));
+                ImageFileHelper.readImage(view.getContext(), profile.getImageFileName(), (bitmap) -> imgViewEditProfileImage.setImageBitmap(bitmap));
             }
         });
 
@@ -129,10 +121,7 @@ public class EditProfileFragment extends Fragment {
         }
         viewModel.updateUserProfile(p, (unused) -> {
             Toast.makeText(EditProfileFragment.this.getContext(), "Profile updated", Toast.LENGTH_SHORT).show();
-            getParentFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.mainContainer, ProfileFragment.class, savedInstanceState)
-                    .commit();
+            getParentFragmentManager().beginTransaction().replace(R.id.mainContainer, ProfileFragment.class, savedInstanceState).commit();
         });
     }
 }

@@ -19,16 +19,16 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.common.CurrentUserHelper;
+import csis3175.w23.g11.rooftown.common.ImageFileHelper;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.data.model.PostType;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
-import csis3175.w23.g11.rooftown.util.CurrentUserHelper;
-import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
 public class PostDetailFragment extends Fragment {
-    private PostViewModel viewModel;
     public static final String ARG_POST_ID = "post_id";
     private static final String TAG = "POSTS";
+    private PostViewModel viewModel;
     private ImageView imgViewPosting;
     private TextView txtViewPosting1stLine;
     private TextView txtViewPosting2ndLine;
@@ -37,17 +37,17 @@ public class PostDetailFragment extends Fragment {
     private TextView txtViewPostDetailInitiatorName;
     private TextView txtViewPostDetailInitiatorDescription;
 
-    public static PostDetailFragment newInstance(){
+    public static PostDetailFragment newInstance() {
         return new PostDetailFragment();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_post_detail, container,false);
+        return inflater.inflate(R.layout.fragment_post_detail, container, false);
     }
 
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstancedState){
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstancedState) {
         super.onViewCreated(view, savedInstancedState);
         viewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
         imgViewPosting = view.findViewById(R.id.imgViewPosting);
@@ -60,7 +60,7 @@ public class PostDetailFragment extends Fragment {
         FloatingActionButton btnEditPost = view.findViewById(R.id.btnEditPost);
         Button btnPostingInterested = view.findViewById(R.id.btnPostingInterested);
 
-        if (null == getArguments() || null == this.getArguments().getString(ARG_POST_ID)){
+        if (null == getArguments() || null == this.getArguments().getString(ARG_POST_ID)) {
             Log.e(TAG, "No post is passed to this fragment. Expected " + ARG_POST_ID);
             return;
         }

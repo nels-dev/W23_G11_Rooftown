@@ -31,14 +31,14 @@ import java.util.Arrays;
 import java.util.Date;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.common.CurrentUserHelper;
+import csis3175.w23.g11.rooftown.common.ImageFileHelper;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.data.model.PostStatus;
 import csis3175.w23.g11.rooftown.posts.data.model.PostType;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 import csis3175.w23.g11.rooftown.user.data.model.UserProfile;
 import csis3175.w23.g11.rooftown.user.ui.viewmodel.UserProfileViewModel;
-import csis3175.w23.g11.rooftown.util.CurrentUserHelper;
-import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
 public class NewRoomPostFragment extends Fragment {
 

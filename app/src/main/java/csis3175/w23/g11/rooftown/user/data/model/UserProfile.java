@@ -1,10 +1,22 @@
 package csis3175.w23.g11.rooftown.user.data.model;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "USER_PROFILE")
 public class UserProfile {
+    @PrimaryKey
+    @NonNull
     private String userId;
+    @ColumnInfo(name = "user_name")
     private String userName;
+    @ColumnInfo(name = "city")
     private String city;
+    @ColumnInfo(name = "country")
     private String country;
+    @ColumnInfo(name = "image_file_name")
     private String imageFileName;
 
     public String getImageFileName() {

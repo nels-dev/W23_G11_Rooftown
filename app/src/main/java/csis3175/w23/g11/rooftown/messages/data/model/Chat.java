@@ -1,20 +1,35 @@
 package csis3175.w23.g11.rooftown.messages.data.model;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Date;
 import java.util.UUID;
 
-// Entity class
+@Entity(tableName = "CHATS")
 public class Chat {
+    @PrimaryKey
+    @NonNull
     private UUID chatId;
+    @ColumnInfo(name = "initiator")
     private String initiator;
+    @ColumnInfo(name = "counter_party")
     private String counterParty;
+    @ColumnInfo(name = "partner_name")
     private String partnerName;
+    @ColumnInfo(name = "partner_image")
     private String partnerImage;
+    @ColumnInfo(name = "last_activity_at")
     private Date lastActivityAt;
+    @ColumnInfo(name = "last_activity_by")
     private String lastActivityBy;
+    @ColumnInfo(name = "last_message")
     private String lastMessage;
+    @ColumnInfo(name = "last_read_at")
     private Date lastReadAt;
 
     public String getPartnerImage() {
@@ -25,11 +40,11 @@ public class Chat {
         this.partnerImage = partnerImage;
     }
 
-    public boolean isRead(){
-        return lastReadAt!=null && lastActivityAt.before(lastReadAt);
+    public boolean isRead() {
+        return lastReadAt != null && lastActivityAt.before(lastReadAt);
     }
 
-    public boolean isLastActivityByMe(){
+    public boolean isLastActivityByMe() {
         return lastActivityBy.equals(FirebaseAuth.getInstance().getUid());
     }
 

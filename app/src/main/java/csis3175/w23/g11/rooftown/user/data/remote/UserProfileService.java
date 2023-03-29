@@ -10,16 +10,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
+import csis3175.w23.g11.rooftown.common.CallbackListener;
 import csis3175.w23.g11.rooftown.user.data.model.UserProfile;
-import csis3175.w23.g11.rooftown.util.CallbackListener;
 
 /**
  * This service class is responsible for talking to Firestore
  * including retrieving, observing and saving documents
  */
 public class UserProfileService {
-    private static final String TAG = "USER_PROFILES";
     public static final String COLLECTION_USER_PROFILES = "USER_PROFILES";
+    private static final String TAG = "USER_PROFILES";
     private final FirebaseFirestore fs;
 
     public UserProfileService() {

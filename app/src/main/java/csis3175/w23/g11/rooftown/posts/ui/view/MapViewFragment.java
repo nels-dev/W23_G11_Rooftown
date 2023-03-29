@@ -17,10 +17,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -30,7 +30,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,13 +41,12 @@ import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
+    private static final String TAG = "POSTS_MAP";
+    private final List<Post> postList = new ArrayList<>();
     private GoogleMap mMap;
     private MapView mapView;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback;
-    private static final String TAG = "POSTS_MAP";
-
-    private final List<Post> postList = new ArrayList<>();
 
     @Nullable
     @Override
@@ -72,7 +70,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         // extract coordinate(lat lng)
         // mark in the map view
         if (getParentFragment() != null) {
-            PostViewModel viewModel = ((RoommatesFragment) getParentFragment()).getViewModel();
+            PostViewModel viewModel = new ViewModelProvider(getParentFragment()).get(PostViewModel.class);
             viewModel.getAllPosts().observe(this.getViewLifecycleOwner(), posts -> {
                 Log.d(TAG, "getAllPosts");
                 postList.clear();
@@ -84,7 +82,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             });
         }
 
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
@@ -95,13 +93,13 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             });
         }
 
-        locationCallback = new LocationCallback(){
+        locationCallback = new LocationCallback() {
             @Override
-            public void onLocationResult(LocationResult locationResult){
-                if (locationResult == null){
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
                     return;
                 }
-                for(Location location: locationResult.getLocations()){
+                for (Location location : locationResult.getLocations()) {
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 //                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                 }
@@ -139,10 +137,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         });
 
         mMap.setOnMarkerClickListener(marker -> {
-            Post post = (Post)marker.getTag();
+            Post post = (Post) marker.getTag();
             if (post != null) {
-                marker.setTitle(((post.getPostType() == PostType.ROOM)?post.getLocation():post.getInitiatorName()));
-                marker.setSnippet(((post.getPostType() == PostType.ROOM)?post.getRoomDescription():post.getInitiatorDescription()));
+                marker.setTitle(((post.getPostType() == PostType.ROOM) ? post.getLocation() : post.getInitiatorName()));
+                marker.setSnippet(((post.getPostType() == PostType.ROOM) ? post.getRoomDescription() : post.getInitiatorDescription()));
 
                 marker.showInfoWindow();
             }
@@ -154,16 +152,16 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         for (Post post : posts) {
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(post.getLatLong());
-            markerOptions.title((post.getPostType() == PostType.ROOM)?post.getLocation():post.getInitiatorName());
+            markerOptions.title((post.getPostType() == PostType.ROOM) ? post.getLocation() : post.getInitiatorName());
             Marker marker = mMap.addMarker(markerOptions);
-            if (marker!= null) {
+            if (marker != null) {
                 marker.setTag(post);
             }
         }
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         mapView.onResume();
 
@@ -173,20 +171,20 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
         mapView.onPause();
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
     }
 
     @Override
-    public void onLowMemory(){
+    public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
     }

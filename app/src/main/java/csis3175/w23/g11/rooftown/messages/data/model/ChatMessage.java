@@ -1,15 +1,29 @@
 package csis3175.w23.g11.rooftown.messages.data.model;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.util.Date;
 import java.util.UUID;
 
-// Entity class
+@Entity(tableName = "CHAT_MESSAGE")
 public class ChatMessage {
-    private UUID chatId;
+
+    @PrimaryKey
+    @NonNull
     private UUID chatMessageId;
+    @ColumnInfo(name = "chat_id")
+    @NonNull
+    private UUID chatId;
+    @ColumnInfo(name = "content")
     private String content;
+    @ColumnInfo(name = "sent_at")
     private Date sentAt;
+    @ColumnInfo(name = "system_message")
     private boolean systemMessage;
+    @ColumnInfo(name = "sent_by")
     private String sentBy;
 
     public UUID getChatId() {

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,12 +14,12 @@ import java.util.List;
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.common.ImageFileHelper;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.data.model.PostType;
-import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
-    private static final String TAG = "LISTS";
+    private static final String TAG = "POSTS";
     List<Post> posts;
     Context context;
     OnClickListener listClickedListener;
@@ -29,26 +28,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         this.posts = posts;
         this.context = context;
         this.listClickedListener = listClickedListener;
-    }
-
-    public static class ListViewHolder extends RecyclerView.ViewHolder{
-        public ImageView imgViewList;
-        public TextView txtViewListTitle;
-        public TextView txtViewListDescription;
-        public UUID postId;
-
-        public ListViewHolder(@NonNull View itemView, OnClickListener listClickedListener){
-            super(itemView);
-            imgViewList = itemView.findViewById(R.id.imgViewList);
-            txtViewListTitle = itemView.findViewById(R.id.txtViewListTitle);
-            txtViewListDescription = itemView.findViewById(R.id.txtViewListDescription);
-
-            this.itemView.setOnClickListener(v -> {
-                if(getAdapterPosition()!= RecyclerView.NO_POSITION){
-                    listClickedListener.onItemClicked(postId);
-                }
-            });
-        }
     }
 
     @NonNull
@@ -95,13 +74,33 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         return posts.size();
     }
 
-    public void populatePosts(List<Post> posts){
+    public void populatePosts(List<Post> posts) {
         this.posts.clear();
         this.posts.addAll(posts);
         this.notifyDataSetChanged();
     }
 
-    public interface OnClickListener{
+    public interface OnClickListener {
         void onItemClicked(UUID postId);
+    }
+
+    public static class ListViewHolder extends RecyclerView.ViewHolder {
+        public ImageView imgViewList;
+        public TextView txtViewListTitle;
+        public TextView txtViewListDescription;
+        public UUID postId;
+
+        public ListViewHolder(@NonNull View itemView, OnClickListener listClickedListener) {
+            super(itemView);
+            imgViewList = itemView.findViewById(R.id.imgViewList);
+            txtViewListTitle = itemView.findViewById(R.id.txtViewListTitle);
+            txtViewListDescription = itemView.findViewById(R.id.txtViewListDescription);
+
+            this.itemView.setOnClickListener(v -> {
+                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    listClickedListener.onItemClicked(postId);
+                }
+            });
+        }
     }
 }

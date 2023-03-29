@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.common.ImageFileHelper;
 import csis3175.w23.g11.rooftown.messages.data.model.Chat;
 import csis3175.w23.g11.rooftown.messages.ui.view.ChatItemClickedListener;
-import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
 public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.MessagesViewHolder> {
     private static final String TAG = "CHATS";
@@ -28,9 +28,7 @@ public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.Messag
     Context context;
     ChatItemClickedListener itemClickedListener;
 
-    public AllChatsAdapter(List<Chat> chats,
-                           Context context,
-                           ChatItemClickedListener itemClickedListener) {
+    public AllChatsAdapter(List<Chat> chats, Context context, ChatItemClickedListener itemClickedListener) {
         this.chats = chats;
         this.context = context;
         this.itemClickedListener = itemClickedListener;
@@ -74,6 +72,12 @@ public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.Messag
         return chats.size();
     }
 
+    public void populateMessages(List<Chat> chats) {
+        this.chats.clear();
+        this.chats.addAll(chats);
+        this.notifyDataSetChanged();
+    }
+
     public static class MessagesViewHolder extends RecyclerView.ViewHolder {
 
         public TextView txtViewChatItemTitle;
@@ -94,12 +98,6 @@ public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.Messag
                 }
             });
         }
-    }
-
-    public void populateMessages(List<Chat> chats) {
-        this.chats.clear();
-        this.chats.addAll(chats);
-        this.notifyDataSetChanged();
     }
 
 }

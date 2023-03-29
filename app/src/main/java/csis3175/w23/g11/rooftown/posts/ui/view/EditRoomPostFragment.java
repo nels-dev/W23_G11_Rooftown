@@ -5,15 +5,6 @@ import static android.app.Activity.RESULT_OK;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,13 +17,20 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.common.ImageFileHelper;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
-import csis3175.w23.g11.rooftown.posts.data.model.PostType;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
-import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
 public class EditRoomPostFragment extends Fragment {
     public static final String ARG_POST_ID = "post_id";
@@ -57,12 +55,13 @@ public class EditRoomPostFragment extends Fragment {
     private String uploadPostInitiatorImageFileName;
     private ActivityResultLauncher<Intent> activityResultLauncherInitiatorImage;
 
-    public static EditRoomPostFragment newInstance() { return new EditRoomPostFragment(); }
+    public static EditRoomPostFragment newInstance() {
+        return new EditRoomPostFragment();
+    }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_room_post, container,false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_edit_room_post, container, false);
     }
 
     @Override
@@ -103,8 +102,7 @@ public class EditRoomPostFragment extends Fragment {
         editTextPostRoomDescription.setText(post.getRoomDescription());
         if (post.getRoomImage() != null) {
             this.uploadPostRoomImageFileName = post.getRoomImage();
-            ImageFileHelper.readImage(view.getContext(), post.getRoomImage(),
-                    (bitmap) -> imgViewPostRoomImage.setImageBitmap(bitmap));
+            ImageFileHelper.readImage(view.getContext(), post.getRoomImage(), (bitmap) -> imgViewPostRoomImage.setImageBitmap(bitmap));
         }
         editTextPostInitiatorName.setText(post.getInitiatorName());
         spinnerPostInitiatorGender.setSelection(genderAdapter.getPosition(post.getInitiatorGender()));
@@ -112,8 +110,7 @@ public class EditRoomPostFragment extends Fragment {
         editTextPostInitiatorDescription.setText(post.getInitiatorDescription());
         if (post.getInitiatorImage() != null) {
             this.uploadPostInitiatorImageFileName = post.getInitiatorImage();
-            ImageFileHelper.readImage(view.getContext(), post.getInitiatorImage(),
-                    (bitmap) -> imgViewPostInitiatorImage.setImageBitmap(bitmap));
+            ImageFileHelper.readImage(view.getContext(), post.getInitiatorImage(), (bitmap) -> imgViewPostInitiatorImage.setImageBitmap(bitmap));
         }
 
         activityResultLauncherRoomImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this::roomImageChosen);
@@ -202,10 +199,7 @@ public class EditRoomPostFragment extends Fragment {
         }
         postViewModel.updatePost(post, (unused) -> {
             Toast.makeText(EditRoomPostFragment.this.getContext(), "Post updated", Toast.LENGTH_SHORT).show();
-            getParentFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.mainContainer, MyPostFragment.class, savedInstanceState)
-                    .commit();
+            getParentFragmentManager().beginTransaction().replace(R.id.mainContainer, MyPostFragment.class, savedInstanceState).commit();
         });
     }
 }

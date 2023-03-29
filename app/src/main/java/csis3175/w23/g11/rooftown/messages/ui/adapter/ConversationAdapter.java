@@ -18,16 +18,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.common.CurrentUserHelper;
 import csis3175.w23.g11.rooftown.messages.data.model.ChatMessage;
-import csis3175.w23.g11.rooftown.util.CurrentUserHelper;
 
 public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.MessagesViewHolder> {
     private static final String TAG = "CHATS";
     List<ChatMessage> chatMessages;
     Context context;
 
-    public ConversationAdapter(List<ChatMessage> chatMessages,
-                               Context context) {
+    public ConversationAdapter(List<ChatMessage> chatMessages, Context context) {
         this.chatMessages = chatMessages;
         this.context = context;
     }
@@ -48,7 +47,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         if (chatMessage.isSystemMessage()) {
             holder.txtViewChatMessage.setText("[" + chatMessage.getContent() + "]");
             holder.txtViewChatMessage.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
-        }else{
+        } else {
             holder.txtViewChatMessage.setText(chatMessage.getContent());
             holder.txtViewChatMessage.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
         }

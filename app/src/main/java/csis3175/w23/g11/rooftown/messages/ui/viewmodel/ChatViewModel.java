@@ -48,7 +48,7 @@ public class ChatViewModel extends ViewModel {
     }
 
     public void loadData() {
-        if(allChatsRegistration!=null){
+        if (allChatsRegistration != null) {
             allChatsRegistration.remove();
         }
         allChatsRegistration = chatRepository.loadAndListenToChats();
@@ -71,5 +71,6 @@ public class ChatViewModel extends ViewModel {
 
     public void markChatAsRead() {
         chatRepository.markChatAsRead(selectedChatId);
+
     }
 }

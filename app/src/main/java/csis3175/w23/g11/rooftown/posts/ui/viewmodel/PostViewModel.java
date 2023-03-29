@@ -8,11 +8,12 @@ import com.google.firebase.firestore.ListenerRegistration;
 import java.util.List;
 import java.util.UUID;
 
+import csis3175.w23.g11.rooftown.common.CallbackListener;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.data.repository.PostRepository;
-import csis3175.w23.g11.rooftown.util.CallbackListener;
 
 public class PostViewModel extends ViewModel {
+    private static final String TAG = "POSTS";
     private final LiveData<List<Post>> posts;
     private final PostRepository postRepository;
     private ListenerRegistration allPostsRegistration;
@@ -22,11 +23,13 @@ public class PostViewModel extends ViewModel {
         posts = postRepository.getPosts();
     }
 
-    public LiveData<List<Post>> getAllPosts() { return posts; }
+    public LiveData<List<Post>> getAllPosts() {
+        return posts;
+    }
 
-    public Post getPost(UUID postId){
-        for (Post post : posts.getValue()){
-            if (post.getPostId().equals(postId)){
+    public Post getPost(UUID postId) {
+        for (Post post : posts.getValue()) {
+            if (post.getPostId().equals(postId)) {
                 return post;
             }
         }

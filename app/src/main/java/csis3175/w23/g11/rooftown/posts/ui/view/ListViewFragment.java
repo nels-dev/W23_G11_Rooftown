@@ -24,35 +24,34 @@ import csis3175.w23.g11.rooftown.posts.ui.adapter.ListAdapter;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class ListViewFragment extends Fragment {
-    private ListAdapter listAdapter;
     private static final String TAG = "POSTS_LIST";
+    private ListAdapter listAdapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_list_view, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d(TAG, "============ List View Created =========");
+        PostViewModel viewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
+        //Setup recycler view
+        RecyclerView recyclerListView = view.findViewById(R.id.recyclerList);
+        recyclerListView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
-        if (getParentFragment() != null) {
-            PostViewModel viewModel = ((RoommatesFragment) getParentFragment()).getViewModel();
+        listAdapter = new ListAdapter(new ArrayList<>(), view.getContext(), this::onItemClicked);
 
-            RecyclerView recyclerList = view.findViewById(R.id.recyclerList);
-            recyclerList.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        viewModel.getAllPosts().observe(this.getViewLifecycleOwner(), posts -> {
+            Log.d(TAG, "LiveData published, size: " + posts.size());
+            listAdapter.populatePosts(posts);
+        });
+        recyclerListView.setAdapter(listAdapter);
 
-            listAdapter = new ListAdapter(new ArrayList<>(), view.getContext(), this::onItemClicked);
-            recyclerList.setAdapter(listAdapter);
-
-            viewModel.getAllPosts().observe(this.getViewLifecycleOwner(), posts -> {
-                Log.d(TAG, "Post List Size " + posts.size());
-                listAdapter.populatePosts(posts);
-            });
-        }
     }
-    private void onItemClicked(UUID postId){
+
+    private void onItemClicked(UUID postId) {
         // Start a post detail window when post is clicked. Post id is given by the adapter's ViewHolder
         PostDetailFragment postDetailFragment = PostDetailFragment.newInstance();
         Bundle args = new Bundle();
@@ -74,6 +73,6 @@ public class ListViewFragment extends Fragment {
     public void onResume() {
         super.onResume();
         BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottomNav);
-        bottomNav.getMenu().findItem(R.id.bottomNavMenuMessages).setChecked(true);
+        bottomNav.getMenu().findItem(R.id.bottomNavMenuRoommates).setChecked(true);
     }
 }

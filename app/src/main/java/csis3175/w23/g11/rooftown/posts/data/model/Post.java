@@ -1,29 +1,55 @@
 package csis3175.w23.g11.rooftown.posts.data.model;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Date;
 import java.util.UUID;
 
+@Entity(tableName = "POSTS")
 public class Post {
+    @PrimaryKey
+    @NonNull
     private UUID postId;
+    @ColumnInfo(name = "post_type")
     private PostType postType;
+    @ColumnInfo(name = "location")
     private String location;
+    @ColumnInfo(name = "city")
     private String city;
+    @ColumnInfo(name = "country")
     private String country;
+    @ColumnInfo(name = "lat_long")
     private LatLng latLong;
+    @ColumnInfo(name = "num_of_rooms")
     private String numOfRooms;
+    @ColumnInfo(name = "furnished")
     private boolean furnished;
+    @ColumnInfo(name = "shared_bathroom")
     private boolean sharedBathroom;
+    @ColumnInfo(name = "room_description")
     private String roomDescription;
+    @ColumnInfo(name = "room_image")
     private String roomImage;
+    @ColumnInfo(name = "initiator")
     private String initiator;
+    @ColumnInfo(name = "initiator_name")
     private String initiatorName;
+    @ColumnInfo(name = "initiator_gender")
     private String initiatorGender;
+    @ColumnInfo(name = "initiator_age")
     private String initiatorAge;
+    @ColumnInfo(name = "initiator_description")
     private String initiatorDescription;
+    @ColumnInfo(name = "initiator_image")
     private String initiatorImage;
+    @ColumnInfo(name = "post_status")
     private PostStatus postStatus;
+    @ColumnInfo(name = "post_at")
     private Date postAt;
 
     public UUID getPostId() {

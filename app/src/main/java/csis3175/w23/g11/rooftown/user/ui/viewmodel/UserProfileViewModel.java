@@ -3,11 +3,9 @@ package csis3175.w23.g11.rooftown.user.ui.viewmodel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.UUID;
-
+import csis3175.w23.g11.rooftown.common.CallbackListener;
 import csis3175.w23.g11.rooftown.user.data.model.UserProfile;
 import csis3175.w23.g11.rooftown.user.data.repository.UserProfileRepository;
-import csis3175.w23.g11.rooftown.util.CallbackListener;
 
 public class UserProfileViewModel extends ViewModel {
     private final LiveData<UserProfile> userProfile;

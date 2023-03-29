@@ -26,7 +26,6 @@ import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class GridViewFragment extends Fragment {
     private GridAdapter gridAdapter;
-    private PostViewModel viewModel;
     private static final String TAG = "POSTS_GRID";
 
     @Override
@@ -39,12 +38,6 @@ public class GridViewFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
-
-        //Setup recycler view
-        RecyclerView recyclerGridView = view.findViewById(R.id.recyclerGrid);
-        recyclerGridView.setLayoutManager(new GridLayoutManager(view.getContext(), 3));
-
 
         if (getParentFragment() != null) {
             PostViewModel viewModel = ((RoommatesFragment) getParentFragment()).getViewModel();
@@ -60,7 +53,6 @@ public class GridViewFragment extends Fragment {
                 Log.d(TAG, "Post List Size: " + posts.size());
                 gridAdapter.populatePosts(posts);
             });
-
         }
     }
     private void onItemClicked(UUID postId){
@@ -70,8 +62,13 @@ public class GridViewFragment extends Fragment {
         args.putString(PostDetailFragment.ARG_POST_ID, postId.toString());
         postDetailFragment.setArguments(args);
 
-        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-        transaction.replace(R.id.roommatesContainer, postDetailFragment);
+        FragmentTransaction transaction;
+        if (getParentFragment() != null) {
+            transaction = getParentFragment().getParentFragmentManager().beginTransaction();
+        } else {
+            transaction = getParentFragmentManager().beginTransaction();
+        }
+        transaction.replace(R.id.mainContainer, postDetailFragment);
         transaction.addToBackStack(TAG);
         transaction.commit();
     }

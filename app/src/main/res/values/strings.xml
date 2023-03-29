@@ -158,4 +158,5 @@
         <item>Prefer not to disclose</item>
     </string-array>
     <string name="btnPostDetailText">I\'m Interested</string>
+    <string name="txtPostedBy">Posted By:</string>
 </resources>

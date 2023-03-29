@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
+import csis3175.w23.g11.rooftown.posts.data.model.PostType;
 import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
@@ -58,18 +59,34 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     }
 
     @Override
-    public void onBindViewHolder(ListViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
         Post post = posts.get(position);
-        holder.txtViewListTitle.setText(post.getLocation());
-        holder.txtViewListDescription.setText(post.getRoomDescription());
-
-        if (post.getRoomImage() !=null){
-            ImageFileHelper.readImage(context, post.getRoomImage(), bitmap -> holder.imgViewList.setImageBitmap(bitmap));
-        } else if (post.getInitiatorImage() != null){
-            ImageFileHelper.readImage(context, post.getInitiatorImage(), bitmap -> holder.imgViewList.setImageBitmap(bitmap));
+        if (post.getPostType() == PostType.ROOM) {
+            holder.txtViewListTitle.setText(post.getLocation());
+            holder.txtViewListDescription.setText(post.getRoomDescription());
+            if (post.getRoomImage() != null) {
+                ImageFileHelper.readImage(context, post.getRoomImage(), bitmap -> holder.imgViewList.setImageBitmap(bitmap));
+            } else {
+                holder.imgViewList.setImageResource(R.drawable.placeholder_room);
+            }
+        } else if (post.getPostType() == PostType.PERSON) {
+            holder.txtViewListTitle.setText(post.getInitiatorName());
+            holder.txtViewListDescription.setText(post.getInitiatorDescription());
+            if (post.getInitiatorImage() != null) {
+                ImageFileHelper.readImage(context, post.getInitiatorImage(), bitmap -> holder.imgViewList.setImageBitmap(bitmap));
+            } else if (post.getInitiatorGender().equals("Male")) {
+                holder.imgViewList.setImageResource(R.drawable.placeholder_person_male);
+            } else if (post.getInitiatorGender().equals("Female")) {
+                holder.imgViewList.setImageResource(R.drawable.placeholder_person_female);
+            } else {
+                holder.imgViewList.setImageResource(R.drawable.placeholder_person_general);
+            }
         } else {
+            holder.txtViewListTitle.setText("");
+            holder.txtViewListDescription.setText("");
             holder.imgViewList.setImageResource(0);
         }
+
         holder.postId = post.getPostId();
     }
 
@@ -84,7 +101,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         this.notifyDataSetChanged();
     }
 
-    public static interface OnClickListener{
+    public interface OnClickListener{
         void onItemClicked(UUID postId);
     }
 }

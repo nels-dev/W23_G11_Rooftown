@@ -24,25 +24,19 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.Arrays;
-import java.util.Date;
+import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
-import csis3175.w23.g11.rooftown.posts.data.model.PostStatus;
 import csis3175.w23.g11.rooftown.posts.data.model.PostType;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
-import csis3175.w23.g11.rooftown.user.data.model.UserProfile;
-import csis3175.w23.g11.rooftown.user.ui.viewmodel.UserProfileViewModel;
-import csis3175.w23.g11.rooftown.util.CurrentUserHelper;
 import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
-public class NewPersonPostFragment extends Fragment {
-
-    private static final String TAG = "NEW_ROOM_POST";
+public class EditPersonPostFragment extends Fragment {
+    public static final String ARG_POST_ID = "post_id";
+    private static final String TAG = "EDIT_PERSON_POST";
     private PostViewModel postViewModel;
+    private Post post;
     private EditText editTextPostLocation;
     private EditText editTextPostCity;
     private Spinner spinnerPostCountry;
@@ -54,24 +48,19 @@ public class NewPersonPostFragment extends Fragment {
     private String uploadPostInitiatorImageFileName;
     private ActivityResultLauncher<Intent> activityResultLauncherInitiatorImage;
 
-    public static NewPersonPostFragment newInstance() {
-        return new NewPersonPostFragment();
-    }
+    public static EditPersonPostFragment newInstance() { return new EditPersonPostFragment(); }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_new_person_post, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_edit_person_post, container,false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        postViewModel = new ViewModelProvider(requireActivity()).get(PostViewModel.class);
-        UserProfileViewModel userProfileViewModel = new ViewModelProvider(requireActivity()).get(UserProfileViewModel.class);
-        userProfileViewModel.setUserId(CurrentUserHelper.getCurrentUid());
-        userProfileViewModel.loadData();
+        postViewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
+        post = postViewModel.getPost(UUID.fromString(this.getArguments().getString(ARG_POST_ID)));
 
         editTextPostLocation = view.findViewById(R.id.editTextPostLocation);
         editTextPostCity = view.findViewById(R.id.editTextPostCity);
@@ -82,6 +71,7 @@ public class NewPersonPostFragment extends Fragment {
         editTextPostInitiatorDescription = view.findViewById(R.id.editTextPostInitiatorDescription);
         imgViewPostInitiatorImage = view.findViewById(R.id.imgViewPostInitiatorImage);
         Button btnSavePost = view.findViewById(R.id.btnSavePost);
+        btnSavePost.setText(R.string.txtSavePost);
 
         String[] countries = view.getResources().getStringArray(R.array.countries_array);
         ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, countries);
@@ -89,17 +79,18 @@ public class NewPersonPostFragment extends Fragment {
         String[] genders = view.getResources().getStringArray(R.array.gender);
         ArrayAdapter<String> genderAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, genders);
         spinnerPostInitiatorGender.setAdapter(genderAdapter);
-        spinnerPostInitiatorGender.setSelection(Arrays.asList(genders).indexOf("Prefer not to disclose"));
-        UserProfile profile = userProfileViewModel.getUserProfile().getValue();
-        if (profile != null) {
-            editTextPostInitiatorName.setText(profile.getUserName());
-            editTextPostCity.setText(profile.getCity());
-            spinnerPostCountry.setSelection(countryAdapter.getPosition((profile.getCountry() != null) ? profile.getCountry() : "Canada"));
-            if (profile.getImageFileName() != null) {
-                this.uploadPostInitiatorImageFileName = profile.getImageFileName();
-                ImageFileHelper.readImage(view.getContext(), profile.getImageFileName(),
-                        (bitmap) -> imgViewPostInitiatorImage.setImageBitmap(bitmap));
-            }
+
+        editTextPostLocation.setText(post.getLocation());
+        editTextPostCity.setText(post.getCity());
+        spinnerPostCountry.setSelection(countryAdapter.getPosition((post.getCountry() != null) ? post.getCountry() : "Canada"));
+        editTextPostInitiatorName.setText(post.getInitiatorName());
+        spinnerPostInitiatorGender.setSelection(genderAdapter.getPosition(post.getInitiatorGender()));
+        editTextPostInitiatorAge.setText(post.getInitiatorAge());
+        editTextPostInitiatorDescription.setText(post.getInitiatorDescription());
+        if (post.getInitiatorImage() != null) {
+            this.uploadPostInitiatorImageFileName = post.getInitiatorImage();
+            ImageFileHelper.readImage(view.getContext(), post.getInitiatorImage(),
+                    (bitmap) -> imgViewPostInitiatorImage.setImageBitmap(bitmap));
         }
 
         activityResultLauncherInitiatorImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this::initiatorImageChosen);
@@ -108,7 +99,7 @@ public class NewPersonPostFragment extends Fragment {
             activityResultLauncherInitiatorImage.launch(intent);
         });
 
-        btnSavePost.setOnClickListener((v) -> createPost(savedInstanceState));
+        btnSavePost.setOnClickListener((v) -> updatePost(savedInstanceState));
     }
 
     private void initiatorImageChosen(ActivityResult result) {
@@ -121,41 +112,35 @@ public class NewPersonPostFragment extends Fragment {
         }
     }
 
-    private void createPost(@Nullable Bundle savedInstanceState) {
-        Post newPost = new Post();
-        newPost.setPostType(PostType.PERSON);
+    private void updatePost(@Nullable Bundle savedInstanceState) {
         if (editTextPostLocation.getText().toString().isEmpty()) {
             Toast.makeText(this.getContext(), "Please enter location", Toast.LENGTH_SHORT).show();
             return;
         }
-        newPost.setLocation(editTextPostLocation.getText().toString());
+        post.setLocation(editTextPostLocation.getText().toString());
         if (editTextPostCity.getText().toString().isEmpty()) {
             Toast.makeText(this.getContext(), "Please enter city", Toast.LENGTH_SHORT).show();
             return;
         }
-        newPost.setCity(editTextPostCity.getText().toString());
-        newPost.setCountry(spinnerPostCountry.getSelectedItem().toString());
-        newPost.setLatLong(new LatLng(Math.random() / 5.0 + 49.1, Math.random() / 2.5 - 123.2));
-        newPost.setInitiator(CurrentUserHelper.getCurrentUid());
+        post.setCity(editTextPostCity.getText().toString());
+        post.setCountry(spinnerPostCountry.getSelectedItem().toString());
         if (editTextPostInitiatorName.getText().toString().isEmpty()) {
             Toast.makeText(this.getContext(), "Please enter display name", Toast.LENGTH_SHORT).show();
             return;
         }
-        newPost.setInitiatorName(editTextPostInitiatorName.getText().toString());
-        newPost.setInitiatorGender(spinnerPostInitiatorGender.getSelectedItem().toString());
-        newPost.setInitiatorAge(editTextPostInitiatorAge.getText().toString());
+        post.setInitiatorName(editTextPostInitiatorName.getText().toString());
+        post.setInitiatorGender(spinnerPostInitiatorGender.getSelectedItem().toString());
+        post.setInitiatorAge(editTextPostInitiatorAge.getText().toString());
         if (editTextPostInitiatorDescription.getText().toString().isEmpty()) {
             Toast.makeText(this.getContext(), "Please enter your description", Toast.LENGTH_SHORT).show();
             return;
         }
-        newPost.setInitiatorDescription(editTextPostInitiatorDescription.getText().toString());
+        post.setInitiatorDescription(editTextPostInitiatorDescription.getText().toString());
         if (uploadPostInitiatorImageFileName != null) {
-            newPost.setInitiatorImage(uploadPostInitiatorImageFileName);
+            post.setInitiatorImage(uploadPostInitiatorImageFileName);
         }
-        newPost.setPostStatus(PostStatus.OPEN);
-        newPost.setPostAt(new Date());
-        postViewModel.createPost(newPost, (unused) -> {
-            Toast.makeText(NewPersonPostFragment.this.getContext(), "Post created", Toast.LENGTH_SHORT).show();
+        postViewModel.updatePost(post, (unused) -> {
+            Toast.makeText(EditPersonPostFragment.this.getContext(), "Post updated", Toast.LENGTH_SHORT).show();
             getParentFragmentManager()
                     .beginTransaction()
                     .replace(R.id.mainContainer, MyPostFragment.class, savedInstanceState)

@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".posts.ui.view.NewRoomPostFragment">
+    tools:context=".posts.ui.view.EditRoomPostFragment">
 
-    <include layout="@layout/layout_person_post"/>
+    <include layout="@layout/layout_room_post"/>
 
 </ScrollView>

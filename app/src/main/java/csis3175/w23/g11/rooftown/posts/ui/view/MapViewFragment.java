@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -28,11 +29,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
@@ -42,11 +45,10 @@ import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
     private static final String TAG = "POSTS_MAP";
-    private final List<Post> postList = new ArrayList<>();
+    public static final int NO_OF_MARKERS_IN_INITIAL_VIEW = 5;
     private GoogleMap mMap;
     private MapView mapView;
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private LocationCallback locationCallback;
 
     @Nullable
     @Override
@@ -66,60 +68,50 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
-        // async get a list of posting
-        // extract coordinate(lat lng)
-        // mark in the map view
-        if (getParentFragment() != null) {
-            PostViewModel viewModel = new ViewModelProvider(getParentFragment()).get(PostViewModel.class);
-            viewModel.getAllPosts().observe(this.getViewLifecycleOwner(), posts -> {
-                Log.d(TAG, "getAllPosts");
-                postList.clear();
-                postList.addAll(posts);
-                addPostMarkers(postList);
-                if (!postList.isEmpty()) {
-                    mMap.animateCamera(CameraUpdateFactory.newLatLng(postList.get(0).getLatLong()));
-                }
-            });
-        }
-
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
-                if (location != null) {
-                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+        }
+
+        // async get a list of posting
+        // extract coordinate(lat lng)
+        // mark in the map view
+        if (getParentFragment() != null && getView()!=null) {
+            PostViewModel viewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
+            viewModel.getAllPosts().observe(this.getViewLifecycleOwner(), posts -> {
+                addPostMarkers(posts);
+                if (posts.isEmpty()) {
+                    // No post, default to current location
+                    fusedLocationProviderClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
+                        if (location != null) {
+                            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                        }
+                    });
+                }else{
+                    LatLngBounds.Builder bound = new LatLngBounds.Builder();
+                    // Assume posts are sorted according to proximity, position the map camera to see 5 markers
+                    for(int i = 0; i<Math.min(posts.size(), NO_OF_MARKERS_IN_INITIAL_VIEW); i++){
+                        bound.include(posts.get(i).getLatLong());
+                    }
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bound.build(), 200));
                 }
             });
         }
-
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                for (Location location : locationResult.getLocations()) {
-                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-//                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                }
-            }
-        };
-//        fusedLocationProviderClient.requestLocationUpdates(new LocationRequest().setInterval(10000), locationCallback, null);
 
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Nullable
             @Override
             public View getInfoWindow(@NonNull Marker marker) {
                 return null;
-            }   // use default info window background
+            }
 
             @Nullable
             @Override
             public View getInfoContents(@NonNull Marker marker) {
+                Post post = (Post) marker.getTag();
                 // Create a custom view for the info window
-                View infoWindowView = getLayoutInflater().inflate(R.layout.layout_custom_info_window, null);
-
+                View infoWindowView = LayoutInflater.from(getContext()).inflate(R.layout.layout_custom_info_window, null);
                 // Set the title and snippet of the info window based on the marker's title and snippet
                 TextView titleTextView = infoWindowView.findViewById(R.id.txtViewInfoWindowTitle);
                 titleTextView.setTextColor(Color.BLACK);
@@ -131,7 +123,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 snippetTextView.setTextColor(Color.GRAY);
                 snippetTextView.setText(marker.getSnippet());
 
-//                ImageView imgViewInfoWin = infoWindowView.findViewById(R.id.imgViewInfoWin);
                 return infoWindowView;
             }
         });
@@ -141,11 +132,32 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             if (post != null) {
                 marker.setTitle(((post.getPostType() == PostType.ROOM) ? post.getLocation() : post.getInitiatorName()));
                 marker.setSnippet(((post.getPostType() == PostType.ROOM) ? post.getRoomDescription() : post.getInitiatorDescription()));
-
                 marker.showInfoWindow();
             }
             return true;
         });
+
+        mMap.setOnInfoWindowClickListener(marker -> {
+            Post post = (Post) marker.getTag();
+            openPostDetail(post.getPostId());
+        });
+    }
+
+    private void openPostDetail(UUID postId){
+        PostDetailFragment postDetailFragment = PostDetailFragment.newInstance();
+        Bundle args = new Bundle();
+        args.putString(PostDetailFragment.ARG_POST_ID, postId.toString());
+        postDetailFragment.setArguments(args);
+
+        FragmentTransaction transaction;
+        if (getParentFragment() != null) {
+            transaction = getParentFragment().getParentFragmentManager().beginTransaction();
+        } else {
+            transaction = getParentFragmentManager().beginTransaction();
+        }
+        transaction.replace(R.id.mainContainer, postDetailFragment);
+        transaction.addToBackStack(TAG);
+        transaction.commit();
     }
 
     private void addPostMarkers(List<Post> posts) {
@@ -174,7 +186,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public void onPause() {
         super.onPause();
         mapView.onPause();
-        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
     @Override

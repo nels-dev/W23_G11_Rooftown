@@ -157,5 +157,5 @@
         <item>Female</item>
         <item>Prefer not to disclose</item>
     </string-array>
-    <string name="btnText">I\'m Interested</string>
+    <string name="btnPostDetailText">I\'m Interested</string>
 </resources>

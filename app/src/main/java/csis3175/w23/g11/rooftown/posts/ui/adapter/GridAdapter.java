@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
+import csis3175.w23.g11.rooftown.posts.data.model.PostType;
 import csis3175.w23.g11.rooftown.util.ImageFileHelper;
 
 public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder> {
@@ -54,10 +55,22 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder
     @Override
     public void onBindViewHolder(@NonNull GridAdapter.GridViewHolder holder, int position) {
         Post post = posts.get(position);
-        if (post.getRoomImage() != null) {
-            ImageFileHelper.readImage(context, post.getRoomImage(), bitmap -> holder.imgViewGrid.setImageBitmap(bitmap));
-        } else if (post.getInitiatorImage() != null) {
-            ImageFileHelper.readImage(context, post.getInitiatorImage(), bitmap -> holder.imgViewGrid.setImageBitmap(bitmap));
+        if (post.getPostType() == PostType.ROOM) {
+            if (post.getRoomImage() != null) {
+                ImageFileHelper.readImage(context, post.getRoomImage(), bitmap -> holder.imgViewGrid.setImageBitmap(bitmap));
+            } else {
+                holder.imgViewGrid.setImageResource(R.drawable.placeholder_room);
+            }
+        } else if (post.getPostType() == PostType.PERSON) {
+            if (post.getInitiatorImage() != null) {
+                ImageFileHelper.readImage(context, post.getInitiatorImage(), bitmap -> holder.imgViewGrid.setImageBitmap(bitmap));
+            } else if (post.getInitiatorGender().equals("Male")) {
+                holder.imgViewGrid.setImageResource(R.drawable.placeholder_person_male);
+            } else if (post.getInitiatorGender().equals("Female")) {
+                holder.imgViewGrid.setImageResource(R.drawable.placeholder_person_female);
+            } else {
+                holder.imgViewGrid.setImageResource(R.drawable.placeholder_person_general);
+            }
         } else {
             holder.imgViewGrid.setImageResource(0);
         }
@@ -75,7 +88,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder
         this.notifyDataSetChanged();
     }
 
-    public static interface OnClickListener{
+    public interface OnClickListener{
         void onItemClicked(UUID postId);
     }
 }

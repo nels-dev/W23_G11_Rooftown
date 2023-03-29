@@ -25,7 +25,6 @@ import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class ListViewFragment extends Fragment {
     private ListAdapter listAdapter;
-    private PostViewModel viewModel;
     private static final String TAG = "POSTS_LIST";
 
     @Override
@@ -37,13 +36,7 @@ public class ListViewFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
 
-        //Setup recycler view
-        RecyclerView recyclerListView = view.findViewById(R.id.recyclerList);
-        recyclerListView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-
-        //Setup adapter
         if (getParentFragment() != null) {
             PostViewModel viewModel = ((RoommatesFragment) getParentFragment()).getViewModel();
 
@@ -66,8 +59,13 @@ public class ListViewFragment extends Fragment {
         args.putString(PostDetailFragment.ARG_POST_ID, postId.toString());
         postDetailFragment.setArguments(args);
 
-        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-        transaction.replace(R.id.roommatesContainer, postDetailFragment);
+        FragmentTransaction transaction;
+        if (getParentFragment() != null) {
+            transaction = getParentFragment().getParentFragmentManager().beginTransaction();
+        } else {
+            transaction = getParentFragmentManager().beginTransaction();
+        }
+        transaction.replace(R.id.mainContainer, postDetailFragment);
         transaction.addToBackStack(TAG);
         transaction.commit();
     }

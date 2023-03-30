@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.common.CallbackListener;
@@ -28,9 +29,24 @@ public class PostViewModel extends ViewModel {
     }
 
     public Post getPost(UUID postId) {
-        for (Post post : posts.getValue()) {
-            if (post.getPostId().equals(postId)) {
-                return post;
+        List<Post> _posts = posts.getValue();
+        if (_posts != null) {
+            for (Post post : _posts) {
+                if (post.getPostId().equals(postId)) {
+                    return post;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Post getMyPost(String uid) {
+        List<Post> _posts = posts.getValue();
+        if (_posts != null) {
+            for (Post post : _posts) {
+                if (post.getInitiator().equals(uid)) {
+                    return post;
+                }
             }
         }
         return null;

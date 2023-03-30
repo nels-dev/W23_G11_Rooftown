@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -20,7 +21,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.common.CurrentUserHelper;
+import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.data.model.PostType;
+import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class MyPostFragment extends Fragment {
     private static final String TAG = "MY_POST";
@@ -69,6 +73,26 @@ public class MyPostFragment extends Fragment {
             linearLayoutPostType.addView(button);
         }
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (getActivity() != null) {
+            PostViewModel viewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
+            String currentUid = CurrentUserHelper.getCurrentUid();
+            Post post = viewModel.getMyPost(currentUid);
+            if (post != null) {
+                PostDetailFragment postDetailFragment = PostDetailFragment.newInstance();
+                Bundle args = new Bundle();
+                args.putString(PostDetailFragment.ARG_POST_ID, post.getPostId().toString());
+                postDetailFragment.setArguments(args);
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainContainer, postDetailFragment)
+                        .commit();
+            }
+        }
     }
 
     @Override

@@ -26,6 +26,7 @@ import csis3175.w23.g11.rooftown.posts.ui.view.RoommatesFragment;
 
 
 public class HomeFragment extends Fragment {
+    private static final String TAG = "HOME";
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -52,6 +53,7 @@ public class HomeFragment extends Fragment {
             card.setOnClickListener((View v) -> requireActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.mainContainer, btnTargetFragments.get(pos))
+                    .addToBackStack(TAG)
                     .commit());
             linearLayoutHome.addView(button);
         }

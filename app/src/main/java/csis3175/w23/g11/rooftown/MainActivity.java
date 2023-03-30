@@ -32,7 +32,7 @@ import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 import csis3175.w23.g11.rooftown.user.ui.view.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
-
+    private static final String TAG = "MAIN";
     BottomNavigationView bottomNav;
     HomeFragment homeFragment = new HomeFragment();
     RoommatesFragment roommatesFragment = new RoommatesFragment();
@@ -69,13 +69,13 @@ public class MainActivity extends AppCompatActivity {
             }
             if (fineLocationGranted != null && fineLocationGranted) {
                 // Precise location access granted.
-                Log.d("MAIN", "Precise location access granted.");
+                Log.d(TAG, "Precise location access granted.");
             } else if (coarseLocationGranted != null && coarseLocationGranted) {
                 // Only approximate location access granted.
-                Log.d("MAIN", "Only approximate location access granted.");
+                Log.d(TAG, "Only approximate location access granted.");
             } else {
                 // No location access granted.
-                Log.d("MAIN", "No location access granted.");
+                Log.d(TAG, "No location access granted.");
             }
         });
 
@@ -91,19 +91,34 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav.setOnItemSelectedListener((@NonNull MenuItem item) -> {
             if (item.getItemId() == R.id.bottomNavMenuHome) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, homeFragment).commit();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.mainContainer, homeFragment)
+                        .addToBackStack(TAG)
+                        .commit();
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuRoommates) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, roommatesFragment).commit();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.mainContainer, roommatesFragment)
+                        .addToBackStack(TAG)
+                        .commit();
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuMessages) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, allChatsFragment).commit();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.mainContainer, allChatsFragment)
+                        .addToBackStack(TAG)
+                        .commit();
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuPosting) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, myPostFragment).commit();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.mainContainer, myPostFragment)
+                        .addToBackStack(TAG)
+                        .commit();
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuProfile) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, profileFragment).commit();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.mainContainer, profileFragment)
+                        .addToBackStack(TAG)
+                        .commit();
                 return true;
             } else {
                 return false;
@@ -134,10 +149,10 @@ public class MainActivity extends AppCompatActivity {
         viewModel.loadData();
     }
 
-    public void switchToMapViewFragment() {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.map_container, new MapViewFragment());
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
+//    public void switchToMapViewFragment() {
+//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//        transaction.replace(R.id.map_container, new MapViewFragment());
+//        transaction.addToBackStack(null);
+//        transaction.commit();
+//    }
 }

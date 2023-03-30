@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -27,6 +28,7 @@ import csis3175.w23.g11.rooftown.messages.ui.viewmodel.ChatViewModel;
 import csis3175.w23.g11.rooftown.posts.ui.view.MapViewFragment;
 import csis3175.w23.g11.rooftown.posts.ui.view.MyPostFragment;
 import csis3175.w23.g11.rooftown.posts.ui.view.RoommatesFragment;
+import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 import csis3175.w23.g11.rooftown.user.ui.view.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -67,10 +69,13 @@ public class MainActivity extends AppCompatActivity {
             }
             if (fineLocationGranted != null && fineLocationGranted) {
                 // Precise location access granted.
+                Log.d("MAIN", "Precise location access granted.");
             } else if (coarseLocationGranted != null && coarseLocationGranted) {
                 // Only approximate location access granted.
+                Log.d("MAIN", "Only approximate location access granted.");
             } else {
                 // No location access granted.
+                Log.d("MAIN", "No location access granted.");
             }
         });
 
@@ -82,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         badgeDrawable.setVisible(false);
 
         loadAndListenToChatsAsync();
+        loadPosts();
 
         bottomNav.setOnItemSelectedListener((@NonNull MenuItem item) -> {
             if (item.getItemId() == R.id.bottomNavMenuHome) {
@@ -121,7 +127,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         });
+    }
 
+    private void loadPosts() {
+        PostViewModel viewModel = new ViewModelProvider(this).get(PostViewModel.class);
+        viewModel.loadData();
     }
 
     public void switchToMapViewFragment() {

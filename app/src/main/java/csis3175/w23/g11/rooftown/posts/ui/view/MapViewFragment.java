@@ -85,7 +85,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                     fusedLocationProviderClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
                         if (location != null) {
                             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                         }
                     });
                 }else{
@@ -94,7 +94,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                     for(int i = 0; i<Math.min(posts.size(), NO_OF_MARKERS_IN_INITIAL_VIEW); i++){
                         bound.include(posts.get(i).getLatLong());
                     }
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bound.build(), 200));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bound.build(), 200));
                 }
             });
         }

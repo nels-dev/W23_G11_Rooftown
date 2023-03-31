@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -21,6 +22,7 @@ import java.util.UUID;
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.common.CurrentUserHelper;
 import csis3175.w23.g11.rooftown.common.ImageFileHelper;
+import csis3175.w23.g11.rooftown.messages.ui.view.ConversationFragment;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.data.model.PostType;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
@@ -36,14 +38,14 @@ public class PostDetailFragment extends Fragment {
     private ImageView imgViewPostDetailAvatar;
     private TextView txtViewPostDetailInitiatorName;
     private TextView txtViewPostDetailInitiatorDescription;
+    private Post post;
 
     public static PostDetailFragment newInstance() {
         return new PostDetailFragment();
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_post_detail, container, false);
     }
 
@@ -65,13 +67,15 @@ public class PostDetailFragment extends Fragment {
             return;
         }
 
-        Post post = viewModel.getPost(UUID.fromString(this.getArguments().getString(ARG_POST_ID)));
+        post = viewModel.getPost(UUID.fromString(this.getArguments().getString(ARG_POST_ID)));
         String currentUid = CurrentUserHelper.getCurrentUid();
         if (post.getInitiator().equals(currentUid)) {
             btnPostingInterested.setVisibility(View.GONE);
         } else {
             btnEditPost.setVisibility(View.GONE);
         }
+
+        btnPostingInterested.setOnClickListener(this::interestInClicked);
 
         if (post.getPostType() == PostType.ROOM) {
             if (post.getRoomImage() != null) {
@@ -99,9 +103,7 @@ public class PostDetailFragment extends Fragment {
                 Bundle args = new Bundle();
                 args.putString(EditRoomPostFragment.ARG_POST_ID, this.getArguments().getString(ARG_POST_ID));
                 editRoomPostFragment.setArguments(args);
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.mainContainer, editRoomPostFragment)
-                        .addToBackStack(TAG) // so that pressing "Back" button on android goes back to this fragment
+                getParentFragmentManager().beginTransaction().replace(R.id.mainContainer, editRoomPostFragment).addToBackStack(TAG) // so that pressing "Back" button on android goes back to this fragment
                         .commit();
             });
         } else if (post.getPostType() == PostType.PERSON) {
@@ -128,11 +130,23 @@ public class PostDetailFragment extends Fragment {
                 Bundle args = new Bundle();
                 args.putString(EditPersonPostFragment.ARG_POST_ID, this.getArguments().getString(ARG_POST_ID));
                 editPersonPostFragment.setArguments(args);
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.mainContainer, editPersonPostFragment)
-                        .addToBackStack(TAG) // so that pressing "Back" button on android goes back to this fragment
+                getParentFragmentManager().beginTransaction().replace(R.id.mainContainer, editPersonPostFragment).addToBackStack(TAG) // so that pressing "Back" button on android goes back to this fragment
                         .commit();
             });
         }
+    }
+
+    private void interestInClicked(View view) {
+        viewModel.showInterest(post.getInitiator(), post.getPostId(), chatId -> {
+            ConversationFragment conversationFragment = ConversationFragment.newInstance();
+            Bundle args = new Bundle();
+            args.putString(ConversationFragment.ARG_CHAT_ID, chatId.toString());
+            conversationFragment.setArguments(args);
+
+            FragmentTransaction tx = getParentFragmentManager().beginTransaction();
+            tx.replace(R.id.mainContainer, conversationFragment);
+            tx.addToBackStack(TAG);
+            tx.commit();
+        });
     }
 }

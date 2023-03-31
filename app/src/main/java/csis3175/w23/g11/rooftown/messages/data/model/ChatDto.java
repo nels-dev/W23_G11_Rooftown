@@ -2,13 +2,13 @@ package csis3175.w23.g11.rooftown.messages.data.model;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 public class ChatDto {
 
     Date lastActivityAt;
     String lastActivityBy;
     String lastMessage;
+    String relatedPost;
     List<ChatMessage> messages;
     List<String> participants;
 
@@ -52,7 +52,15 @@ public class ChatDto {
         this.participants = participants;
     }
 
-    public static class ChatMessage{
+    public String getRelatedPost() {
+        return relatedPost;
+    }
+
+    public void setRelatedPost(String relatedPost) {
+        this.relatedPost = relatedPost;
+    }
+
+    public static class ChatMessage {
         String chatMessageId;
         Date sentAt;
         boolean systemMessage;

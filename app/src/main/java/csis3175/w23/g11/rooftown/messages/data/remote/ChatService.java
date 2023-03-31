@@ -2,17 +2,12 @@ package csis3175.w23.g11.rooftown.messages.data.remote;
 
 import android.util.Log;
 
-import androidx.annotation.Nullable;
-
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +21,6 @@ import csis3175.w23.g11.rooftown.common.CurrentUserHelper;
 import csis3175.w23.g11.rooftown.messages.data.model.Chat;
 import csis3175.w23.g11.rooftown.messages.data.model.ChatDto;
 import csis3175.w23.g11.rooftown.messages.data.model.ChatMessage;
-import csis3175.w23.g11.rooftown.user.data.model.UserProfile;
 import csis3175.w23.g11.rooftown.user.data.repository.UserProfileRepository;
 
 /**
@@ -47,32 +41,24 @@ public class ChatService {
     }
 
     public ListenerRegistration listenToAllChats(CallbackListener<List<Chat>> resultConsumer) {
-        return allChats.addSnapshotListener(MetadataChanges.EXCLUDE, new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (value == null) return;
-                for (DocumentChange chng : value.getDocumentChanges()) {
-                    List<Chat> delta = new ArrayList<>();
-                    if (chng.getType() == DocumentChange.Type.ADDED) {
-                        Log.d(TAG, "Chat created: " + chng.getDocument().getId());
-                        delta.add(toChat(chng.getDocument()));
-                    } else if (chng.getType() == DocumentChange.Type.MODIFIED) {
-                        Log.d(TAG, "Chat updated: " + chng.getDocument().getId());
-                        delta.add(toChat(chng.getDocument()));
-                    } else if (chng.getType() == DocumentChange.Type.REMOVED) {
-                        // Shouldn't happen, but for completeness
-                        Log.w(TAG, "Chat deleted: " + chng.getDocument().getId());
-                    }
-                    Set<String> userIds = extractAllUsers(delta);
-                    userProfileRepository.loadUsers(new ArrayList<>(userIds), (unused) -> {
-                        for (Chat c : delta) {
-                            UserProfile userProfile = c.getInitiator().equals(CurrentUserHelper.getCurrentUid()) ? userProfileRepository.getUserProfile(c.getCounterParty()) : userProfileRepository.getUserProfile(c.getInitiator());
-                            c.setPartnerName(userProfile.getUserName());
-                            c.setPartnerImage(userProfile.getImageFileName());
-                        }
-                        resultConsumer.callback(delta);
-                    });
+        return allChats.addSnapshotListener(MetadataChanges.EXCLUDE, (value, error) -> {
+            if (value == null) return;
+            for (DocumentChange chng : value.getDocumentChanges()) {
+                List<Chat> delta = new ArrayList<>();
+                if (chng.getType() == DocumentChange.Type.ADDED) {
+                    Log.d(TAG, "Chat created: " + chng.getDocument().getId());
+                    delta.add(toChat(chng.getDocument()));
+                } else if (chng.getType() == DocumentChange.Type.MODIFIED) {
+                    Log.d(TAG, "Chat updated: " + chng.getDocument().getId());
+                    delta.add(toChat(chng.getDocument()));
+                } else if (chng.getType() == DocumentChange.Type.REMOVED) {
+                    // Shouldn't happen, but added for completeness
+                    Log.w(TAG, "Chat deleted: " + chng.getDocument().getId());
                 }
+                Set<String> userIds = extractAllUsers(delta);
+                userProfileRepository.loadUsers(new ArrayList<>(userIds), (unused) -> {
+                    resultConsumer.callback(delta);
+                });
             }
         });
     }
@@ -89,8 +75,7 @@ public class ChatService {
 
     public ListenerRegistration listenToChatMessages(UUID chatId, CallbackListener<List<ChatMessage>> resultConsumer) {
         return fs.collection(COLLECTION_CHAT).document(chatId.toString()).addSnapshotListener(MetadataChanges.EXCLUDE, (value, error) -> {
-            if (value != null) {
-                Log.d(TAG, "Chat has changed. Extracting messages");
+            if (value != null && value.exists()) {
                 List<ChatMessage> messages = getMessages(value);
                 resultConsumer.callback(messages);
             }
@@ -98,7 +83,6 @@ public class ChatService {
     }
 
     public void saveChat(Chat chat, List<ChatMessage> messages) {
-        Log.d(TAG, ">> Invoke save chat to firestore: " + chat.getChatId().toString());
         ChatDto dto = toDto(chat, messages);
         fs.collection(COLLECTION_CHAT).document(chat.getChatId().toString()).set(dto).addOnSuccessListener(unused -> {
             Log.d(TAG, "Chat document saved");
@@ -126,6 +110,7 @@ public class ChatService {
         dto.setLastActivityBy(chat.getLastActivityBy());
         dto.setParticipants(new ArrayList<>(Arrays.asList(chat.getInitiator(), chat.getCounterParty())));
         dto.setMessages(messageDtos);
+        dto.setRelatedPost(chat.getRelatedPost().toString());
         return dto;
     }
 
@@ -156,6 +141,7 @@ public class ChatService {
         chat.setLastMessage(dto.getLastMessage());
         chat.setInitiator(dto.getParticipants().get(0));
         chat.setCounterParty(dto.getParticipants().get(1));
+        chat.setRelatedPost(dto.getRelatedPost() == null ? null : UUID.fromString(dto.getRelatedPost()));
         return chat;
     }
 

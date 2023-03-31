@@ -25,14 +25,18 @@ import csis3175.w23.g11.rooftown.messages.ui.viewmodel.ChatViewModel;
 
 public class AllChatsFragment extends Fragment implements TabLayout.OnTabSelectedListener {
 
+    private static final String TAG = "CHATS";
     private TabLayout tabLayoutMessages;
     private AllChatsAdapter messagesAdapter;
     private ChatViewModel viewModel;
     private int selectedTab;
-    private static final String TAG = "CHATS";
+
+    public static AllChatsFragment newInstance() {
+        return new AllChatsFragment();
+    }
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_messages, container, false);
     }
 
@@ -50,12 +54,12 @@ public class AllChatsFragment extends Fragment implements TabLayout.OnTabSelecte
         recyclerViewChats.setAdapter(messagesAdapter);
 
         viewModel.getOutgoingChats().observe(this.getViewLifecycleOwner(), chats -> {
-            if(tabLayoutMessages.getSelectedTabPosition()==0){
+            if (tabLayoutMessages.getSelectedTabPosition() == 0) {
                 messagesAdapter.populateMessages(chats);
             }
         });
         viewModel.getIncomingChats().observe(this.getViewLifecycleOwner(), chats -> {
-            if(tabLayoutMessages.getSelectedTabPosition()==1){
+            if (tabLayoutMessages.getSelectedTabPosition() == 1) {
                 messagesAdapter.populateMessages(chats);
             }
         });
@@ -66,7 +70,7 @@ public class AllChatsFragment extends Fragment implements TabLayout.OnTabSelecte
         tabLayoutMessages.addOnTabSelectedListener(this);
     }
 
-    private void onItemClicked(UUID chatId){
+    private void onItemClicked(UUID chatId) {
         // Start a chat window when item is pressed. chat id is given by the adapter's ViewHolder
         ConversationFragment conversationFragment = ConversationFragment.newInstance();
         Bundle args = new Bundle();
@@ -88,10 +92,10 @@ public class AllChatsFragment extends Fragment implements TabLayout.OnTabSelecte
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
-        if(tab.getPosition()==0){
+        if (tab.getPosition() == 0) {
             // Interest in
             messagesAdapter.populateMessages(viewModel.getOutgoingChats().getValue());
-        }else{
+        } else {
             // Interest by
             messagesAdapter.populateMessages(viewModel.getIncomingChats().getValue());
         }

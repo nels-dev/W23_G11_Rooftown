@@ -4,7 +4,6 @@ import static android.view.View.LAYOUT_DIRECTION_LTR;
 import static android.view.View.LAYOUT_DIRECTION_RTL;
 import static androidx.recyclerview.widget.RecyclerView.NO_ID;
 
-import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,11 +23,9 @@ import csis3175.w23.g11.rooftown.messages.data.model.ChatMessage;
 public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.MessagesViewHolder> {
     private static final String TAG = "CHATS";
     List<ChatMessage> chatMessages;
-    Context context;
 
-    public ConversationAdapter(List<ChatMessage> chatMessages, Context context) {
+    public ConversationAdapter(List<ChatMessage> chatMessages) {
         this.chatMessages = chatMessages;
-        this.context = context;
     }
 
     @NonNull

@@ -76,7 +76,9 @@ public class ConversationFragment extends Fragment {
             Post relatedPost = chatAndRelatedPost.getRelatedPost();
             if (chatAndRelatedPost.getRelatedPost() != null) {
                 txtViewPostTitle.setText(relatedPost.getDisplayTitle());
-                ImageFileHelper.readImage(this.getContext(), relatedPost.getDisplayImage(), (bitmap) -> imgViewPostImage.setImageBitmap(bitmap));
+                if (relatedPost.getDisplayImage()!=null){
+                    ImageFileHelper.readImage(this.getContext(), relatedPost.getDisplayImage(), (bitmap) -> imgViewPostImage.setImageBitmap(bitmap));
+                }
             }
         }));
         view.findViewById(R.id.btnSendMessage).setOnClickListener(this::sendMessage);

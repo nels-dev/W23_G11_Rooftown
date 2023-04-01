@@ -19,16 +19,16 @@ import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.common.ImageFileHelper;
-import csis3175.w23.g11.rooftown.messages.data.model.Chat;
+import csis3175.w23.g11.rooftown.messages.data.model.ChatAndCounterParty;
 import csis3175.w23.g11.rooftown.messages.ui.view.ChatItemClickedListener;
 
 public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.MessagesViewHolder> {
     private static final String TAG = "CHATS";
-    List<Chat> chats;
+    List<ChatAndCounterParty> chats;
     Context context;
     ChatItemClickedListener itemClickedListener;
 
-    public AllChatsAdapter(List<Chat> chats, Context context, ChatItemClickedListener itemClickedListener) {
+    public AllChatsAdapter(List<ChatAndCounterParty> chats, Context context, ChatItemClickedListener itemClickedListener) {
         this.chats = chats;
         this.context = context;
         this.itemClickedListener = itemClickedListener;
@@ -43,23 +43,23 @@ public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.Messag
 
     @Override
     public void onBindViewHolder(MessagesViewHolder holder, int position) {
-        // When the ViewHolder "window" is used to render the item at position
-        Chat chat = chats.get(position);
-        holder.txtViewChatItemTitle.setText(chat.getPartnerName());
-        holder.txtViewChatItemContent.setText(chat.getLastMessage());
-        holder.txtViewChatItemTime.setText(DateUtils.getRelativeTimeSpanString(chat.getLastActivityAt().getTime()));
+        ChatAndCounterParty chat = chats.get(position);
+        holder.txtViewChatItemTitle.setText(chat.getChat().isInitiatedByMe() ? chat.getCounterParty().getUserName() : chat.getInitiator().getUserName());
+        holder.txtViewChatItemContent.setText(chat.getChat().getLastMessage());
+        holder.txtViewChatItemTime.setText(DateUtils.getRelativeTimeSpanString(chat.getChat().getLastActivityAt().getTime()));
 
-        if (!chat.isRead()) {
+        if (!chat.getChat().isRead()) {
             holder.txtViewChatItemTitle.setTypeface(Typeface.DEFAULT_BOLD);
             holder.txtViewChatItemContent.setTypeface(Typeface.DEFAULT_BOLD);
         } else {
             holder.txtViewChatItemTitle.setTypeface(Typeface.DEFAULT);
             holder.txtViewChatItemContent.setTypeface(Typeface.DEFAULT);
         }
-        if (null != chat.getPartnerImage()) {
-            ImageFileHelper.readImage(context, chat.getPartnerImage(), bitmap -> holder.imgViewChatItem.setImageBitmap(bitmap));
+        String imageFile = chat.getChat().isInitiatedByMe() ? chat.getCounterParty().getImageFileName() : chat.getInitiator().getImageFileName();
+        if (null != imageFile) {
+            ImageFileHelper.readImage(context, imageFile, bitmap -> holder.imgViewChatItem.setImageBitmap(bitmap));
         }
-        holder.chatId = chat.getChatId();
+        holder.chatId = chat.getChat().getChatId();
     }
 
     @Override
@@ -72,7 +72,7 @@ public class AllChatsAdapter extends RecyclerView.Adapter<AllChatsAdapter.Messag
         return chats.size();
     }
 
-    public void populateMessages(List<Chat> chats) {
+    public void populateMessages(List<ChatAndCounterParty> chats) {
         this.chats.clear();
         this.chats.addAll(chats);
         this.notifyDataSetChanged();

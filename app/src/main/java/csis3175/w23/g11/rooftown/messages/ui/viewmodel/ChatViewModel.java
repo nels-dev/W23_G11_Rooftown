@@ -8,14 +8,16 @@ import com.google.firebase.firestore.ListenerRegistration;
 import java.util.List;
 import java.util.UUID;
 
-import csis3175.w23.g11.rooftown.messages.data.model.Chat;
+import csis3175.w23.g11.rooftown.messages.data.model.ChatAndCounterParty;
+import csis3175.w23.g11.rooftown.messages.data.model.ChatAndRelatedPost;
 import csis3175.w23.g11.rooftown.messages.data.model.ChatMessage;
 import csis3175.w23.g11.rooftown.messages.data.repository.ChatRepository;
 
 public class ChatViewModel extends ViewModel {
-    private final LiveData<List<Chat>> outgoingChats;
-    private final LiveData<List<Chat>> incomingChats;
+    private final LiveData<List<ChatAndCounterParty>> outgoingChats;
+    private final LiveData<List<ChatAndCounterParty>> incomingChats;
     private final LiveData<List<ChatMessage>> chatMessages;
+    private final LiveData<ChatAndRelatedPost> selectedChat;
     private final LiveData<Integer> numberOfUnread;
     private final ChatRepository chatRepository;
     private ListenerRegistration singleChatRegistration;
@@ -29,13 +31,14 @@ public class ChatViewModel extends ViewModel {
         incomingChats = chatRepository.getIncomingChats();
         chatMessages = chatRepository.getChatMessages();
         numberOfUnread = chatRepository.getNumberOfUnread();
+        selectedChat = chatRepository.getSelectedChat();
     }
 
-    public LiveData<List<Chat>> getOutgoingChats() {
+    public LiveData<List<ChatAndCounterParty>> getOutgoingChats() {
         return outgoingChats;
     }
 
-    public LiveData<List<Chat>> getIncomingChats() {
+    public LiveData<List<ChatAndCounterParty>> getIncomingChats() {
         return incomingChats;
     }
 
@@ -45,6 +48,10 @@ public class ChatViewModel extends ViewModel {
 
     public LiveData<Integer> getNumberOfUnread() {
         return numberOfUnread;
+    }
+
+    public LiveData<ChatAndRelatedPost> getSelectedChat() {
+        return selectedChat;
     }
 
     public void loadData() {
@@ -62,15 +69,16 @@ public class ChatViewModel extends ViewModel {
             singleChatRegistration.remove();
         }
         selectedChatId = chatId;
+        chatRepository.loadChatAndRelatedPost(selectedChatId);
         singleChatRegistration = chatRepository.loadAndListenToMessages(chatId);
     }
 
-    public void sendMessage(String content) {
-        chatRepository.sendMessage(selectedChatId, content);
+
+    public void sendMessage(String content, boolean isSystemMessage) {
+        chatRepository.sendMessage(selectedChatId, content, isSystemMessage);
     }
 
     public void markChatAsRead() {
         chatRepository.markChatAsRead(selectedChatId);
-
     }
 }

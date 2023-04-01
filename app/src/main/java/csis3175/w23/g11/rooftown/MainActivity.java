@@ -13,7 +13,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.badge.BadgeDrawable;
@@ -25,7 +24,6 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import csis3175.w23.g11.rooftown.common.AppDatabase;
 import csis3175.w23.g11.rooftown.messages.ui.view.AllChatsFragment;
 import csis3175.w23.g11.rooftown.messages.ui.viewmodel.ChatViewModel;
-import csis3175.w23.g11.rooftown.posts.ui.view.MapViewFragment;
 import csis3175.w23.g11.rooftown.posts.ui.view.MyPostFragment;
 import csis3175.w23.g11.rooftown.posts.ui.view.RoommatesFragment;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
@@ -47,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Initialize database
-        AppDatabase.init(this);
+        AppDatabase.init(this.getApplicationContext());
 
         //Register listener to handle authentication expired or sign out
         FirebaseAuth.getInstance().addAuthStateListener(firebaseAuth -> {
@@ -91,34 +89,19 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav.setOnItemSelectedListener((@NonNull MenuItem item) -> {
             if (item.getItemId() == R.id.bottomNavMenuHome) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.mainContainer, homeFragment)
-                        .addToBackStack(TAG)
-                        .commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, homeFragment).addToBackStack(TAG).commit();
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuRoommates) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.mainContainer, roommatesFragment)
-                        .addToBackStack(TAG)
-                        .commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, roommatesFragment).addToBackStack(TAG).commit();
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuMessages) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.mainContainer, allChatsFragment)
-                        .addToBackStack(TAG)
-                        .commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, allChatsFragment).addToBackStack(TAG).commit();
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuPosting) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.mainContainer, myPostFragment)
-                        .addToBackStack(TAG)
-                        .commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, myPostFragment).addToBackStack(TAG).commit();
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuProfile) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.mainContainer, profileFragment)
-                        .addToBackStack(TAG)
-                        .commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, profileFragment).addToBackStack(TAG).commit();
                 return true;
             } else {
                 return false;

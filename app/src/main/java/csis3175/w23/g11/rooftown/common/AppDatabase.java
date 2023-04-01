@@ -16,7 +16,7 @@ import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.user.data.local.UserProfileDao;
 import csis3175.w23.g11.rooftown.user.data.model.UserProfile;
 
-@Database(entities = {Chat.class, ChatMessage.class, Post.class, UserProfile.class}, version = 6, exportSchema = false)
+@Database(entities = {Chat.class, ChatMessage.class, Post.class, UserProfile.class}, version = 21, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase instance = null;
@@ -29,7 +29,9 @@ public abstract class AppDatabase extends RoomDatabase {
     }
 
     public static void init(Context context) {
-        instance = Room.databaseBuilder(context, AppDatabase.class, "rooftop-db").fallbackToDestructiveMigration().build();
+        if (instance == null) {
+            instance = Room.databaseBuilder(context, AppDatabase.class, "rooftop-db").fallbackToDestructiveMigration().build();
+        }
     }
 
     public abstract ChatDao chatDao();

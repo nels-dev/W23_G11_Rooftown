@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import csis3175.w23.g11.rooftown.common.AppDatabase;
 import csis3175.w23.g11.rooftown.user.data.model.UserProfile;
 import csis3175.w23.g11.rooftown.user.data.repository.UserProfileRepository;
 
@@ -38,11 +39,7 @@ public class SigninActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
-        GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .requestProfile()
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .build();
+        GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().requestProfile().requestIdToken(getString(R.string.default_web_client_id)).build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, options);
         btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn);
         btnGoogleSignIn.setOnClickListener(this::signIn);
@@ -89,6 +86,10 @@ public class SigninActivity extends AppCompatActivity {
             UserProfile up = new UserProfile();
             up.setUserId(user.getUid());
             up.setUserName(user.getDisplayName());
+
+            // Initialize database
+            AppDatabase.init(this.getApplicationContext());
+
             new UserProfileRepository().createIfNotExist(up);
 
             Intent intent = new Intent(this, MainActivity.class);

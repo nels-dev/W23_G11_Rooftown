@@ -17,8 +17,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.Random;
-
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.common.CurrentUserHelper;
 import csis3175.w23.g11.rooftown.common.ImageFileHelper;
@@ -32,7 +30,6 @@ public class ProfileFragment extends Fragment {
     private TextView txtViewDisplayName;
     private TextView txtViewCity;
     private TextView txtViewCountry;
-    private TextView txtViewPassword;
     private ImageView imgViewProfileImage;
     private Button btnSignOut;
     private FloatingActionButton btnEditProfile;
@@ -58,16 +55,12 @@ public class ProfileFragment extends Fragment {
         txtViewDisplayName = view.findViewById(R.id.txtViewDisplayName);
         txtViewCity = view.findViewById(R.id.txtViewCity);
         txtViewCountry = view.findViewById(R.id.txtViewCountry);
-        txtViewPassword = view.findViewById(R.id.txtViewPassword);
         imgViewProfileImage = view.findViewById(R.id.imgViewProfileImage);
         btnSignOut = view.findViewById(R.id.btnSignOut);
         btnEditProfile = view.findViewById(R.id.btnEditProfile);
         viewModel = new ViewModelProvider(this).get(UserProfileViewModel.class);
         viewModel.setUserId(CurrentUserHelper.getCurrentUid());
         viewModel.getUserProfile().observe(this.getViewLifecycleOwner(), (profile) -> {
-
-            // No real password is being written/fetched, only a dummy one
-            txtViewPassword.setText(String.valueOf(new Random().nextInt(9999999) + 10000000));
 
             txtViewEmail.setText(CurrentUserHelper.getCurrentUserEmail());
             txtViewDisplayName.setText(profile.getUserName());

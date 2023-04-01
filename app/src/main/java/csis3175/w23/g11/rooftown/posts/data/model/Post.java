@@ -203,4 +203,12 @@ public class Post {
     public void setPostAt(Date postAt) {
         this.postAt = postAt;
     }
+
+    public String getDisplayTitle() {
+        return this.postType == PostType.ROOM ? this.location : this.getInitiatorName();
+    }
+
+    public String getDisplayImage() {
+        return this.postType == PostType.ROOM ? this.roomImage : this.initiatorImage;
+    }
 }

@@ -41,10 +41,8 @@ public class EditProfileFragment extends Fragment {
     private TextView editTextDisplayName;
     private TextView editTextCity;
     private Spinner spinnerCountry;
-    private TextView editTextPassword;
     private Button btnSaveProfile;
     private ImageView imgViewEditProfileImage;
-    private String randomPassword;
     private String uploadFileName;
     private ActivityResultLauncher<Intent> activityResultLauncher;
 
@@ -61,10 +59,8 @@ public class EditProfileFragment extends Fragment {
         editTextDisplayName = view.findViewById(R.id.editTextDisplayName);
         editTextCity = view.findViewById(R.id.editTextCity);
         spinnerCountry = view.findViewById(R.id.spinnerCountry);
-        editTextPassword = view.findViewById(R.id.editTextPassword);
         btnSaveProfile = view.findViewById(R.id.btnSaveProfile);
         imgViewEditProfileImage = view.findViewById(R.id.imgViewEditProfileImage);
-        randomPassword = String.valueOf(new Random().nextInt(9999999) + 10000000);
 
         String[] countries = view.getResources().getStringArray(R.array.countries_array);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, countries);
@@ -72,7 +68,6 @@ public class EditProfileFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(UserProfileViewModel.class);
         viewModel.setUserId(CurrentUserHelper.getCurrentUid());
         viewModel.getUserProfile().observe(this.getViewLifecycleOwner(), (profile) -> {
-            editTextPassword.setText(randomPassword);
             editTextEmail.setText(CurrentUserHelper.getCurrentUserEmail());
             editTextDisplayName.setText(profile.getUserName());
             editTextCity.setText(profile.getCity());
@@ -114,10 +109,6 @@ public class EditProfileFragment extends Fragment {
         if (null != uploadFileName) {
             //Image updated by user
             p.setImageFileName(uploadFileName);
-        }
-        if (!randomPassword.equals(editTextPassword.getText().toString())) {
-            //Password changed by user
-            //TODO: update password
         }
         viewModel.updateUserProfile(p, (unused) -> {
             Toast.makeText(EditProfileFragment.this.getContext(), "Profile updated", Toast.LENGTH_SHORT).show();

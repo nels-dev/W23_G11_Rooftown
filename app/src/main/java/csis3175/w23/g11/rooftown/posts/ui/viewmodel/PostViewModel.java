@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModel;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.common.CallbackListener;
+import csis3175.w23.g11.rooftown.messages.data.repository.ChatRepository;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.data.repository.PostRepository;
 
@@ -17,10 +17,12 @@ public class PostViewModel extends ViewModel {
     private static final String TAG = "POSTS";
     private final LiveData<List<Post>> posts;
     private final PostRepository postRepository;
+    private final ChatRepository chatRepository;
     private ListenerRegistration allPostsRegistration;
 
     public PostViewModel() {
         postRepository = new PostRepository();
+        chatRepository = new ChatRepository();
         posts = postRepository.getPosts();
     }
 
@@ -65,5 +67,9 @@ public class PostViewModel extends ViewModel {
 
     public void updatePost(Post post, CallbackListener<Void> callback) {
         postRepository.updatePost(post, callback);
+    }
+
+    public void showInterest(String to, UUID postId, CallbackListener<UUID> callback) {
+        chatRepository.sendMessage(to, postId, "User is interested in your posting! Send a response?", true, callback);
     }
 }

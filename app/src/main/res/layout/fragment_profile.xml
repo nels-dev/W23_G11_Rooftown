@@ -81,28 +81,6 @@
             tools:text="nelson@email.com" />
 
         <TextView
-            android:id="@+id/textView6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="32dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="32dp"
-            android:text="@string/txtPassword"
-            android:textAllCaps="false"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/txtViewPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="32dp"
-            android:paddingEnd="32dp"
-            android:password="true"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            tools:text="password" />
-
-        <TextView
             android:id="@+id/textView11"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

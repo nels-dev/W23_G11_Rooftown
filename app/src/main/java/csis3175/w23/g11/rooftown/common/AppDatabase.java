@@ -16,7 +16,7 @@ import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.user.data.local.UserProfileDao;
 import csis3175.w23.g11.rooftown.user.data.model.UserProfile;
 
-@Database(entities = {Chat.class, ChatMessage.class, Post.class, UserProfile.class}, version = 20, exportSchema = false)
+@Database(entities = {Chat.class, ChatMessage.class, Post.class, UserProfile.class}, version = 21, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase instance = null;

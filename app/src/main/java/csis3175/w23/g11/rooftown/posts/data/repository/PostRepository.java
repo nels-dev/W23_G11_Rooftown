@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
@@ -31,9 +32,9 @@ public class PostRepository {
         return posts;
     }
 
-    public ListenerRegistration loadAndListenToPosts() {
+    public void loadPosts(LatLng currentLocation) {
         AsyncTask.execute(() -> posts.postValue(postDao.getPosts()));
-        return postService.listenToAllPosts(this::remoteCallBackWithData);
+        postService.fetchPosts(currentLocation, this::remoteCallBackWithData);
     }
 
     public void remoteCallBackWithData(List<Post> remoteDocPosts) {

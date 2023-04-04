@@ -4,11 +4,21 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQueryBounds;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,24 +35,40 @@ public class PostService {
     public static final String COLLECTION_POST = "POSTS";
     private static final String TAG = "POSTS";
     private final FirebaseFirestore fs;
-    private final Query allPosts;
+    final double radiusInM = 10000;
 
     public PostService() {
         fs = FirebaseFirestore.getInstance();
-        allPosts = fs.collection(COLLECTION_POST)
-                .whereNotEqualTo("postStatus", PostStatus.CANCELLED.name());
     }
 
-    public ListenerRegistration listenToAllPosts(CallbackListener<List<Post>> resultConsumer) {
-        return allPosts.addSnapshotListener(MetadataChanges.EXCLUDE, (value, error) -> {
-            if (value == null) return;
-            Log.d(TAG, "Firebase invoked listener with doc size:" + value.getDocuments().size());
-            List<Post> posts = new ArrayList<>();
-            for (DocumentSnapshot doc : value.getDocuments()) {
-                posts.add(toPost(doc));
-            }
-            resultConsumer.callback(posts);
-        });
+    public void fetchPosts(LatLng currentLocation, CallbackListener<List<Post>> resultConsumer) {
+        // a post, callback listener with a list post
+        GeoLocation geoLocation = new GeoLocation(currentLocation.latitude, currentLocation.longitude);
+        List<GeoQueryBounds> bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInM);
+
+
+        final List<Task<QuerySnapshot>> tasks = new ArrayList<>();
+        for (GeoQueryBounds b : bounds) {
+            Query q = fs.collection(COLLECTION_POST)
+                    .whereEqualTo("postStatus", PostStatus.OPEN.name())
+                    .orderBy("geohash")
+                    .startAt(b.startHash)
+                    .endAt(b.endHash);
+            tasks.add(q.get());
+        }
+
+        // Collect all the query results together into a single list
+        Tasks.whenAllComplete(tasks)
+                .addOnCompleteListener(t -> {
+                    List<Post> posts = new ArrayList<>();
+                    for (Task<QuerySnapshot> task : tasks) {
+                        QuerySnapshot snap = task.getResult();
+                        for (DocumentSnapshot doc : snap.getDocuments()) {
+                            posts.add(toPost(doc));
+                        }
+                    }
+                    resultConsumer.callback(posts);
+                });
     }
 
     public void savePost(Post post, CallbackListener<Void> callback) {

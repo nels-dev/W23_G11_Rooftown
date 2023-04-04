@@ -2,6 +2,7 @@ package csis3175.w23.g11.rooftown;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -13,8 +14,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     MyPostFragment myPostFragment = new MyPostFragment();
     ProfileFragment profileFragment = new ProfileFragment();
     private BadgeDrawable badgeDrawable;
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         locationPermissionRequest.launch(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
+
+        //Initialize location client
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         bottomNav = findViewById(R.id.bottomNav);
         getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, homeFragment).commit();
@@ -129,7 +138,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadPosts() {
         PostViewModel viewModel = new ViewModelProvider(this).get(PostViewModel.class);
-        viewModel.loadData();
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Get location
+            fusedLocationProviderClient.getLastLocation()
+                    .addOnSuccessListener(this, location -> {
+                        if (location != null) {
+                            viewModel.loadData(new LatLng(location.getLatitude(),location.getLongitude()));
+                        }
+                    });
+        }
     }
 
 //    public void switchToMapViewFragment() {

@@ -3,6 +3,7 @@ package csis3175.w23.g11.rooftown.posts.ui.viewmodel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.List;
@@ -18,7 +19,6 @@ public class PostViewModel extends ViewModel {
     private final LiveData<List<Post>> posts;
     private final PostRepository postRepository;
     private final ChatRepository chatRepository;
-    private ListenerRegistration allPostsRegistration;
 
     public PostViewModel() {
         postRepository = new PostRepository();
@@ -54,11 +54,8 @@ public class PostViewModel extends ViewModel {
         return null;
     }
 
-    public void loadData() {
-        if (allPostsRegistration != null) {
-            allPostsRegistration.remove();
-        }
-        allPostsRegistration = postRepository.loadAndListenToPosts();
+    public void loadData(LatLng currentLocation) {
+        postRepository.loadPosts(currentLocation);
     }
 
     public void createPost(Post post, CallbackListener<Void> callback) {

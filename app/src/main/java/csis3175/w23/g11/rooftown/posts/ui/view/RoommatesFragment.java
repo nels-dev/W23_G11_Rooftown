@@ -22,7 +22,6 @@ public class RoommatesFragment extends Fragment implements TabLayout.OnTabSelect
     private GridViewFragment gridViewFragment;
     private ListViewFragment listViewFragment;
     private MapViewFragment mapViewFragment;
-    private PostViewModel viewModel;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -33,8 +32,6 @@ public class RoommatesFragment extends Fragment implements TabLayout.OnTabSelect
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
-        viewModel.loadData();
         gridViewFragment = new GridViewFragment();
         listViewFragment = new ListViewFragment();
         mapViewFragment = new MapViewFragment();

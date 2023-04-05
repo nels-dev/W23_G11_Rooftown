@@ -24,14 +24,18 @@
 
                 <ImageView
                     android:id="@+id/imgViewPosting"
-                    android:layout_width="400dp"
-                    android:layout_height="150dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
                     android:layout_gravity="center"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="0dp"
+                    android:contentDescription="@string/txtRoomImage"
                     tools:src="@tools:sample/avatars" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/btnEditPost"
+                    android:contentDescription="@string/txtBtnEditPostDesc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end|top"
@@ -45,29 +49,31 @@
 
             <TextView
                 android:id="@+id/txtViewPosting1stLine"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="36dp"
-                android:text=""
-                android:textSize="34sp" />
-
-            <TextView
-                android:id="@+id/txtViewPosting2ndLine"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp"
-                android:text=""
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/txtViewPosting3rdLine"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
-                android:text=""
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:textSize="40sp" />
+
+            <TextView
+                android:id="@+id/txtViewPosting2ndLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/txtViewPosting3rdLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 android:textSize="16sp" />
 
             <TextView
@@ -81,7 +87,7 @@
                 android:textStyle="bold" />
 
             <LinearLayout
-                android:id="@+id/linearLayout3"
+                android:id="@+id/linearLayoutInitiator"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:layout_margin="16dp"
@@ -90,48 +96,60 @@
                 <ImageView
                     android:id="@+id/imgViewPostDetailAvatar"
                     android:layout_width="100dp"
-                    android:layout_height="150dp"
+                    android:layout_height="100dp"
+                    android:contentDescription="@string/txtInitiatorImage"
                     tools:src="@tools:sample/avatars" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:paddingStart="16dp"
+                    android:paddingStart="0dp"
                     android:paddingEnd="16dp">
 
                     <TextView
                         android:id="@+id/txtViewPostDetailInitiatorName"
                         android:layout_width="match_parent"
-                        android:layout_height="69dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal|center_vertical"
-                        android:layout_weight="0.4"
                         android:text=""
-                        android:textSize="20sp" />
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtViewPostDetailInitiatorBrief"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:text=""
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/txtViewPostDetailInitiatorDescription"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="0.6"
+                        android:layout_height="wrap_content"
                         android:text=""
-                        android:textSize="14sp" />
+                        android:textSize="16sp" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
+            <Button
+                android:id="@+id/btnPostingInterested"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/btnPostDetailText"
+                app:layout_constraintBottom_toBottomOf="@+id/scrollView4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
         </LinearLayout>
 
     </ScrollView>
-
-    <Button
-        android:id="@+id/btnPostingInterested"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/btnPostDetailText"
-        app:layout_constraintBottom_toBottomOf="@+id/scrollView4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

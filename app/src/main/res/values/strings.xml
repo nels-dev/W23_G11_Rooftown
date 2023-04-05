@@ -159,4 +159,5 @@
     </string-array>
     <string name="btnPostDetailText">I\'m Interested</string>
     <string name="txtPostedBy">Posted By:</string>
+    <string name="txtBtnEditPostDesc">Edit Post</string>
 </resources>

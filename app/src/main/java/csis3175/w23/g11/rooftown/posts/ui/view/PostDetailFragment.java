@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -32,12 +33,7 @@ public class PostDetailFragment extends Fragment {
     private static final String TAG = "POSTS";
     private PostViewModel viewModel;
     private ImageView imgViewPosting;
-    private TextView txtViewPosting1stLine;
-    private TextView txtViewPosting2ndLine;
-    private TextView txtViewPosting3rdLine;
     private ImageView imgViewPostDetailAvatar;
-    private TextView txtViewPostDetailInitiatorName;
-    private TextView txtViewPostDetailInitiatorDescription;
     private Post post;
 
     public static PostDetailFragment newInstance() {
@@ -51,14 +47,18 @@ public class PostDetailFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstancedState) {
         super.onViewCreated(view, savedInstancedState);
-        viewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
+        if (getActivity() != null) {
+            viewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
+        }
         imgViewPosting = view.findViewById(R.id.imgViewPosting);
-        txtViewPosting1stLine = view.findViewById(R.id.txtViewPosting1stLine);
-        txtViewPosting2ndLine = view.findViewById(R.id.txtViewPosting2ndLine);
-        txtViewPosting3rdLine = view.findViewById(R.id.txtViewPosting3rdLine);
+        TextView txtViewPosting1stLine = view.findViewById(R.id.txtViewPosting1stLine);
+        TextView txtViewPosting2ndLine = view.findViewById(R.id.txtViewPosting2ndLine);
+        TextView txtViewPosting3rdLine = view.findViewById(R.id.txtViewPosting3rdLine);
+        LinearLayout linearLayoutInitiator = view.findViewById(R.id.linearLayoutInitiator);
         imgViewPostDetailAvatar = view.findViewById(R.id.imgViewPostDetailAvatar);
-        txtViewPostDetailInitiatorName = view.findViewById(R.id.txtViewPostDetailInitiatorName);
-        txtViewPostDetailInitiatorDescription = view.findViewById(R.id.txtViewPostDetailInitiatorDescription);
+        TextView txtViewPostDetailInitiatorName = view.findViewById(R.id.txtViewPostDetailInitiatorName);
+        TextView txtViewPostDetailInitiatorBrief = view.findViewById(R.id.txtViewPostDetailInitiatorBrief);
+        TextView txtViewPostDetailInitiatorDescription = view.findViewById(R.id.txtViewPostDetailInitiatorDescription);
         FloatingActionButton btnEditPost = view.findViewById(R.id.btnEditPost);
         Button btnPostingInterested = view.findViewById(R.id.btnPostingInterested);
 
@@ -77,6 +77,14 @@ public class PostDetailFragment extends Fragment {
 
         btnPostingInterested.setOnClickListener(this::interestInClicked);
 
+        String initiatorBrief = "";
+        if (post.getInitiatorGender() != null && (post.getInitiatorGender().equals("Male") || post.getInitiatorGender().equals("Female"))) {
+            initiatorBrief += post.getInitiatorGender();
+        }
+        if (post.getInitiatorAge() != null && post.getInitiatorAge().isEmpty()) {
+            initiatorBrief += (initiatorBrief.isEmpty() ? "" : ", ") + post.getInitiatorAge();
+        }
+
         if (post.getPostType() == PostType.ROOM) {
             if (post.getRoomImage() != null) {
                 ImageFileHelper.readImage(view.getContext(), post.getRoomImage(), (bitmap) -> imgViewPosting.setImageBitmap(bitmap));
@@ -84,8 +92,8 @@ public class PostDetailFragment extends Fragment {
                 imgViewPosting.setImageResource(R.drawable.placeholder_room);
             }
             txtViewPosting1stLine.setText(post.getLocation());
-            txtViewPosting2ndLine.setText(post.getCity());
-            txtViewPosting3rdLine.setText(post.getRoomDescription());
+            txtViewPosting2ndLine.setText(String.format("%s, %s", post.getCity(), post.getCountry()));
+            txtViewPosting3rdLine.setText(String.format("%s, %s\n%s", post.isFurnished() ? "Furnished" : "Unfurnished", post.isSharedBathroom() ? "Shared Bathroom" : "Private Bathroom", post.getRoomDescription()));
 
             if (post.getInitiatorImage() != null) {
                 ImageFileHelper.readImage(view.getContext(), post.getInitiatorImage(), (bitmap) -> imgViewPostDetailAvatar.setImageBitmap(bitmap));
@@ -97,6 +105,7 @@ public class PostDetailFragment extends Fragment {
                 imgViewPostDetailAvatar.setImageResource(R.drawable.placeholder_person_general);
             }
             txtViewPostDetailInitiatorName.setText(post.getInitiatorName());
+            txtViewPostDetailInitiatorBrief.setText(initiatorBrief);
             txtViewPostDetailInitiatorDescription.setText(post.getInitiatorDescription());
             btnEditPost.setOnClickListener((v) -> {
                 EditRoomPostFragment editRoomPostFragment = EditRoomPostFragment.newInstance();
@@ -107,6 +116,13 @@ public class PostDetailFragment extends Fragment {
                         .commit();
             });
         } else if (post.getPostType() == PostType.PERSON) {
+            String initiatorDetail = "";
+            if (!initiatorBrief.isEmpty()) {
+                initiatorDetail += initiatorBrief;
+            }
+            if (post.getInitiatorDescription() != null && post.getInitiatorDescription().isEmpty()) {
+                initiatorDetail += (initiatorDetail.isEmpty() ? "" : "\n") + post.getInitiatorDescription();
+            }
             if (post.getInitiatorImage() != null) {
                 ImageFileHelper.readImage(view.getContext(), post.getInitiatorImage(), (bitmap) -> imgViewPosting.setImageBitmap(bitmap));
             } else if (post.getInitiatorGender().equals("Male")) {
@@ -117,14 +133,16 @@ public class PostDetailFragment extends Fragment {
                 imgViewPosting.setImageResource(R.drawable.placeholder_person_general);
             }
             txtViewPosting1stLine.setText(post.getInitiatorName());
-            txtViewPosting2ndLine.setText(post.getInitiatorGender());
-            txtViewPosting3rdLine.setText(post.getInitiatorDescription());
+            txtViewPosting2ndLine.setText(String.format("%s, %s", post.getLocation(), post.getCity()));
+            txtViewPosting3rdLine.setText(initiatorDetail);
 
             TextView txtViewPostBy = view.findViewById(R.id.txtViewPostBy);
-            txtViewPostBy.setVisibility(View.INVISIBLE);
-            imgViewPostDetailAvatar.setVisibility(View.INVISIBLE);
-            txtViewPostDetailInitiatorName.setVisibility(View.INVISIBLE);
-            txtViewPostDetailInitiatorDescription.setVisibility(View.INVISIBLE);
+            txtViewPostBy.setVisibility(View.GONE);
+            linearLayoutInitiator.setVisibility(View.GONE);
+            imgViewPostDetailAvatar.setVisibility(View.GONE);
+            txtViewPostDetailInitiatorName.setVisibility(View.GONE);
+            txtViewPostDetailInitiatorBrief.setVisibility(View.GONE);
+            txtViewPostDetailInitiatorDescription.setVisibility(View.GONE);
             btnEditPost.setOnClickListener((v) -> {
                 EditPersonPostFragment editPersonPostFragment = EditPersonPostFragment.newInstance();
                 Bundle args = new Bundle();
@@ -137,6 +155,7 @@ public class PostDetailFragment extends Fragment {
     }
 
     private void interestInClicked(View view) {
+        if (viewModel == null) return;
         viewModel.showInterest(post.getInitiator(), post.getPostId(), chatId -> {
             ConversationFragment conversationFragment = ConversationFragment.newInstance();
             Bundle args = new Bundle();

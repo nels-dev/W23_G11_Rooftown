@@ -55,8 +55,8 @@ public class PostViewModel extends ViewModel {
         return null;
     }
 
-    public void loadData(LatLng currentLocation) {
-        postRepository.loadPosts(currentLocation);
+    public void loadData(LatLng currentLocation, String currentUserId) {
+        postRepository.loadPosts(currentLocation, currentUserId);
     }
 
     public void createPost(Post post, CallbackListener<Void> callback) {

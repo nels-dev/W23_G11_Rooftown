@@ -3,6 +3,8 @@ package csis3175.w23.g11.rooftown.posts.ui.view;
 import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -25,6 +27,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
@@ -41,6 +50,7 @@ public class EditRoomPostFragment extends Fragment {
     private EditText editTextPostLocation;
     private EditText editTextPostCity;
     private Spinner spinnerPostCountry;
+    private EditText editTextPostPostalCode;
     private EditText editTextPostNumOfRooms;
     private RadioGroup radGrpPostFurnished;
     private RadioGroup radGrpPostSharedBathroom;
@@ -74,6 +84,7 @@ public class EditRoomPostFragment extends Fragment {
         editTextPostLocation = view.findViewById(R.id.editTextPostLocation);
         editTextPostCity = view.findViewById(R.id.editTextPostCity);
         spinnerPostCountry = view.findViewById(R.id.spinnerPostCountry);
+        editTextPostPostalCode = view.findViewById(R.id.editTextPostPostalCode);
         editTextPostNumOfRooms = view.findViewById(R.id.editTextPostNumOfRooms);
         radGrpPostFurnished = view.findViewById(R.id.radGrpPostFurnished);
         radGrpPostSharedBathroom = view.findViewById(R.id.radGrpPostSharedBathroom);
@@ -99,6 +110,7 @@ public class EditRoomPostFragment extends Fragment {
         editTextPostLocation.setText(post.getLocation());
         editTextPostCity.setText(post.getCity());
         spinnerPostCountry.setSelection(countryAdapter.getPosition((post.getCountry() != null) ? post.getCountry() : "Canada"));
+        editTextPostPostalCode.setText(post.getPostalCode());
         editTextPostNumOfRooms.setText(post.getNumOfRooms());
         radGrpPostFurnished.check(post.isFurnished() ? R.id.radBtnPostFurnishedYes : R.id.radBtnPostFurnishedNo);
         radGrpPostSharedBathroom.check(post.isSharedBathroom() ? R.id.radBtnPostSharedBathroomYes : R.id.radBtnPostSharedBathroomNo);
@@ -162,7 +174,28 @@ public class EditRoomPostFragment extends Fragment {
             return;
         }
         post.setCity(editTextPostCity.getText().toString());
-        post.setCountry(spinnerPostCountry.getSelectedItem().toString());
+        String country = spinnerPostCountry.getSelectedItem().toString();
+        post.setCountry(country);
+        if (editTextPostPostalCode.getText().toString().isEmpty()) {
+            Toast.makeText(this.getContext(), "Please enter postal code", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String postalCode = editTextPostPostalCode.getText().toString();
+        post.setPostalCode(editTextPostPostalCode.getText().toString());
+        Geocoder geocoder = new Geocoder(this.getContext(), Locale.getDefault());
+        try {
+            List<Address> addresses = null;
+            addresses = geocoder.getFromLocationName(postalCode + ", " + country, 1);
+            if (addresses != null && addresses.size() > 0) {
+                post.setLatLong(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()));
+                post.setGeohash(GeoFireUtils.getGeoHashForLocation(new GeoLocation(addresses.get(0).getLatitude(), addresses.get(0).getLongitude())));
+            } else {
+                Toast.makeText(this.getContext(), "Invalid postal code", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (editTextPostNumOfRooms.getText().toString().isEmpty()) {
             Toast.makeText(this.getContext(), "Please enter number of rooms", Toast.LENGTH_SHORT).show();
             return;

@@ -43,6 +43,7 @@
     <string name="txtLocation">Location</string>
     <string name="txtCity">City/Province</string>
     <string name="txtCountry">Country</string>
+    <string name="txtPostalCode">Postal Code</string>
     <string name="txtLatLong">Lat / Long</string>
     <string name="txtNumOfRooms">Number Of Rooms</string>
     <string name="txtFurnished">Furnished?</string>

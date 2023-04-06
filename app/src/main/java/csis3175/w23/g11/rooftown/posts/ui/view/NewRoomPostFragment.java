@@ -3,6 +3,8 @@ package csis3175.w23.g11.rooftown.posts.ui.view;
 import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -25,10 +27,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.common.CurrentUserHelper;
@@ -47,6 +54,7 @@ public class NewRoomPostFragment extends Fragment {
     private EditText editTextPostLocation;
     private EditText editTextPostCity;
     private Spinner spinnerPostCountry;
+    private EditText editTextPostPostalCode;
     private EditText editTextPostNumOfRooms;
     private RadioGroup radGrpPostFurnished;
     private RadioGroup radGrpPostSharedBathroom;
@@ -84,6 +92,7 @@ public class NewRoomPostFragment extends Fragment {
         editTextPostLocation = view.findViewById(R.id.editTextPostLocation);
         editTextPostCity = view.findViewById(R.id.editTextPostCity);
         spinnerPostCountry = view.findViewById(R.id.spinnerPostCountry);
+        editTextPostPostalCode = view.findViewById(R.id.editTextPostPostalCode);
         editTextPostNumOfRooms = view.findViewById(R.id.editTextPostNumOfRooms);
         radGrpPostFurnished = view.findViewById(R.id.radGrpPostFurnished);
         radGrpPostSharedBathroom = view.findViewById(R.id.radGrpPostSharedBathroom);
@@ -162,8 +171,28 @@ public class NewRoomPostFragment extends Fragment {
             return;
         }
         newPost.setCity(editTextPostCity.getText().toString());
-        newPost.setCountry(spinnerPostCountry.getSelectedItem().toString());
-        newPost.setLatLong(new LatLng(Math.random() / 5.0 + 49.1, Math.random() / 2.5 - 123.2));
+        String country = spinnerPostCountry.getSelectedItem().toString();
+        newPost.setCountry(country);
+        if (editTextPostPostalCode.getText().toString().isEmpty()) {
+            Toast.makeText(this.getContext(), "Please enter postal code", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String postalCode = editTextPostPostalCode.getText().toString();
+        newPost.setPostalCode(editTextPostPostalCode.getText().toString());
+        Geocoder geocoder = new Geocoder(this.getContext(), Locale.getDefault());
+        try {
+            List<Address> addresses = null;
+            addresses = geocoder.getFromLocationName(postalCode + ", Canada", 1);
+            if (addresses != null && addresses.size() > 0) {
+                newPost.setLatLong(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()));
+                newPost.setGeohash(GeoFireUtils.getGeoHashForLocation(new GeoLocation(addresses.get(0).getLatitude(), addresses.get(0).getLongitude())));
+            } else {
+                Toast.makeText(this.getContext(), "Invalid postal code", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (editTextPostNumOfRooms.getText().toString().isEmpty()) {
             Toast.makeText(this.getContext(), "Please enter number of rooms", Toast.LENGTH_SHORT).show();
             return;

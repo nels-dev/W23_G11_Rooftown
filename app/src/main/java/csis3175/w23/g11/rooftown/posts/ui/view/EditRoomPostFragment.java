@@ -30,6 +30,7 @@ import java.util.UUID;
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.common.ImageFileHelper;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
+import csis3175.w23.g11.rooftown.posts.data.model.PostStatus;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class EditRoomPostFragment extends Fragment {
@@ -85,6 +86,8 @@ public class EditRoomPostFragment extends Fragment {
         imgViewPostInitiatorImage = view.findViewById(R.id.imgViewPostInitiatorImage);
         Button btnSavePost = view.findViewById(R.id.btnSavePost);
         btnSavePost.setText(R.string.txtSavePost);
+        Button btnCancelPost = view.findViewById(R.id.btnCancelPost);
+        btnCancelPost.setVisibility(View.VISIBLE);
 
         String[] countries = view.getResources().getStringArray(R.array.countries_array);
         ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, countries);
@@ -125,6 +128,7 @@ public class EditRoomPostFragment extends Fragment {
         });
 
         btnSavePost.setOnClickListener((v) -> updatePost(savedInstanceState));
+        btnCancelPost.setOnClickListener((v) -> cancelPost(savedInstanceState));
     }
 
     private void roomImageChosen(ActivityResult result) {
@@ -197,6 +201,14 @@ public class EditRoomPostFragment extends Fragment {
         if (uploadPostInitiatorImageFileName != null) {
             post.setInitiatorImage(uploadPostInitiatorImageFileName);
         }
+        postViewModel.updatePost(post, (unused) -> {
+            Toast.makeText(EditRoomPostFragment.this.getContext(), "Post updated", Toast.LENGTH_SHORT).show();
+            getParentFragmentManager().beginTransaction().replace(R.id.mainContainer, MyPostFragment.class, savedInstanceState).commit();
+        });
+    }
+
+    private void cancelPost(@Nullable Bundle savedInstanceState) {
+        post.setPostStatus(PostStatus.CANCELLED);
         postViewModel.updatePost(post, (unused) -> {
             Toast.makeText(EditRoomPostFragment.this.getContext(), "Post updated", Toast.LENGTH_SHORT).show();
             getParentFragmentManager().beginTransaction().replace(R.id.mainContainer, MyPostFragment.class, savedInstanceState).commit();

@@ -228,4 +228,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/txtCreatePost" />
+
+    <Button
+        android:id="@+id/btnCancelPost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/md_theme_dark_onError"
+        android:text="@string/txtCancelPost"
+        android:visibility="gone" />
 </LinearLayout>

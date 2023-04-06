@@ -12,6 +12,7 @@ import java.util.UUID;
 import csis3175.w23.g11.rooftown.common.CallbackListener;
 import csis3175.w23.g11.rooftown.messages.data.repository.ChatRepository;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
+import csis3175.w23.g11.rooftown.posts.data.model.PostStatus;
 import csis3175.w23.g11.rooftown.posts.data.repository.PostRepository;
 
 public class PostViewModel extends ViewModel {
@@ -46,7 +47,7 @@ public class PostViewModel extends ViewModel {
         List<Post> _posts = posts.getValue();
         if (_posts != null) {
             for (Post post : _posts) {
-                if (post.getInitiator().equals(uid)) {
+                if (post.getInitiator().equals(uid) && !post.getPostStatus().equals(PostStatus.CANCELLED)) {
                     return post;
                 }
             }

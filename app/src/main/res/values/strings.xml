@@ -149,6 +149,7 @@
     </string>
     <string name="txtSaveProfile">Save Profile</string>
     <string name="txtCreatePost">Create Post</string>
+    <string name="txtCancelPost">Cancel Post</string>
     <string name="txtSavePost">Save Post</string>
     <string name="txtPostImage">Post Image</string>
     <string name="txtFragmentMyPostChooseType">Buttons to choose whether you have rooms to share or not</string>

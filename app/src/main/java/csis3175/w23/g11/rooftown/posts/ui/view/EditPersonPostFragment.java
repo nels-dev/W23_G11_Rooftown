@@ -3,6 +3,8 @@ package csis3175.w23.g11.rooftown.posts.ui.view;
 import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -24,11 +26,19 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.common.ImageFileHelper;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
+import csis3175.w23.g11.rooftown.posts.data.model.PostStatus;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class EditPersonPostFragment extends Fragment {
@@ -39,6 +49,7 @@ public class EditPersonPostFragment extends Fragment {
     private EditText editTextPostLocation;
     private EditText editTextPostCity;
     private Spinner spinnerPostCountry;
+    private EditText editTextPostPostalCode;
     private EditText editTextPostInitiatorName;
     private Spinner spinnerPostInitiatorGender;
     private EditText editTextPostInitiatorAge;
@@ -65,6 +76,7 @@ public class EditPersonPostFragment extends Fragment {
         editTextPostLocation = view.findViewById(R.id.editTextPostLocation);
         editTextPostCity = view.findViewById(R.id.editTextPostCity);
         spinnerPostCountry = view.findViewById(R.id.spinnerPostCountry);
+        editTextPostPostalCode = view.findViewById(R.id.editTextPostPostalCode);
         editTextPostInitiatorName = view.findViewById(R.id.editTextPostInitiatorName);
         spinnerPostInitiatorGender = view.findViewById(R.id.spinnerPostInitiatorGender);
         editTextPostInitiatorAge = view.findViewById(R.id.editTextPostInitiatorAge);
@@ -72,6 +84,8 @@ public class EditPersonPostFragment extends Fragment {
         imgViewPostInitiatorImage = view.findViewById(R.id.imgViewPostInitiatorImage);
         Button btnSavePost = view.findViewById(R.id.btnSavePost);
         btnSavePost.setText(R.string.txtSavePost);
+        Button btnCancelPost = view.findViewById(R.id.btnCancelPost);
+        btnCancelPost.setVisibility(View.VISIBLE);
 
         String[] countries = view.getResources().getStringArray(R.array.countries_array);
         ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, countries);
@@ -83,6 +97,7 @@ public class EditPersonPostFragment extends Fragment {
         editTextPostLocation.setText(post.getLocation());
         editTextPostCity.setText(post.getCity());
         spinnerPostCountry.setSelection(countryAdapter.getPosition((post.getCountry() != null) ? post.getCountry() : "Canada"));
+        editTextPostPostalCode.setText(post.getPostalCode());
         editTextPostInitiatorName.setText(post.getInitiatorName());
         spinnerPostInitiatorGender.setSelection(genderAdapter.getPosition(post.getInitiatorGender()));
         editTextPostInitiatorAge.setText(post.getInitiatorAge());
@@ -99,6 +114,7 @@ public class EditPersonPostFragment extends Fragment {
         });
 
         btnSavePost.setOnClickListener((v) -> updatePost(savedInstanceState));
+        btnCancelPost.setOnClickListener((v) -> cancelPost(savedInstanceState));
     }
 
     private void initiatorImageChosen(ActivityResult result) {
@@ -122,7 +138,28 @@ public class EditPersonPostFragment extends Fragment {
             return;
         }
         post.setCity(editTextPostCity.getText().toString());
-        post.setCountry(spinnerPostCountry.getSelectedItem().toString());
+        String country = spinnerPostCountry.getSelectedItem().toString();
+        post.setCountry(country);
+        if (editTextPostPostalCode.getText().toString().isEmpty()) {
+            Toast.makeText(this.getContext(), "Please enter postal code", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String postalCode = editTextPostPostalCode.getText().toString();
+        post.setPostalCode(editTextPostPostalCode.getText().toString());
+        Geocoder geocoder = new Geocoder(this.getContext(), Locale.getDefault());
+        try {
+            List<Address> addresses = null;
+            addresses = geocoder.getFromLocationName(postalCode + ", " + country, 1);
+            if (addresses != null && addresses.size() > 0) {
+                post.setLatLong(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()));
+                post.setGeohash(GeoFireUtils.getGeoHashForLocation(new GeoLocation(addresses.get(0).getLatitude(), addresses.get(0).getLongitude())));
+            } else {
+                Toast.makeText(this.getContext(), "Invalid postal code", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (editTextPostInitiatorName.getText().toString().isEmpty()) {
             Toast.makeText(this.getContext(), "Please enter display name", Toast.LENGTH_SHORT).show();
             return;
@@ -138,6 +175,14 @@ public class EditPersonPostFragment extends Fragment {
         if (uploadPostInitiatorImageFileName != null) {
             post.setInitiatorImage(uploadPostInitiatorImageFileName);
         }
+        postViewModel.updatePost(post, (unused) -> {
+            Toast.makeText(EditPersonPostFragment.this.getContext(), "Post updated", Toast.LENGTH_SHORT).show();
+            getParentFragmentManager().beginTransaction().replace(R.id.mainContainer, MyPostFragment.class, savedInstanceState).commit();
+        });
+    }
+
+    private void cancelPost(@Nullable Bundle savedInstanceState) {
+        post.setPostStatus(PostStatus.CANCELLED);
         postViewModel.updatePost(post, (unused) -> {
             Toast.makeText(EditPersonPostFragment.this.getContext(), "Post updated", Toast.LENGTH_SHORT).show();
             getParentFragmentManager().beginTransaction().replace(R.id.mainContainer, MyPostFragment.class, savedInstanceState).commit();

@@ -23,8 +23,12 @@ public class Post {
     private String city;
     @ColumnInfo(name = "country")
     private String country;
+    @ColumnInfo(name = "postal_code")
+    private String postalCode;
     @ColumnInfo(name = "lat_long")
     private LatLng latLong;
+    @ColumnInfo(name = "geohash")
+    private String geohash;
     @ColumnInfo(name = "num_of_rooms")
     private String numOfRooms;
     @ColumnInfo(name = "furnished")
@@ -92,6 +96,10 @@ public class Post {
         this.country = country;
     }
 
+    public String getPostalCode() { return postalCode; }
+
+    public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
+
     public LatLng getLatLong() {
         return latLong;
     }
@@ -99,6 +107,10 @@ public class Post {
     public void setLatLong(LatLng latLong) {
         this.latLong = latLong;
     }
+
+    public String getGeohash() { return geohash; }
+
+    public void setGeohash(String geohash) { this.geohash = geohash; }
 
     public String getNumOfRooms() {
         return numOfRooms;

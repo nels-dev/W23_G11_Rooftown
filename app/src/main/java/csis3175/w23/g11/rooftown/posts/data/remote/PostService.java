@@ -90,7 +90,9 @@ public class PostService {
             post.setLocation(dto.getLocation());
             post.setCity(dto.getCity());
             post.setCountry(dto.getCountry());
+            post.setPostalCode(dto.getPostalCode());
             post.setLatLong(Converters.fromLatLngString(dto.getLatLong()));
+            post.setGeohash(dto.getGeohash());
             post.setNumOfRooms(dto.getNumOfRooms());
             post.setFurnished(dto.isFurnished());
             post.setSharedBathroom(dto.isSharedBathroom());
@@ -114,7 +116,9 @@ public class PostService {
         dto.setLocation(post.getLocation());
         dto.setCity(post.getCity());
         dto.setCountry(post.getCountry());
+        dto.setPostalCode(post.getPostalCode());
         dto.setLatLong(Converters.toLatLngString(post.getLatLong()));
+        dto.setGeohash(post.getGeohash());
         dto.setNumOfRooms(post.getNumOfRooms());
         dto.setFurnished(post.isFurnished());
         dto.setSharedBathroom(post.isSharedBathroom());

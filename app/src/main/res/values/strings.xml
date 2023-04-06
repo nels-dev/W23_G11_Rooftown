@@ -43,6 +43,7 @@
     <string name="txtLocation">Location</string>
     <string name="txtCity">City/Province</string>
     <string name="txtCountry">Country</string>
+    <string name="txtPostalCode">Postal Code</string>
     <string name="txtLatLong">Lat / Long</string>
     <string name="txtNumOfRooms">Number Of Rooms</string>
     <string name="txtFurnished">Furnished?</string>
@@ -149,6 +150,7 @@
     </string>
     <string name="txtSaveProfile">Save Profile</string>
     <string name="txtCreatePost">Create Post</string>
+    <string name="txtCancelPost">Cancel Post</string>
     <string name="txtSavePost">Save Post</string>
     <string name="txtPostImage">Post Image</string>
     <string name="txtFragmentMyPostChooseType">Buttons to choose whether you have rooms to share or not</string>

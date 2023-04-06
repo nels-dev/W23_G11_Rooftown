@@ -60,22 +60,69 @@
         android:inputType="textNoSuggestions"
         android:minHeight="48dp" />
 
-    <TextView
-        android:id="@+id/txtViewPostCountry"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_marginTop="16dp"
-        android:text="@string/txtCountry"
-        android:textAllCaps="false"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        android:textSize="14sp" />
+        android:orientation="horizontal"
+        android:minHeight="48dp"
+        android:baselineAligned="false">
 
-    <Spinner
-        android:id="@+id/spinnerPostCountry"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:entries="@array/countries_array"
-        android:spinnerMode="dialog" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtViewPostCountry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/txtCountry"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textSize="14sp" />
+
+            <Spinner
+                android:id="@+id/spinnerPostCountry"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:entries="@array/countries_array"
+                android:spinnerMode="dialog" />
+
+        </LinearLayout>
+
+        <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtViewPostPostalCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/txtPostalCode"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/editTextPostPostalCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/txtPostalCode"
+                android:inputType="textNoSuggestions"
+                android:minHeight="48dp"
+                android:autofillHints="postalAddress" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
@@ -228,4 +275,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/txtCreatePost" />
+
+    <Button
+        android:id="@+id/btnCancelPost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/md_theme_dark_onError"
+        android:text="@string/txtCancelPost"
+        android:visibility="gone" />
 </LinearLayout>

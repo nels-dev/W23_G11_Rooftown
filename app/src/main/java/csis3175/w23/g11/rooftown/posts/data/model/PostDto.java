@@ -7,7 +7,9 @@ public class PostDto {
     private String location;
     private String city;
     private String country;
+    private String postalCode;
     private String latLong;
+    private String geohash;
     private String numOfRooms;
     private boolean furnished;
     private boolean sharedBathroom;
@@ -54,6 +56,10 @@ public class PostDto {
         this.country = country;
     }
 
+    public String getPostalCode() { return postalCode; }
+
+    public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
+
     public String getLatLong() {
         return latLong;
     }
@@ -61,6 +67,10 @@ public class PostDto {
     public void setLatLong(String latLong) {
         this.latLong = latLong;
     }
+
+    public String getGeohash() { return geohash; }
+
+    public void setGeohash(String geohash) { this.geohash = geohash; }
 
     public String getNumOfRooms() {
         return numOfRooms;

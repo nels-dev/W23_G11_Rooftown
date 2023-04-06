@@ -32,9 +32,9 @@ public class PostRepository {
         return posts;
     }
 
-    public void loadPosts(LatLng currentLocation) {
+    public void loadPosts(LatLng currentLocation, String currentUserId) {
         AsyncTask.execute(() -> posts.postValue(postDao.getPosts()));
-        postService.fetchPosts(currentLocation, this::remoteCallBackWithData);
+        postService.fetchPosts(currentLocation, currentUserId, this::remoteCallBackWithData);
     }
 
     public void remoteCallBackWithData(List<Post> remoteDocPosts) {

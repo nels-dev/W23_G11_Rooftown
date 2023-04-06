@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 
 import csis3175.w23.g11.rooftown.common.AppDatabase;
+import csis3175.w23.g11.rooftown.common.CurrentUserHelper;
 import csis3175.w23.g11.rooftown.messages.ui.view.AllChatsFragment;
 import csis3175.w23.g11.rooftown.messages.ui.viewmodel.ChatViewModel;
 import csis3175.w23.g11.rooftown.posts.ui.view.MyPostFragment;
@@ -144,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             fusedLocationProviderClient.getLastLocation()
                     .addOnSuccessListener(this, location -> {
                         if (location != null) {
-                            viewModel.loadData(new LatLng(location.getLatitude(),location.getLongitude()));
+                            viewModel.loadData(new LatLng(location.getLatitude(),location.getLongitude()), CurrentUserHelper.getCurrentUid());
                         }
                     });
         }

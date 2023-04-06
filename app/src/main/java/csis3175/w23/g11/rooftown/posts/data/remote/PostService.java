@@ -41,7 +41,7 @@ public class PostService {
         fs = FirebaseFirestore.getInstance();
     }
 
-    public void fetchPosts(LatLng currentLocation, CallbackListener<List<Post>> resultConsumer) {
+    public void fetchPosts(LatLng currentLocation, String initiator, CallbackListener<List<Post>> resultConsumer) {
         // a post, callback listener with a list post
         GeoLocation geoLocation = new GeoLocation(currentLocation.latitude, currentLocation.longitude);
         List<GeoQueryBounds> bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInM);
@@ -56,6 +56,10 @@ public class PostService {
                     .endAt(b.endHash);
             tasks.add(q.get());
         }
+        Query myPosts = fs.collection(COLLECTION_POST)
+            .whereNotEqualTo("postStatus", PostStatus.CANCELLED.name())
+            .whereEqualTo("initiator", initiator);
+        tasks.add(myPosts.get());
 
         // Collect all the query results together into a single list
         Tasks.whenAllComplete(tasks)

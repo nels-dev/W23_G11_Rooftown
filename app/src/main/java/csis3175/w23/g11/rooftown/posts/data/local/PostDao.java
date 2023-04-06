@@ -17,10 +17,10 @@ public interface PostDao {
     @Query("SELECT * FROM POSTS WHERE post_status<>'CANCELLED'")
     List<Post> getPosts();
 
-    @Query("SELECT * FROM POSTS WHERE postId<>:postId")
+    @Query("SELECT * FROM POSTS WHERE postId = :postId")
     Post getByPostId(UUID postId);
 
-    @Query("SELECT * FROM POSTS WHERE initiator<>:userId AND post_status<>'CANCELLED'")
+    @Query("SELECT * FROM POSTS WHERE initiator = :userId AND post_status<>'CANCELLED'")
     Post getPostByInitiator(String userId);
 
 

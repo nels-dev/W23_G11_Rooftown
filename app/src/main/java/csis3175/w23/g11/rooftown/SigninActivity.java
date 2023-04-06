@@ -15,7 +15,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -24,13 +23,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import csis3175.w23.g11.rooftown.common.AppDatabase;
+import csis3175.w23.g11.rooftown.databinding.ActivitySigninBinding;
 import csis3175.w23.g11.rooftown.user.data.model.UserProfile;
 import csis3175.w23.g11.rooftown.user.data.repository.UserProfileRepository;
 
 public class SigninActivity extends AppCompatActivity {
 
     private static final String TAG = "SIGNIN";
-    private SignInButton btnGoogleSignIn;
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
     private ActivityResultLauncher<Intent> signInActivityResultLauncher;
@@ -38,11 +37,12 @@ public class SigninActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signin);
+        ActivitySigninBinding binding = ActivitySigninBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().requestProfile().requestIdToken(getString(R.string.default_web_client_id)).build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, options);
-        btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn);
-        btnGoogleSignIn.setOnClickListener(this::signIn);
+
+        binding.btnGoogleSignIn.setOnClickListener(this::signIn);
         signInActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this::onActivityResult);
         mAuth = FirebaseAuth.getInstance();
 
@@ -77,9 +77,6 @@ public class SigninActivity extends AppCompatActivity {
             Log.d(TAG, "signInWithCredential:success");
             FirebaseUser user = mAuth.getCurrentUser();
             Log.i(TAG, "Firebase User Data: ");
-            Log.i(TAG, user.getDisplayName());
-            Log.i(TAG, user.getEmail());
-            Log.i(TAG, user.getUid());
 
             Toast.makeText(this, "Sign in successful. Hi " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
 

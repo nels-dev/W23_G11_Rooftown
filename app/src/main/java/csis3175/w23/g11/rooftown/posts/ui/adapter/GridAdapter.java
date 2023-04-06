@@ -1,10 +1,7 @@
 package csis3175.w23.g11.rooftown.posts.ui.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,51 +11,56 @@ import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.common.ImageFileHelper;
+import csis3175.w23.g11.rooftown.databinding.LayoutGriditemBinding;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.data.model.PostType;
 
 public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder> {
-    private static final String TAG = "POSTS";
     List<Post> posts;
-    Context context;
     OnClickListener gridClickedListener;
 
-    public GridAdapter(List<Post> posts, Context context, OnClickListener gridClickedListener) {
+    public GridAdapter(List<Post> posts, OnClickListener gridClickedListener) {
         this.posts = posts;
-        this.context = context;
         this.gridClickedListener = gridClickedListener;
     }
 
     @NonNull
     @Override
     public GridAdapter.GridViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_griditem, parent, false);
-        return new GridViewHolder(view, gridClickedListener);
+        LayoutGriditemBinding binding = LayoutGriditemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new GridViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull GridAdapter.GridViewHolder holder, int position) {
         Post post = posts.get(position);
+
         if (post.getPostType() == PostType.ROOM) {
+            holder.binding.imgViewGrid.setImageResource(0);
             if (post.getRoomImage() != null) {
-                ImageFileHelper.readImage(context, post.getRoomImage(), bitmap -> holder.imgViewGrid.setImageBitmap(bitmap));
-            } else {
-                holder.imgViewGrid.setImageResource(R.drawable.placeholder_room);
+                ImageFileHelper.readImage(holder.itemView.getContext(), post.getRoomImage(), bitmap -> holder.binding.imgViewGrid.setImageBitmap(bitmap));
             }
         } else if (post.getPostType() == PostType.PERSON) {
             if (post.getInitiatorImage() != null) {
-                ImageFileHelper.readImage(context, post.getInitiatorImage(), bitmap -> holder.imgViewGrid.setImageBitmap(bitmap));
-            } else if (post.getInitiatorGender().equals("Male")) {
-                holder.imgViewGrid.setImageResource(R.drawable.placeholder_person_male);
-            } else if (post.getInitiatorGender().equals("Female")) {
-                holder.imgViewGrid.setImageResource(R.drawable.placeholder_person_female);
+                holder.binding.imgViewGrid.setImageResource(0);
+                ImageFileHelper.readImage(holder.itemView.getContext(), post.getInitiatorImage(), bitmap -> holder.binding.imgViewGrid.setImageBitmap(bitmap));
             } else {
-                holder.imgViewGrid.setImageResource(R.drawable.placeholder_person_general);
+                if ("Male".equals(post.getInitiatorGender())) {
+                    holder.binding.imgViewGrid.setImageResource(R.drawable.placeholder_person_male);
+                } else if ("Female".equals(post.getInitiatorGender())) {
+                    holder.binding.imgViewGrid.setImageResource(R.drawable.placeholder_person_female);
+                } else {
+                    holder.binding.imgViewGrid.setImageResource(R.drawable.placeholder_person_general);
+                }
             }
         } else {
-            holder.imgViewGrid.setImageResource(0);
+            holder.binding.imgViewGrid.setImageResource(0);
         }
-        holder.postId = post.getPostId();
+        holder.binding.getRoot().setOnClickListener(view -> {
+            if (holder.getAdapterPosition() != RecyclerView.NO_POSITION) {
+                gridClickedListener.onItemClicked(post.getPostId());
+            }
+        });
     }
 
     @Override
@@ -77,18 +79,11 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder
     }
 
     public static class GridViewHolder extends RecyclerView.ViewHolder {
-        public ImageView imgViewGrid;
-        public UUID postId;
+        public LayoutGriditemBinding binding;
 
-        public GridViewHolder(@NonNull View itemView, OnClickListener gridClickedListener) {
-            super(itemView);
-            imgViewGrid = itemView.findViewById(R.id.imgViewGrid);
-
-            this.itemView.setOnClickListener(v -> {
-                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    gridClickedListener.onItemClicked(postId);
-                }
-            });
+        public GridViewHolder(@NonNull LayoutGriditemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

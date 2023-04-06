@@ -2,6 +2,7 @@ package csis3175.w23.g11.rooftown.posts.ui.view;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +17,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.geofire.GeoFireUtils;
 import com.firebase.geofire.GeoLocation;
@@ -26,9 +26,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.databinding.FragmentGridViewBinding;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.ui.adapter.GridAdapter;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
@@ -37,61 +39,60 @@ public class GridViewFragment extends Fragment {
     private static final String TAG = "POSTS_GRID";
     private GridAdapter gridAdapter;
     private FusedLocationProviderClient fusedLocationProviderClient;
+    private Location currentLocation;
+    private FragmentGridViewBinding binding;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_grid_view, container, false);
+        binding = FragmentGridViewBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d(TAG, "============ Grid View Created =========");
         //Setup recycler view
         PostViewModel viewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
 
-        RecyclerView recyclerGrid = view.findViewById(R.id.recyclerGrid);
-        recyclerGrid.setLayoutManager(new GridLayoutManager(view.getContext(), 3));
 
-        // Setup Adapter
-        gridAdapter = new GridAdapter(new ArrayList<>(), view.getContext(), this::onItemClicked);
-        viewModel.getAllPosts().observe(this.getViewLifecycleOwner(), posts -> {
-            Log.d(TAG, "LiveData published, size: " + posts.size());
-            gridAdapter.populatePosts(posts);
-        });
-        recyclerGrid.setAdapter(gridAdapter);
+        binding.recyclerGrid.setLayoutManager(new GridLayoutManager(view.getContext(), 3));
+        gridAdapter = new GridAdapter(new ArrayList<>(), this::onItemClicked);
+        binding.recyclerGrid.setAdapter(gridAdapter);
 
         //Initialize location client
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
-
         if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this.getContext(), "GPS Location is disabled.", Toast.LENGTH_SHORT).show();
             return;
         }
-        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(getActivity(), location -> {
-            viewModel.getAllPosts().observe(this.getViewLifecycleOwner(), posts -> {
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
+            this.currentLocation = location;
+            viewModel.getAllPosts().observe(requireActivity(), posts -> {
                 Log.d(TAG, "LiveData published, size: " + posts.size());
-                // calculate distance between current location and post location
-                GeoLocation currentLocation = new GeoLocation(location.getLatitude(), location.getLongitude());
-                Collections.sort(posts, (p1, p2) -> {
-                    double distanceP1 = GeoFireUtils.getDistanceBetween(convertLatLngToGeoLocation(p1), currentLocation);
-                    double distanceP2 = GeoFireUtils.getDistanceBetween(convertLatLngToGeoLocation(p2), currentLocation);
-
-                    if (distanceP1 < distanceP2) {
-                        return -1;
-                    } else if (distanceP2 < distanceP1) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
-                });
+                sortByDistance(posts);
                 gridAdapter.populatePosts(posts);
             });
         });
     }
 
-    private GeoLocation convertLatLngToGeoLocation (Post post){
+    private void sortByDistance(List<Post> posts) {
+        if (currentLocation == null) return;
+        GeoLocation gloc = new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude());
+        Collections.sort(posts, (p1, p2) -> {
+            double distanceP1 = GeoFireUtils.getDistanceBetween(convertLatLngToGeoLocation(p1), gloc);
+            double distanceP2 = GeoFireUtils.getDistanceBetween(convertLatLngToGeoLocation(p2), gloc);
+
+            if (distanceP1 < distanceP2) {
+                return -1;
+            } else if (distanceP2 < distanceP1) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    }
+
+    private GeoLocation convertLatLngToGeoLocation(Post post) {
         return new GeoLocation(post.getLatLong().latitude, post.getLatLong().longitude);
     }
 

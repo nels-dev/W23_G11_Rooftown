@@ -4,9 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +19,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -33,7 +29,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,8 +39,8 @@ import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
-    private static final String TAG = "POSTS_MAP";
     public static final int NO_OF_MARKERS_IN_INITIAL_VIEW = 5;
+    private static final String TAG = "POSTS_MAP";
     private GoogleMap mMap;
     private MapView mapView;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -76,26 +71,23 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         // async get a list of posting
         // extract coordinate(lat lng)
         // mark in the map view
-        if (getParentFragment() != null && getView()!=null) {
+        if (getParentFragment() != null && getView() != null) {
             PostViewModel viewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
             viewModel.getAllPosts().observe(this.getViewLifecycleOwner(), posts -> {
                 addPostMarkers(posts);
-                if (posts.isEmpty()) {
-                    // No post, default to current location
-                    fusedLocationProviderClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
-                        if (location != null) {
-                            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                        }
-                    });
-                }else{
+                fusedLocationProviderClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
                     LatLngBounds.Builder bound = new LatLngBounds.Builder();
-                    // Assume posts are sorted according to proximity, position the map camera to see 5 markers
-                    for(int i = 0; i<Math.min(posts.size(), NO_OF_MARKERS_IN_INITIAL_VIEW); i++){
-                        bound.include(posts.get(i).getLatLong());
+
+                    if (location != null) {
+                        bound.include(new LatLng(location.getLatitude(), location.getLongitude()));
+                    }
+                    if (!posts.isEmpty()) {
+                        for (int i = 0; i < Math.min(posts.size(), NO_OF_MARKERS_IN_INITIAL_VIEW); i++) {
+                            bound.include(posts.get(i).getLatLong());
+                        }
                     }
                     mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bound.build(), 200));
-                }
+                });
             });
         }
 
@@ -143,7 +135,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void openPostDetail(UUID postId){
+    private void openPostDetail(UUID postId) {
         PostDetailFragment postDetailFragment = PostDetailFragment.newInstance();
         Bundle args = new Bundle();
         args.putString(PostDetailFragment.ARG_POST_ID, postId.toString());

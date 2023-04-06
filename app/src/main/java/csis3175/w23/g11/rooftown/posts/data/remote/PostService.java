@@ -8,16 +8,11 @@ import com.firebase.geofire.GeoFireUtils;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQueryBounds;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -34,8 +29,8 @@ import csis3175.w23.g11.rooftown.posts.data.model.PostType;
 public class PostService {
     public static final String COLLECTION_POST = "POSTS";
     private static final String TAG = "POSTS";
-    private final FirebaseFirestore fs;
     final double radiusInM = 10000;
+    private final FirebaseFirestore fs;
 
     public PostService() {
         fs = FirebaseFirestore.getInstance();
@@ -49,11 +44,7 @@ public class PostService {
 
         final List<Task<QuerySnapshot>> tasks = new ArrayList<>();
         for (GeoQueryBounds b : bounds) {
-            Query q = fs.collection(COLLECTION_POST)
-                    .whereEqualTo("postStatus", PostStatus.OPEN.name())
-                    .orderBy("geohash")
-                    .startAt(b.startHash)
-                    .endAt(b.endHash);
+            Query q = fs.collection(COLLECTION_POST).whereEqualTo("postStatus", PostStatus.OPEN.name()).orderBy("geohash").startAt(b.startHash).endAt(b.endHash);
             tasks.add(q.get());
         }
         Query myPosts = fs.collection(COLLECTION_POST)
@@ -62,27 +53,22 @@ public class PostService {
         tasks.add(myPosts.get());
 
         // Collect all the query results together into a single list
-        Tasks.whenAllComplete(tasks)
-                .addOnCompleteListener(t -> {
-                    List<Post> posts = new ArrayList<>();
-                    for (Task<QuerySnapshot> task : tasks) {
-                        QuerySnapshot snap = task.getResult();
-                        for (DocumentSnapshot doc : snap.getDocuments()) {
-                            posts.add(toPost(doc));
-                        }
-                    }
-                    resultConsumer.callback(posts);
-                });
+        Tasks.whenAllComplete(tasks).addOnCompleteListener(t -> {
+            List<Post> posts = new ArrayList<>();
+            for (Task<QuerySnapshot> task : tasks) {
+                QuerySnapshot snap = task.getResult();
+                for (DocumentSnapshot doc : snap.getDocuments()) {
+                    posts.add(toPost(doc));
+                }
+            }
+            resultConsumer.callback(posts);
+        });
     }
 
     public void savePost(Post post, CallbackListener<Void> callback) {
         Log.d(TAG, ">> Invoke save post to Firestore: " + post.getPostId().toString());
         PostDto dto = toDto(post);
-        fs.collection(COLLECTION_POST)
-                .document(post.getPostId().toString())
-                .set(dto)
-                .addOnSuccessListener(callback::callback)
-                .addOnFailureListener((@NonNull Exception e) -> Log.d(TAG, "Cannot save document", e));
+        fs.collection(COLLECTION_POST).document(post.getPostId().toString()).set(dto).addOnSuccessListener(callback::callback).addOnFailureListener((@NonNull Exception e) -> Log.d(TAG, "Cannot save document", e));
     }
 
     private Post toPost(DocumentSnapshot doc) {

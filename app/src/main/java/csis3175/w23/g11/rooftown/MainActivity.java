@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // Get location
-            fusedLocationProviderClient.getLastLocation()
+            fusedLocationProviderClient.getCurrentLocation(100, new CancellationTokenSource().getToken())
                     .addOnSuccessListener(this, location -> {
                         if (location != null) {
                             viewModel.loadData(new LatLng(location.getLatitude(),location.getLongitude()), CurrentUserHelper.getCurrentUid());
@@ -150,11 +151,4 @@ public class MainActivity extends AppCompatActivity {
                     });
         }
     }
-
-//    public void switchToMapViewFragment() {
-//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//        transaction.replace(R.id.map_container, new MapViewFragment());
-//        transaction.addToBackStack(null);
-//        transaction.commit();
-//    }
 }

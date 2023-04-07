@@ -103,7 +103,7 @@ public class GridViewFragment extends Fragment {
             transaction = getParentFragmentManager().beginTransaction();
         }
         transaction.replace(R.id.mainContainer, postDetailFragment);
-        transaction.addToBackStack(TAG);
+        transaction.addToBackStack(RoommatesFragment.TAG);
         transaction.commit();
     }
 

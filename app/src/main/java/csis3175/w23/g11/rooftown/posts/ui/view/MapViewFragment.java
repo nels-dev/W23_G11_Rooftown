@@ -145,7 +145,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             transaction = getParentFragmentManager().beginTransaction();
         }
         transaction.replace(R.id.mainContainer, postDetailFragment);
-        transaction.addToBackStack(TAG);
+        transaction.addToBackStack(RoommatesFragment.TAG);
         transaction.commit();
     }
 

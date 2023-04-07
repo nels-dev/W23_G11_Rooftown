@@ -27,19 +27,26 @@ import csis3175.w23.g11.rooftown.posts.data.model.PostType;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class MyPostFragment extends Fragment {
-    private static final String TAG = "MY_POST";
+    public static final String TAG = "MY_POST";
+    private FragmentMyPostBinding binding;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        FragmentMyPostBinding binding = FragmentMyPostBinding.inflate(inflater, container, false);
+        binding = FragmentMyPostBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         List<Integer> btnTitles = new ArrayList<>(Arrays.asList(R.string.txtPostTypeButton1Title, R.string.txtPostTypeButton2Title));
         List<Integer> btnContents = new ArrayList<>(Arrays.asList(R.string.txtPostTypeButton1Content, R.string.txtPostTypeButton2Content));
         List<Integer> btnDrawables = new ArrayList<>(Arrays.asList(R.drawable.ic_outline_add_home_60, R.drawable.ic_outline_person_add_alt_60));
         List<PostType> btnPostTypes = new ArrayList<>(Arrays.asList(PostType.ROOM, PostType.PERSON));
 
         for (int i = 0; i < btnTitles.size(); i++) {
-            LayoutHomebuttonBinding buttonBinding = LayoutHomebuttonBinding.inflate(inflater, container, false);
+            LayoutHomebuttonBinding buttonBinding = LayoutHomebuttonBinding.inflate(LayoutInflater.from(view.getContext()), binding.getRoot(), false);
 
             buttonBinding.txtTitle.setText(btnTitles.get(i));
             buttonBinding.txtDesc.setText(btnContents.get(i));
@@ -71,12 +78,6 @@ public class MyPostFragment extends Fragment {
 
             binding.linearLayoutPostType.addView(buttonBinding.getRoot());
         }
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         if (getActivity() != null) {
             PostViewModel viewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
             String currentUid = CurrentUserHelper.getCurrentUid();

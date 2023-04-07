@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     AllChatsFragment allChatsFragment = new AllChatsFragment();
     MyPostFragment myPostFragment = new MyPostFragment();
     ProfileFragment profileFragment = new ProfileFragment();
+    private String currentTab = HomeFragment.TAG;
     private BadgeDrawable badgeDrawable;
 
     @Override
@@ -92,19 +93,24 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav.setOnItemSelectedListener((@NonNull MenuItem item) -> {
             if (item.getItemId() == R.id.bottomNavMenuHome) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, homeFragment).addToBackStack(TAG).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, homeFragment).addToBackStack(currentTab).commit();
+                currentTab = HomeFragment.TAG;
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuRoommates) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, roommatesFragment).addToBackStack(TAG).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, roommatesFragment).addToBackStack(currentTab).commit();
+                currentTab = RoommatesFragment.TAG;
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuMessages) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, allChatsFragment).addToBackStack(TAG).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, allChatsFragment).addToBackStack(currentTab).commit();
+                currentTab = AllChatsFragment.TAG;
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuPosting) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, myPostFragment).addToBackStack(TAG).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, myPostFragment).addToBackStack(currentTab).commit();
+                currentTab = MyPostFragment.TAG;
                 return true;
             } else if (item.getItemId() == R.id.bottomNavMenuProfile) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, profileFragment).addToBackStack(TAG).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainContainer, profileFragment).addToBackStack(currentTab).commit();
+                currentTab = ProfileFragment.TAG;
                 return true;
             } else {
                 return false;

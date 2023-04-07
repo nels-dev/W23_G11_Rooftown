@@ -24,7 +24,7 @@ import csis3175.w23.g11.rooftown.user.ui.viewmodel.UserProfileViewModel;
 
 public class ProfileFragment extends Fragment {
 
-    private static final String TAG = "USER_PROFILE";
+    public static final String TAG = "USER_PROFILE";
     private UserProfileViewModel viewModel;
     private TextView txtViewEmail;
     private TextView txtViewDisplayName;

@@ -33,22 +33,25 @@ public class HomeFragment extends Fragment {
         List<Integer> btnTitles = new ArrayList<>(Arrays.asList(R.string.txtHomeButton1Title, R.string.txtHomeButton2Title, R.string.txtHomeButton3Title));
         List<Integer> btnContents = new ArrayList<>(Arrays.asList(R.string.txtHomeButton1Content, R.string.txtHomeButton2Content, R.string.txtHomeButton3Content));
         List<Integer> btnDrawables = new ArrayList<>(Arrays.asList(R.drawable.ic_outline_search_60, R.drawable.ic_outline_add_box_60, R.drawable.ic_outline_question_answer_60));
+        List<Integer> backgrounds = new ArrayList<>(Arrays.asList(R.drawable.roommates, R.drawable.room, R.drawable.chat));
+        List<Integer> btnTexts = new ArrayList<>(Arrays.asList(R.string.bottomNavRoommatesButtonTitle, R.string.bottomNavPostingButtonTitle, R.string.bottomNavMessagesButtonTitle));
         List<Fragment> btnTargetFragments = new ArrayList<>(Arrays.asList(new RoommatesFragment(), new MyPostFragment(), new AllChatsFragment()));
 
         for (int i = 0; i < btnTitles.size(); i++) {
             int pos = i;
             LayoutHomebuttonBinding buttonBinding = LayoutHomebuttonBinding.inflate(inflater, container, false);
-            buttonBinding.txtViewHomeButtonTitle.setText(btnTitles.get(pos));
-            buttonBinding.txtViewHomeButtonContent.setText(btnContents.get(pos));
-            buttonBinding.txtViewHomeButtonContent.setCompoundDrawablesWithIntrinsicBounds(null,
-                    ResourcesCompat.getDrawable(getResources(), btnDrawables.get(pos), null),
-                    null,
-                    null);
-            buttonBinding.cardViewHomeButton.setOnClickListener((View v) -> requireActivity().getSupportFragmentManager()
+            buttonBinding.txtTitle.setText(btnTitles.get(pos));
+            buttonBinding.txtDesc.setText(btnContents.get(pos));
+            buttonBinding.imgViewIcon.setImageDrawable(ResourcesCompat.getDrawable(getResources(), btnDrawables.get(pos), null));
+            buttonBinding.imgViewCardBackground.setImageDrawable(ResourcesCompat.getDrawable(getResources(), backgrounds.get(pos), null));
+            buttonBinding.btnAction.setText(btnTexts.get(pos));
+            View.OnClickListener onClickListener = (View v) -> requireActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.mainContainer, btnTargetFragments.get(pos))
                     .addToBackStack(TAG)
-                    .commit());
+                    .commit();
+            buttonBinding.cardViewHomeButton.setOnClickListener(onClickListener);
+            buttonBinding.btnAction.setOnClickListener(onClickListener);
             binding.linearLayoutHome.addView(buttonBinding.getRoot());
         }
 

@@ -30,7 +30,7 @@ import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 
 public class PostDetailFragment extends Fragment {
     public static final String ARG_POST_ID = "post_id";
-    private static final String TAG = "POSTS";
+    private static final String TAG = "POST_DETAIL";
     private PostViewModel viewModel;
     private ImageView imgViewPosting;
     private ImageView imgViewPostDetailAvatar;
@@ -120,7 +120,7 @@ public class PostDetailFragment extends Fragment {
             if (!initiatorBrief.isEmpty()) {
                 initiatorDetail += initiatorBrief;
             }
-            if (post.getInitiatorDescription() != null && post.getInitiatorDescription().isEmpty()) {
+            if (post.getInitiatorDescription() != null && !post.getInitiatorDescription().isEmpty()) {
                 initiatorDetail += (initiatorDetail.isEmpty() ? "" : "\n") + post.getInitiatorDescription();
             }
             if (post.getInitiatorImage() != null) {

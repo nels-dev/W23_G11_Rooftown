@@ -44,12 +44,11 @@ public class PostService {
 
         final List<Task<QuerySnapshot>> tasks = new ArrayList<>();
         for (GeoQueryBounds b : bounds) {
-            Query q = fs.collection(COLLECTION_POST).whereEqualTo("postStatus", PostStatus.OPEN.name()).orderBy("geohash").startAt(b.startHash).endAt(b.endHash);
+            Query q = fs.collection(COLLECTION_POST).orderBy("geohash").startAt(b.startHash).endAt(b.endHash);
             tasks.add(q.get());
         }
         Query myPosts = fs.collection(COLLECTION_POST)
-            .whereNotEqualTo("postStatus", PostStatus.CANCELLED.name())
-            .whereEqualTo("initiator", initiator);
+                .whereEqualTo("initiator", initiator);
         tasks.add(myPosts.get());
 
         // Collect all the query results together into a single list

@@ -1,18 +1,14 @@
 package csis3175.w23.g11.rooftown.posts.ui.view;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -20,8 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.firebase.geofire.GeoFireUtils;
 import com.firebase.geofire.GeoLocation;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -30,6 +25,8 @@ import java.util.List;
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.common.CurrentUserHelper;
+import csis3175.w23.g11.rooftown.common.LocationHelper;
 import csis3175.w23.g11.rooftown.databinding.FragmentListViewBinding;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.ui.adapter.ListAdapter;
@@ -38,7 +35,6 @@ import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 public class ListViewFragment extends Fragment {
     private static final String TAG = "POSTS_LIST";
     private ListAdapter listAdapter;
-    private FusedLocationProviderClient fusedLocationProviderClient;
     private Location currentLocation;
     private FragmentListViewBinding binding;
 
@@ -58,22 +54,17 @@ public class ListViewFragment extends Fragment {
         listAdapter = new ListAdapter(new ArrayList<>(), this::onItemClicked);
         binding.recyclerList.setAdapter(listAdapter);
 
-
-        //Initialize location client
-        if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this.getContext(), "GPS Location is disabled.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
-        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(getActivity(), location -> {
-            this.currentLocation = location;
-            viewModel.getAllPosts().observe(requireActivity(), posts -> {
-                Log.d(TAG, "LiveData published, size: " + posts.size());
-                sortByDistance(posts);
-                listAdapter.populatePosts(posts);
-            });
+        LocationHelper.performWithLocation(requireActivity(), loc -> {
+            this.currentLocation = loc;
+            if (this.getView() != null) {
+                viewModel.getAllPosts().observe(this.getViewLifecycleOwner(), posts -> {
+                    Log.d(TAG, "LiveData published, size: " + posts.size());
+                    sortByDistance(posts);
+                    listAdapter.populatePosts(posts);
+                });
+                viewModel.loadData(new LatLng(loc.getLatitude(), loc.getLongitude()), CurrentUserHelper.getCurrentUid());
+            }
         });
-
     }
 
 
@@ -112,7 +103,7 @@ public class ListViewFragment extends Fragment {
             transaction = getParentFragmentManager().beginTransaction();
         }
         transaction.replace(R.id.mainContainer, postDetailFragment);
-        transaction.addToBackStack(TAG);
+        transaction.addToBackStack(RoommatesFragment.TAG);
         transaction.commit();
     }
 

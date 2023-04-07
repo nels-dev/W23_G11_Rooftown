@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,21 +45,10 @@ public class UserProfileRepository {
         });
     }
 
-    // Load multiple users.
-    // For performance concerns, data is NOT forcefully sync with remote if exist locally
+    // Load multiple users
     public void loadUsers(List<String> userIds, CallbackListener<Void> callback) {
         AsyncTask.execute(() -> {
-            List<String> notFound = new ArrayList<>();
-            for (String userId : userIds) {
-                if (!userProfileDao.exist(userId)) {
-                    notFound.add(userId);
-                }
-            }
-            if (!notFound.isEmpty()) {
-                syncWithRemote(notFound, callback);
-            } else {
-                callback.callback(null);
-            }
+            syncWithRemote(userIds, callback);
         });
     }
 

@@ -18,8 +18,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -33,6 +31,7 @@ import java.util.List;
 import java.util.UUID;
 
 import csis3175.w23.g11.rooftown.R;
+import csis3175.w23.g11.rooftown.common.LocationHelper;
 import csis3175.w23.g11.rooftown.posts.data.model.Post;
 import csis3175.w23.g11.rooftown.posts.data.model.PostType;
 import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
@@ -43,7 +42,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "POSTS_MAP";
     private GoogleMap mMap;
     private MapView mapView;
-    private FusedLocationProviderClient fusedLocationProviderClient;
 
     @Nullable
     @Override
@@ -53,7 +51,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         mapView = view.findViewById(R.id.map_container);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         // Inflate the layout for this fragment
         return view;
     }
@@ -75,7 +72,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             PostViewModel viewModel = new ViewModelProvider(getActivity()).get(PostViewModel.class);
             viewModel.getAllPosts().observe(this.getViewLifecycleOwner(), posts -> {
                 addPostMarkers(posts);
-                fusedLocationProviderClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
+                LocationHelper.performWithLocation(requireActivity(), location -> {
                     LatLngBounds.Builder bound = new LatLngBounds.Builder();
 
                     if (location != null) {
@@ -148,7 +145,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             transaction = getParentFragmentManager().beginTransaction();
         }
         transaction.replace(R.id.mainContainer, postDetailFragment);
-        transaction.addToBackStack(TAG);
+        transaction.addToBackStack(RoommatesFragment.TAG);
         transaction.commit();
     }
 

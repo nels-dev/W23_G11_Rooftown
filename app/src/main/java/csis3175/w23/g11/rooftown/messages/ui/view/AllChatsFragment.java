@@ -25,7 +25,7 @@ import csis3175.w23.g11.rooftown.messages.ui.viewmodel.ChatViewModel;
 
 public class AllChatsFragment extends Fragment implements TabLayout.OnTabSelectedListener {
 
-    private static final String TAG = "CHATS";
+    public static final String TAG = "CHATS";
     private TabLayout tabLayoutMessages;
     private AllChatsAdapter messagesAdapter;
     private ChatViewModel viewModel;

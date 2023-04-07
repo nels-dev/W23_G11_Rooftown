@@ -87,17 +87,22 @@ public class ChatRepository {
     }
 
     public void remoteCallBackWithData(List<Chat> chats) {
+        List<String> allUsers = new ArrayList<>();
         for (Chat c : chats) {
             if (chatDao.exist(c.getChatId())) {
                 chatDao.updateChat(c.getChatId(), c.getLastActivityAt(), c.getLastActivityBy(), c.getLastMessage());
             } else {
                 chatDao.insertChat(c);
             }
+            allUsers.add(c.isInitiatedByMe() ? c.getCounterParty() : c.getInitiator());
         }
-        Log.d(TAG, "Received remote data, posting value to live data ");
-        outgoingChats.postValue(chatDao.getChatsByInitiator(CurrentUserHelper.getCurrentUid()));
-        incomingChats.postValue(chatDao.getChatsByCounterParty(CurrentUserHelper.getCurrentUid()));
-        numberOfUnread.postValue(chatDao.getNumberOfUnread(CurrentUserHelper.getCurrentUid()));
+        userProfileRepository.loadUsers(allUsers, (notUsed) -> {
+            Log.d(TAG, "Received remote data, posting value to live data ");
+            outgoingChats.postValue(chatDao.getChatsByInitiator(CurrentUserHelper.getCurrentUid()));
+            incomingChats.postValue(chatDao.getChatsByCounterParty(CurrentUserHelper.getCurrentUid()));
+            numberOfUnread.postValue(chatDao.getNumberOfUnread(CurrentUserHelper.getCurrentUid()));
+        });
+
     }
 
 

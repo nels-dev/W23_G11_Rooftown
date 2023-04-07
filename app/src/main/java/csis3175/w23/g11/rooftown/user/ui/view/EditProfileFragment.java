@@ -25,11 +25,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.Random;
+import com.google.android.gms.maps.model.LatLng;
 
 import csis3175.w23.g11.rooftown.R;
 import csis3175.w23.g11.rooftown.common.CurrentUserHelper;
 import csis3175.w23.g11.rooftown.common.ImageFileHelper;
+import csis3175.w23.g11.rooftown.common.LocationHelper;
+import csis3175.w23.g11.rooftown.posts.ui.viewmodel.PostViewModel;
 import csis3175.w23.g11.rooftown.user.data.model.UserProfile;
 import csis3175.w23.g11.rooftown.user.ui.viewmodel.UserProfileViewModel;
 
@@ -113,6 +115,8 @@ public class EditProfileFragment extends Fragment {
         viewModel.updateUserProfile(p, (unused) -> {
             Toast.makeText(EditProfileFragment.this.getContext(), "Profile updated", Toast.LENGTH_SHORT).show();
             getParentFragmentManager().beginTransaction().replace(R.id.mainContainer, ProfileFragment.class, savedInstanceState).commit();
+            PostViewModel postViewModel = new ViewModelProvider(requireActivity()).get(PostViewModel.class);
+            LocationHelper.performWithLocation(requireActivity(), loc -> postViewModel.loadData(new LatLng(loc.getLatitude(), loc.getLongitude()), CurrentUserHelper.getCurrentUid()));
         });
     }
 }

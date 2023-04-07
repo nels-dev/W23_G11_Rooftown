@@ -120,7 +120,7 @@ public class PostDetailFragment extends Fragment {
             if (!initiatorBrief.isEmpty()) {
                 initiatorDetail += initiatorBrief;
             }
-            if (post.getInitiatorDescription() != null && post.getInitiatorDescription().isEmpty()) {
+            if (post.getInitiatorDescription() != null && !post.getInitiatorDescription().isEmpty()) {
                 initiatorDetail += (initiatorDetail.isEmpty() ? "" : "\n") + post.getInitiatorDescription();
             }
             if (post.getInitiatorImage() != null) {

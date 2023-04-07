@@ -46,23 +46,27 @@ public class MyPostFragment extends Fragment {
             buttonBinding.imgViewIcon.setImageDrawable(ResourcesCompat.getDrawable(getResources(), btnDrawables.get(i), null));
             CardView card = buttonBinding.cardViewHomeButton;
             if (btnPostTypes.get(i) == PostType.ROOM) {
-                card.setOnClickListener((View v) -> {
+                View.OnClickListener onClickListener = (View v) -> {
                     NewRoomPostFragment newRoomPostFragment = NewRoomPostFragment.newInstance();
                     getParentFragmentManager()
                             .beginTransaction()
                             .replace(R.id.mainContainer, newRoomPostFragment)
                             .addToBackStack(TAG)
                             .commit();
-                });
+                };
+                card.setOnClickListener(onClickListener);
+                buttonBinding.btnAction.setOnClickListener(onClickListener);
             } else if (btnPostTypes.get(i) == PostType.PERSON) {
-                card.setOnClickListener((View v) -> {
+                View.OnClickListener onClickListener = (View v) -> {
                     NewPersonPostFragment newPersonPostFragment = NewPersonPostFragment.newInstance();
                     getParentFragmentManager()
                             .beginTransaction()
                             .replace(R.id.mainContainer, newPersonPostFragment)
                             .addToBackStack(TAG)
                             .commit();
-                });
+                };
+                card.setOnClickListener(onClickListener);
+                buttonBinding.btnAction.setOnClickListener(onClickListener);
             }
 
             binding.linearLayoutPostType.addView(buttonBinding.getRoot());

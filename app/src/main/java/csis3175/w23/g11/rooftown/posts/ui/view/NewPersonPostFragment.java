@@ -109,6 +109,8 @@ public class NewPersonPostFragment extends Fragment {
                 ImageFileHelper.readImage(view.getContext(), profile.getImageFileName(),
                         (bitmap) -> imgViewPostInitiatorImage.setImageBitmap(bitmap));
             }
+        } else {
+            spinnerPostCountry.setSelection(countryAdapter.getPosition("Canada"));
         }
 
         activityResultLauncherInitiatorImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this::initiatorImageChosen);

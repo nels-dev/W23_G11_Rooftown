@@ -122,6 +122,8 @@ public class NewRoomPostFragment extends Fragment {
                 ImageFileHelper.readImage(view.getContext(), profile.getImageFileName(),
                         (bitmap) -> imgViewPostInitiatorImage.setImageBitmap(bitmap));
             }
+        } else {
+            spinnerPostCountry.setSelection(countryAdapter.getPosition("Canada"));
         }
 
         activityResultLauncherRoomImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this::roomImageChosen);
@@ -182,7 +184,7 @@ public class NewRoomPostFragment extends Fragment {
         Geocoder geocoder = new Geocoder(this.getContext(), Locale.getDefault());
         try {
             List<Address> addresses = null;
-            addresses = geocoder.getFromLocationName(postalCode + ", Canada", 1);
+            addresses = geocoder.getFromLocationName(postalCode + ", " + country, 1);
             if (addresses != null && addresses.size() > 0) {
                 newPost.setLatLong(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()));
                 newPost.setGeohash(GeoFireUtils.getGeoHashForLocation(new GeoLocation(addresses.get(0).getLatitude(), addresses.get(0).getLongitude())));

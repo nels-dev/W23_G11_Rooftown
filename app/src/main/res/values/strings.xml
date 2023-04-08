@@ -30,7 +30,7 @@
     <string name="txtHomeButton3Content">Someone interested in your post? Or vice versa? Let’s chat in detail to see if match</string>
     <string name="txtPostTypeButton1Title">Find Roommates</string>
     <string name="txtPostTypeButton1Content">I have a room and looking for room mate to share the home</string>
-    <string name="txtPostTypeButton2Title">Find Room and Roommates</string>
+    <string name="txtPostTypeButton2Title">Find Room and Mates</string>
     <string name="txtPostTypeButton2Content">I don\'t have a room yet and I am looking for a room</string>
     <string name="txtSignOut">Sign Out</string>
     <string name="txtAboutTargetLocation">About your target location</string>

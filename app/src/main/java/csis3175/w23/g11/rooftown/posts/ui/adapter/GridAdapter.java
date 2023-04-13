@@ -39,10 +39,12 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder
             holder.binding.imgViewGrid.setImageResource(0);
             if (post.getRoomImage() != null) {
                 ImageFileHelper.readImage(holder.itemView.getContext(), post.getRoomImage(), bitmap -> holder.binding.imgViewGrid.setImageBitmap(bitmap));
+            } else {
+                holder.binding.imgViewGrid.setImageResource(R.drawable.placeholder_room);
             }
         } else if (post.getPostType() == PostType.PERSON) {
+            holder.binding.imgViewGrid.setImageResource(0);
             if (post.getInitiatorImage() != null) {
-                holder.binding.imgViewGrid.setImageResource(0);
                 ImageFileHelper.readImage(holder.itemView.getContext(), post.getInitiatorImage(), bitmap -> holder.binding.imgViewGrid.setImageBitmap(bitmap));
             } else {
                 if ("Male".equals(post.getInitiatorGender())) {
